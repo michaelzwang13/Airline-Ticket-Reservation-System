@@ -7,10 +7,10 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                       port = 8889,
+                       port = 3306,
                        user='root',
-                       password='root',
-                       db='ProjectFinal',
+                       password='',
+                       db='Airline',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
@@ -19,15 +19,25 @@ conn = pymysql.connect(host='localhost',
 def hello():
     return render_template('index.html')
 
-#Define route for login
-@app.route('/login')
-def login():
-    return render_template('login.html')
+#Define route for customer login
+@app.route('/customer_login')
+def customer_login():
+    return render_template('customer_login.html')
 
-#Define route for register
-@app.route('/register')
-def register():
-    return render_template('register.html')
+#Define route for staff login
+@app.route('/staff_login')
+def staff_login():
+    return render_template('staff_login.html')
+
+#Define route for customer register
+@app.route('/customer_register')
+def customer_register():
+    return render_template('customer_register.html')
+
+#Define route for staff register
+@app.route('/staff_register')
+def staff_register():
+    return render_template('staff_register.html')
 
 #Authenticates the login
 @app.route('/loginAuth', methods=['GET', 'POST'])
