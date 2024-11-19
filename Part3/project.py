@@ -1,7 +1,7 @@
 #Import Flask Library
-from flask import Flask, render_template, request, session, url_for, redirect
+from flask import Flask, render_template, request, session, url_for, redirect,send_file
 import pymysql.cursors
-
+import os
 #Initialize the app from Flask
 app = Flask(__name__)
 
@@ -170,6 +170,15 @@ def staffRegisterAuth():
         conn.commit()
         cursor.close()
         return render_template('index.html')
+    
+@app.route('/images/<path:filename>')
+def get_image(filename):
+    try:
+        # Specify your image directory path
+        image_path = os.path.join('images', filename)
+        return send_file(image_path, mimetype='image/jpeg')
+    except FileNotFoundError:
+        return "Image not found", 404
 
 @app.route('/home')
 def home():
