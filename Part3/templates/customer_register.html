@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration - Airline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff8f0;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .image-section {
+            flex: 1;
+            background: linear-gradient(rgba(255, 102, 0, 0.1), rgba(255, 102, 0, 0.2)),
+                        url('/api/placeholder/800/1200') no-repeat center center;
+			background: url('images/customer registration.jpeg') no-repeat center center/cover;
+            background-size: 100% 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: baseline;
+            color: orange;
+            text-align: baseline;
+            padding: 20px;
+        }
+        .form-section {
+            flex: 1;
+            padding: 40px;
+            position: relative;
+            overflow-y: auto;
+        }
+        h1 {
+            color: #ff6600;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-section-title {
+            color: #ff6600;
+            margin: 30px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #ffe6cc;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ff6600;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-link:hover {
+            background-color: rgba(255, 102, 0, 0.1);
+        }
+        .back-link::before {
+            content: "←";
+            font-size: 16px;
+        }
+        .required {
+            color: #ff4444;
+        }
+        .multi-field-container {
+            margin-bottom: 20px;
+        }
+        .multi-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .multi-field input {
+            flex: 1;
+        }
+        .add-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 0;
+            width: auto;
+        }
+        .remove-button {
+            background-color: #ff4444;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: auto;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-section">
+            <div class="image-section-content">
+                <h2>Join Our Community</h2>
+                <p>Start your journey with us</p>
+            </div>
+        </div>
+        <div class="form-section">
+            <a href="customer_login.html" class="back-link">Back</a>
+            <h1>Customer Registration</h1>
+            <form id="customerRegistrationForm" onsubmit="return validateForm(event)">
+                <!-- Account Information -->
+                <h3 class="form-section-title">Account Information</h3>
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <!-- Personal Information -->
+                <h3 class="form-section-title">Personal Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">First Name <span class="required">*</span></label>
+                        <input type="text" id="first_name" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name <span class="required">*</span></label>
+                        <input type="text" id="last_name" name="last_name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="date_of_birth">Date of Birth <span class="required">*</span></label>
+                    <input type="date" id="date_of_birth" name="date_of_birth" required>
+                </div>
+
+                <!-- Address Information -->
+                <h3 class="form-section-title">Address</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="building_number">Building Number <span class="required">*</span></label>
+                        <input type="text" id="building_number" name="building_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="street_name">Street Name <span class="required">*</span></label>
+                        <input type="text" id="street_name" name="street_name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="apartment_number">Apartment Number</label>
+                    <input type="text" id="apartment_number" name="apartment_number">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City <span class="required">*</span></label>
+                        <input type="text" id="city" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State <span class="required">*</span></label>
+                        <input type="text" id="state" name="state" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="zip_code">ZIP Code <span class="required">*</span></label>
+                    <input type="text" id="zip_code" name="zip_code" pattern="[0-9]{5}" title="Five digit ZIP code" required>
+                </div>
+
+                <!-- Contact Information -->
+                <h3 class="form-section-title">Contact Information</h3>
+                <div class="multi-field-container">
+                    <label>Phone Numbers <span class="required">*</span></label>
+                    <div id="phone-fields">
+                        <div class="multi-field">
+                            <input type="tel" name="phones[]" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                            <button type="button" class="add-button" onclick="addPhoneField()">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passport Information -->
+                <h3 class="form-section-title">Passport Information</h3>
+                <div class="form-group">
+                    <label for="passport_number">Passport Number <span class="required">*</span></label>
+                    <input type="text" id="passport_number" name="passport_number" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="passport_expiration">Passport Expiration <span class="required">*</span></label>
+                        <input type="date" id="passport_expiration" name="passport_expiration" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passport_country">Passport Country <span class="required">*</span></label>
+                        <input type="text" id="passport_country" name="passport_country" required>
+                    </div>
+                </div>
+
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function addPhoneField() {
+            const container = document.getElementById('phone-fields');
+            const newField = document.createElement('div');
+            newField.className = 'multi-field';
+            newField.innerHTML = `
+                <input type="tel" name="phones[]" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
+                <button type="button" class="remove-button" onclick="removeField(this)">-</button>
+            `;
+            container.appendChild(newField);
+        }
+
+        function removeField(button) {
+            button.parentElement.remove();
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+            
+            // Check if there's at least one phone number
+            const phones = document.querySelectorAll('input[name="phones[]"]');
+            if (phones.length < 1) {
+                alert('Please add at least one phone number');
+                return false;
+            }
+
+            // Add additional validation here if needed
+            
+            alert('Registration successful!');
+            return true;
+        }
+    </script>
+</body>
+</html>
