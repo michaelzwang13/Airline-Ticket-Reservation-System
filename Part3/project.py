@@ -68,7 +68,7 @@ def customerLoginAuth():
         #creates a session for the the user
         #session is a built in
         session['email_address'] = email_address
-        return redirect(url_for('home'))
+        return redirect(url_for('customer_home'))
     else:
         #returns an error message to the html page
         error = 'Invalid login or email_address'
@@ -180,8 +180,8 @@ def get_image(filename):
     except FileNotFoundError:
         return "Image not found", 404
 
-@app.route('/home')
-def home():
+@app.route('/customer_home')
+def customer_home():
     email_address = session['email_address']
     cursor = conn.cursor()
     query = 'SELECT first_name, last_name FROM customer WHERE email_address = %s'
@@ -190,7 +190,8 @@ def home():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    return render_template('home.html', email_address=email_address, posts=data1)
+
+    return render_template('customer_home.html', email_address=email_address, posts=data1)
 
 
 @app.route('/logout')
