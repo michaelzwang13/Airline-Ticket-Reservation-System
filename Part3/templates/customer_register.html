@@ -151,12 +151,13 @@
         <div class="form-section">
             <a href="/customer_login" class="back-link">Back</a>
             <h1>Customer Registration</h1>
-            <form id="customerRegistrationForm" onsubmit="return validateForm(event)">
+            <!-- <form id="customerRegistrationForm" onsubmit="return validateForm(event)"> -->
+            <form id="customerRegistrationForm" action="/customerRegisterAuth" method="POST">
                 <!-- Account Information -->
                 <h3 class="form-section-title">Account Information</h3>
                 <div class="form-group">
-                    <label for="email">Email Address <span class="required">*</span></label>
-                    <input type="email" id="email" name="email" required>
+                    <label for="email_address">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email_address" name="email_address" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password <span class="required">*</span></label>
@@ -185,8 +186,8 @@
                 <h3 class="form-section-title">Address</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="building_number">Building Number <span class="required">*</span></label>
-                        <input type="text" id="building_number" name="building_number" required>
+                        <label for="building_name">Building Name <span class="required">*</span></label>
+                        <input type="text" id="building_name" name="building_name" required>
                     </div>
                     <div class="form-group">
                         <label for="street_name">Street Name <span class="required">*</span></label>
@@ -195,8 +196,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="apartment_number">Apartment Number</label>
-                    <input type="text" id="apartment_number" name="apartment_number">
+                    <label for="apt_num">Apartment Number</label>
+                    <input type="number" id="apt_num" name="apt_num">
                 </div>
 
                 <div class="form-row">
@@ -211,12 +212,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="zip_code">ZIP Code <span class="required">*</span></label>
-                    <input type="text" id="zip_code" name="zip_code" pattern="[0-9]{5}" title="Five digit ZIP code" required>
+                    <label for="zipcode">ZIP Code <span class="required">*</span></label>
+                    <input type="text" id="zipcode" name="zipcode" pattern="[0-9]{5}" title="Five digit ZIP code" required>
                 </div>
 
                 <!-- Contact Information -->
-                <h3 class="form-section-title">Contact Information</h3>
+                <!-- <h3 class="form-section-title">Contact Information</h3>
                 <div class="multi-field-container">
                     <label>Phone Numbers <span class="required">*</span></label>
                     <div id="phone-fields">
@@ -225,7 +226,7 @@
                             <button type="button" class="add-button" onclick="addPhoneField()">+</button>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Passport Information -->
                 <h3 class="form-section-title">Passport Information</h3>
