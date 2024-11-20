@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Search - Public Access</title>
+    <style>
+        /* All existing styles remain the same */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff8f0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ff6600;
+            color: white;
+        }
+        header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        header .login-options {
+            display: flex;
+            gap: 20px;
+        }
+        header .login-options a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 5px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        header .login-options a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        nav {
+            margin: 20px 0;
+            text-align: center;
+        }
+        nav button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #e65c00;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-box {
+            display: none;
+            padding: 20px;
+            background-color: #ffe6cc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .search-box.active {
+            display: block;
+        }
+        .search-box h2 {
+            color: #ff6600;
+            margin-bottom: 20px;
+        }
+        .search-box label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #ff6600;
+        }
+        .search-box input,
+        .search-box select,
+        .search-box button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ffcc99;
+            border-radius: 5px;
+        }
+        .search-box button {
+            background-color: #ff6600;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        .search-box button:hover {
+            background-color: #e65c00;
+        }
+        .trip-type {
+            margin-bottom: 15px;
+        }
+        .trip-type label {
+            display: inline-block;
+            margin-right: 20px;
+            color: #333;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .date-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .return-date {
+            display: none;
+        }
+        .return-date.show {
+            display: block;
+        }
+        .section-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Airline</div>
+        <div class="login-options">
+            <a href="#">Home</a>
+            <a href="manage.html">Manage</a>
+            <a href="my_account.html">My Account</a>
+            <a onclick="logout()" style="cursor: pointer;">Logout</a>
+        </div>
+    </header>
+    <nav>
+        <button onclick="showSection('search-flights')">Search Flights</button>
+        <button onclick="showSection('check-status')">Check Flight Status</button>
+    </nav>
+    <div class="container">
+        <section id="search-flights" class="search-box active">
+            <h2>Search Future Flights</h2>
+            <p class="section-description">Search available flights by entering your travel details below</p>
+            <form>
+                <div class="trip-type">
+                    <label>
+                        <input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturnDate()"> One Way
+                    </label>
+                    <label>
+                        <input type="radio" name="trip-type" value="round-trip" onchange="toggleReturnDate()"> Round Trip
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="from-city">From City:</label>
+                        <input type="text" id="from-city" placeholder="Enter city name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="from-airport">From Airport:</label>
+                        <input type="text" id="from-airport" placeholder="Enter airport name/code">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="to-city">To City:</label>
+                        <input type="text" id="to-city" placeholder="Enter city name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="to-airport">To Airport:</label>
+                        <input type="text" id="to-airport" placeholder="Enter airport name/code">
+                    </div>
+                </div>
+
+                <div class="date-inputs">
+                    <div class="form-group">
+                        <label for="departure-date">Departure Date:</label>
+                        <input type="date" id="departure-date" required>
+                    </div>
+                    <div class="form-group return-date">
+                        <label for="return-date">Return Date:</label>
+                        <input type="date" id="return-date">
+                    </div>
+                </div>
+
+                <button type="submit">Search Flights</button>
+            </form>
+        </section>
+        
+        <section id="check-status" class="search-box">
+            <h2>Check Flight Status</h2>
+            <p class="section-description">Track your flight status using flight details</p>
+            <form>
+                <div class="form-group">
+                    <label for="airline-name">Airline Name:</label>
+                    <input type="text" id="airline-name" placeholder="Enter airline name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="flight-number">Flight Number:</label>
+                    <input type="text" id="flight-number" placeholder="Enter flight number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="flight-date">Flight Date:</label>
+                    <input type="date" id="flight-date" required>
+                </div>
+
+                <button type="submit">Check Status</button>
+            </form>
+        </section>
+    </div>
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.search-box');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+        }
+        function logout() {
+            // Add your logout logic here
+            window.location.href = '/'; // Redirect to login page after logout
+        }
+
+        function toggleReturnDate() {
+            const returnDateDiv = document.querySelector('.return-date');
+            const returnDateInput = document.getElementById('return-date');
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
+            
+            if (tripType === 'round-trip') {
+                returnDateDiv.classList.add('show');
+                returnDateInput.required = true;
+            } else {
+                returnDateDiv.classList.remove('show');
+                returnDateInput.required = false;
+            }
+        }
+    </script>
+</body>
+</html>
