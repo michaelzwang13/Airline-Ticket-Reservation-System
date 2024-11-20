@@ -86,7 +86,7 @@ def staffLoginAuth():
         #creates a session for the the user
         #session is a built in
         session['username'] = username
-        return redirect(url_for('home'))
+        return redirect(url_for('staff_home'))
     else:
         #returns an error message to the html page
         error = 'Invalid login or username'
