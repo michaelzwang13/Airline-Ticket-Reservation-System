@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Dashboard</title>
+    <style>
+        /* Adopted styles from the user file */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff8f0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ff6600;
+            color: white;
+        }
+        header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        header .login-options {
+            display: flex;
+            gap: 20px;
+        }
+        header .login-options a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 5px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        header .login-options a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .flight-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fffbe6;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ffd966;
+            border-radius: 8px;
+        }
+        .flight-details {
+            flex: 1;
+            margin-right: 20px;
+        }
+        .flight-time {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .airline {
+            font-weight: bold;
+        }
+        .flight-card .actions {
+            text-align: right;
+        }
+        .actions button {
+            background-color: #ff6600;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .actions button.cancel {
+            background-color: #e65c00;
+        }
+        .actions button:hover {
+            opacity: 0.9;
+        }
+        h2 {
+            color: #ff6600;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Flight Dashboard</div>
+        <div class="login-options">
+            <a href="#">Home</a>
+            <a href="#">Manage</a>
+            <a href="#">My Account</a>
+            <a onclick="logout()" style="cursor: pointer;">Log Out</a>
+        </div>
+    </header>
+    <div class="container">
+        <h2>Upcoming Flights</h2>
+        <div id="upcoming-flights">
+            <!-- Placeholder for dynamically added upcoming flights -->
+        </div>
+
+        <h2>Previous Flights</h2>
+        <div id="previous-flights">
+            <!-- Placeholder for dynamically added previous flights -->
+        </div>
+    </div>
+    <script>
+        // Placeholder for flight data
+        const upcomingFlights = [];
+        const previousFlights = [];
+
+        // Dynamically populate flights
+        function populateFlights() {
+            const upcomingContainer = document.getElementById('upcoming-flights');
+            const previousContainer = document.getElementById('previous-flights');
+
+            // Populate upcoming flights
+            if (upcomingFlights.length === 0) {
+                upcomingContainer.innerHTML = '<p>No upcoming flights.</p>';
+            } else {
+                upcomingContainer.innerHTML = upcomingFlights.map(flight => generateFlightCard(flight, 'upcoming')).join('');
+            }
+
+            // Populate previous flights
+            if (previousFlights.length === 0) {
+                previousContainer.innerHTML = '<p>No previous flights.</p>';
+            } else {
+                previousContainer.innerHTML = previousFlights.map(flight => generateFlightCard(flight, 'previous')).join('');
+            }
+        }
+
+        // Generate flight card HTML
+        function generateFlightCard(flight, type) {
+            return `
+                <div class="flight-card">
+                    <div class="flight-details">
+                        <div>${flight.date}</div>
+                        <div class="flight-time">${flight.from} (${flight.departureTime}) → ${flight.to} (${flight.arrivalTime})</div>
+                        <div class="airline">${flight.airline}, ${flight.seats} Seats, Starting From $${flight.price}</div>
+                    </div>
+                    <div class="actions">
+                        ${type === 'upcoming' 
+                            ? `<button class="cancel" onclick="cancelFlight('${flight.id}')">Cancel</button>`
+                            : `<button onclick="rateFlight('${flight.id}')">Rate</button>`}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Cancel flight logic
+        function cancelFlight(id) {
+            alert(`Flight with ID ${id} has been canceled.`);
+            // Remove from upcomingFlights and refresh UI
+        }
+
+        // Rate flight logic
+        function rateFlight(id) {
+            const rating = prompt('Please rate your flight (1-5 stars):');
+            if (rating && parseInt(rating) >= 1 && parseInt(rating) <= 5) {
+                alert(`Thank you for rating the flight: ${rating} stars.`);
+            } else {
+                alert('Invalid rating. Please enter a number between 1 and 5.');
+            }
+        }
+
+        function logout() {
+            alert("Logging out...");
+            window.location.href = '/';
+        }
+
+        // Initialize the page
+        populateFlights();
+    </script>
+</body>
+</html>

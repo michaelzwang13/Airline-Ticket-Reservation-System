@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff8f0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ff6600;
+            color: white;
+        }
+        header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        header .nav-options {
+            display: flex;
+            gap: 20px;
+        }
+        header .nav-options a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 5px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        header .nav-options a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        nav {
+            margin: 20px 0;
+            text-align: center;
+        }
+        nav button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #e65c00;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .feature-section {
+            display: none;
+            padding: 20px;
+            background-color: #ffe6cc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .feature-section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ffcc99;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #ff6600;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+        .group {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .group input {
+            flex: 1;
+        }
+        .save-button {
+            width: 100%;
+            font-size: 1.2em;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Staff Dashboard</div>
+        <div class="nav-options">
+            <a onclick="home()" style="cursor: pointer;">Home</a>
+            <a href="#">Manage</a>
+            <a href="#">My Account</a>
+            <a onclick="logout()" style="cursor: pointer;">Log Out</a>
+        </div>
+    </header>
+    <nav>
+        <button onclick="showFeature('edit-profile-info')">Edit Profile Info</button>
+        <button onclick="showFeature('view-flight-rates')">View Flight Rates</button>
+        <button onclick="showFeature('view-frequent-customers')">View Frequent Customers</button>
+        <button onclick="showFeature('view-earned-revenue')">View Earned Revenue</button>
+    </nav>
+    <div class="container">
+        <!-- Edit Profile Info -->
+        <section id="edit-profile-info" class="feature-section active">
+            <h2>Edit Profile Information</h2>
+            <form id="edit-profile-form">
+                <div class="form-group">
+                    <label for="first-name">First Name:</label>
+                    <input type="text" id="first-name" placeholder="Enter your first name">
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name:</label>
+                    <input type="text" id="last-name" placeholder="Enter your last name">
+                </div>
+                <div class="form-group">
+                    <label for="city">City:</label>
+                    <input type="text" id="city" placeholder="Enter your city">
+                </div>
+                <div id="phone-list">
+                    <h3>Phone Numbers</h3>
+                </div>
+                <button type="button" onclick="addPhoneNumber()">Add Phone Number</button>
+                <div id="email-list">
+                    <h3>Email Addresses</h3>
+                </div>
+                <button type="button" onclick="addEmailAddress()">Add Email Address</button>
+                <button type="button" class="save-button" onclick="saveProfile()">Save Changes</button>
+            </form>
+        </section>
+
+        <!-- View Flight Rates -->
+        <section id="view-flight-rates" class="feature-section">
+            <h2>View Flight Rates</h2>
+            <p>Flight rates data will be displayed here.</p>
+        </section>
+
+        <!-- View Frequent Customers -->
+        <section id="view-frequent-customers" class="feature-section">
+            <h2>View Frequent Customers</h2>
+            <p>Frequent customer data will be displayed here.</p>
+        </section>
+
+        <!-- View Earned Revenue -->
+        <section id="view-earned-revenue" class="feature-section">
+            <h2>View Earned Revenue</h2>
+            <p>Revenue data will be displayed here.</p>
+        </section>
+    </div>
+
+    <script>
+        function addPhoneNumber() {
+            const phoneList = document.getElementById('phone-list');
+
+            const group = document.createElement('div');
+            group.classList.add('group');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter phone number';
+            input.classList.add('phone-input');
+            group.appendChild(input);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => group.remove();
+            group.appendChild(removeButton);
+
+            phoneList.appendChild(group);
+        }
+
+        function addEmailAddress() {
+            const emailList = document.getElementById('email-list');
+
+            const group = document.createElement('div');
+            group.classList.add('group');
+
+            const input = document.createElement('input');
+            input.type = 'email';
+            input.placeholder = 'Enter email address';
+            input.classList.add('email-input');
+            group.appendChild(input);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => group.remove();
+            group.appendChild(removeButton);
+
+            emailList.appendChild(group);
+        }
+
+        function saveProfile() {
+            const inputs = document.querySelectorAll('#edit-profile-form input');
+            const phoneInputs = document.querySelectorAll('.phone-input');
+            const emailInputs = document.querySelectorAll('.email-input');
+            const updatedProfile = {};
+            
+            inputs.forEach(input => {
+                if (input.value.trim() !== "" && !input.classList.contains('phone-input') && !input.classList.contains('email-input')) {
+                    const fieldName = input.id.replace(/-/g, '');
+                    updatedProfile[fieldName] = input.value.trim();
+                }
+            });
+
+            const phoneNumbers = [];
+            phoneInputs.forEach(input => {
+                if (input.value.trim() !== '') {
+                    phoneNumbers.push(input.value.trim());
+                }
+            });
+
+            const emailAddresses = [];
+            emailInputs.forEach(input => {
+                if (input.value.trim() !== '') {
+                    emailAddresses.push(input.value.trim());
+                }
+            });
+
+            updatedProfile.phoneNumbers = phoneNumbers;
+            updatedProfile.emailAddresses = emailAddresses;
+
+            alert('Profile updated successfully!');
+            console.log("Updated Profile:", updatedProfile);
+        }
+
+        function showFeature(featureId) {
+            const sections = document.querySelectorAll('.feature-section');
+            sections.forEach(section => section.classList.remove('active'));
+            const selectedFeature = document.getElementById(featureId);
+            if (selectedFeature) {
+                selectedFeature.classList.add('active');
+            }
+        }
+
+        function home() {
+            window.location.href = '/staff_home';
+        }
+
+        function logout() {
+            alert("Logging out...");
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
