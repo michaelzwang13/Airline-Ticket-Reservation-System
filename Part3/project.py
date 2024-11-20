@@ -40,8 +40,8 @@ def staff_register():
     return render_template('staff_register.html')
 
 #Authenticates the login
-@app.route('/customer_loginAuth', methods=['GET', 'POST'])
-def customer_loginAuth():
+@app.route('/customerLoginAuth', methods=['GET', 'POST'])
+def customerLoginAuth():
     #grabs information from the forms
     email_address = request.form['email_address']
     password = request.form['password']
@@ -66,33 +66,6 @@ def customer_loginAuth():
         error = 'Invalid login or email_address'
         return render_template('customer_login.html', error=error)
     
-@app.route('/staff_loginAuth', methods=['GET', 'POST'])
-def staff_loginAuth():
-    #grabs information from the forms
-    email_address = request.form['email_address']
-    password = request.form['password']
-
-    #cursor used to send queries
-    cursor = conn.cursor()
-    #executes query
-    query = 'SELECT * FROM customer WHERE email_address = %s and password = %s'
-    cursor.execute(query, (email_address, password))
-    #stores the results in a variable
-    data = cursor.fetchone()
-    #use fetchall() if you are expecting more than 1 data row
-    cursor.close()
-    error = None
-    if(data):
-        #creates a session for the the user
-        #session is a built in
-        session['email_address'] = email_address
-        return redirect(url_for('home'))
-    else:
-        #returns an error message to the html page
-        error = 'Invalid login or email_address'
-        return render_template('staff_login.html', error=error)
-        return render_template('customer_login.html', error=error)
-
 @app.route('/staffLoginAuth', methods=['GET', 'POST'])
 def staffLoginAuth():
     #grabs information from the forms
@@ -118,50 +91,6 @@ def staffLoginAuth():
         #returns an error message to the html page
         error = 'Invalid login or username'
         return render_template('staff_login.html', error=error)
-
-#Authenticates the register
-@app.route('/customer_registerAuth', methods=['GET', 'POST'])
-def customer_registerAuth():
-    #grabs information from the forms
-    email_address = request.form['email_address']
-    password = request.form['password']
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    building_name = request.form['building_name']
-    street_name = request.form['street_name']
-    apt_num = request.form['apt_num']
-    city = request.form['city']
-    state = request.form['state']
-    zipcode = request.form['zipcode']
-    date_of_birth = request.form['date_of_birth']
-    passport_number = request.form['passport_number']
-    passport_expiration = request.form['passport_expiration']
-    passport_country = request.form['passport_country']
-
-    #cursor used to send queries
-    cursor = conn.cursor()
-    #executes query
-    query = 'SELECT * FROM customer WHERE email_address = %s'
-    cursor.execute(query, (email_address))
-    #stores the results in a variable
-    data = cursor.fetchone()
-    #use fetchall() if you are expecting more than 1 data row
-    error = None
-    if(data):
-        #If the previous query returns data, then user exists
-        error = "This email already exists"
-        return render_template('register.html', error = error)
-    else:
-        ins = 'INSERT INTO customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-        cursor.execute(ins, (email_address, password, first_name, last_name, building_name,
-                            street_name, apt_num, city, state, zipcode, date_of_birth,
-                            passport_number, passport_expiration, passport_country))
-        conn.commit()
-        cursor.close()
-        return render_template('index.html')
-
-#@app.route('/staff_registerAuth', methods=['GET', 'POST'])
-#def staff_registerAuth():
 
 @app.route('/customerRegisterAuth', methods=['GET', 'POST'])
 def customerRegisterAuth():
@@ -255,6 +184,19 @@ def customer_home():
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
     return render_template('customer_home.html', email_address=email_address, posts=data1)
+
+@app.route('/staff_home')
+def staff_home():
+    
+    email_address = session['email_address']
+    cursor = conn.cursor()
+    query = 'SELECT first_name, last_name FROM airline_staff WHERE email_address = %s'
+    cursor.execute(query, (email_address))
+    data1 = cursor.fetchall() 
+    for each in data1:
+        print(each['first_name'] + " " + each['last_name'])
+    cursor.close()
+    return render_template('staff_home.html', email_address=email_address, posts=data1)
 
 
 @app.route('/logout')
