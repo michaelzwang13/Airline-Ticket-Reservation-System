@@ -160,7 +160,7 @@ def staffRegisterAuth():
         cursor.execute(ins, (username, airline_name, password, first_name, last_name, date_of_birth))
         conn.commit()
         cursor.close()
-        return render_template('index.html')
+        return render_template('staff_home.html')
     
 
 @app.route('/images/<path:filename>')
@@ -188,15 +188,15 @@ def customer_home():
 @app.route('/staff_home')
 def staff_home():
     
-    email_address = session['email_address']
+    username = session['username']
     cursor = conn.cursor()
-    query = 'SELECT first_name, last_name FROM airline_staff WHERE email_address = %s'
-    cursor.execute(query, (email_address))
+    query = 'SELECT first_name, last_name FROM airline_staff WHERE username = %s'
+    cursor.execute(query, (username))
     data1 = cursor.fetchall() 
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    return render_template('staff_home.html', email_address=email_address, posts=data1)
+    return render_template('staff_home.html', username=username, posts=data1)
 
 
 @app.route('/logout')
