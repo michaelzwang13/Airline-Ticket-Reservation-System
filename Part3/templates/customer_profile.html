@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff8f0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ff6600;
+            color: white;
+        }
+        header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        header .nav-options {
+            display: flex;
+            gap: 20px;
+        }
+        header .nav-options a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 5px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        header .nav-options a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        nav {
+            margin: 20px 0;
+            text-align: center;
+        }
+        nav button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #e65c00;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .feature-section {
+            display: none;
+            padding: 20px;
+            background-color: #ffe6cc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .feature-section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ffcc99;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #ff6600;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+        .phone-group {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .phone-group input {
+            flex: 1;
+        }
+        .save-button {
+            width: 100%;
+            font-size: 1.2em;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Customer Dashboard</div>
+        <div class="nav-options">
+            <a onclick="home()" style="cursor: pointer;">Home</a>
+            <a onclick="my_flight()" style="cursor: pointer;">My Flight</a>
+            <a href="#">My Account</a>
+            <a onclick="logout()" style="cursor: pointer;">Log Out</a>
+        </div>
+    </header>
+    <nav>
+        <button onclick="showFeature('edit-profile-info')">Edit Profile Info</button>
+        <button onclick="showFeature('track-spending')">Track Spending</button>
+    </nav>
+    <div class="container">
+        <section id="edit-profile-info" class="feature-section active">
+            <h2>Edit Profile Information</h2>
+            <form id="edit-profile-form" action="/editCustomerProfile" method="POST">
+                <div class="form-group">
+                    <label for="first-name">First Name:</label>
+                    <input type="text" id="first-name" name = "first_name" placeholder="Enter your first name">
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name:</label>
+                    <input type="text" id="last-name" name ="last_name" placeholder="Enter your last name">
+                </div>
+                <div class="form-group">
+                    <label for="building-name">Building Name:</label>
+                    <input type="text" id="building-name" name = "building_name" placeholder="Enter your building name">
+                </div>
+                <div class="form-group">
+                    <label for="street-name">Street Name:</label>
+                    <input type="text" id="street-name" name="street_name" placeholder="Enter your street name">
+                </div>
+                <div class="form-group">
+                    <label for="apartment-number">Apartment Number:</label>
+                    <input type="text" id="apartment-number" name="apt_num" placeholder="Enter your apartment number">
+                </div>
+                <div class="form-group">
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name= "city" placeholder="Enter your city">
+                </div>
+                <div class="form-group">
+                    <label for="state">State:</label>
+                    <input type="text" id="state" name = "state" placeholder="Enter your state">
+                </div>
+                <div class="form-group">
+                    <label for="zipcode">Zip Code:</label>
+                    <input type="text" id="zipcode" name= "zipcode" placeholder="Enter your zip code">
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth:</label>
+                    <input type="date" id="dob" name = "date_of_birth">
+                </div>
+                <div id="phone-list">
+                    <h3>Phone Numbers</h3>
+                </div>
+                <button type="button" onclick="addPhoneNumber()">Add Phone Number</button>
+                <div class="form-actions">
+                    <button type="submit" class="save-button">Save Changes</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="track-spending" class="feature-section">
+            <h2>Track Spending</h2>
+            <p>Track and monitor your spending here.</p>
+            <button>View Spending Summary</button>
+        </section>
+    </div>
+
+    <script>
+    let phoneNumberCount = 0;
+        function addPhoneNumber() {
+            const phoneList = document.getElementById('phone-list');
+
+            // Create a new phone input group
+            const phoneGroup = document.createElement('div');
+            phoneGroup.classList.add('phone-group');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter phone number';
+            input.classList.add('phone-input');
+            input.name =`phoneNumbers[${phoneNumberCount}]`;
+            phoneGroup.appendChild(input);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => phoneGroup.remove();
+            phoneGroup.appendChild(removeButton);
+
+            phoneList.appendChild(phoneGroup);
+            phoneNumberCount++;
+        }
+
+
+        // function saveProfile() {
+        //     const inputs = document.querySelectorAll('#edit-profile-form input');
+        //     const phoneInputs = document.querySelectorAll('.phone-input');
+        //     const updatedProfile = {};
+            
+        //     inputs.forEach(input => {
+        //         if (input.value.trim() !== "" && input.classList.contains('phone-input') === false) {
+        //             const fieldName = input.id.replace(/-/g, '');
+        //             updatedProfile[fieldName] = input.value.trim();
+        //         }
+        //     });
+
+        //     const phoneNumbers = [];
+        //     phoneInputs.forEach(input => {
+        //         if (input.value.trim() !== '') {
+        //             phoneNumbers.push(input.value.trim());
+        //         }
+        //     });
+
+        //     updatedProfile.phoneNumbers = phoneNumbers;
+
+        //     alert('Profile updated successfully!');
+        //     console.log("Updated Profile:", updatedProfile);
+        // }
+
+        function showFeature(featureId) {
+            const sections = document.querySelectorAll('.feature-section');
+            sections.forEach(section => section.classList.remove('active'));
+            const selectedFeature = document.getElementById(featureId);
+            if (selectedFeature) {
+                selectedFeature.classList.add('active');
+            }
+        }
+        function my_flight(){
+            window.location.href = '/customer_flight';
+        }
+        function home() {
+            window.location.href = '/customer_home';
+        }
+
+        function logout() {
+            alert("Logging out...");
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

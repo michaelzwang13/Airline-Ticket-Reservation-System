@@ -125,7 +125,6 @@
         <div class="form-section">
             <a href="/staff_login" class="back-link">Back</a>
             <h1>Staff Registration</h1>
-            <!-- <form id="staffRegistrationForm" onsubmit="return validateForm(event)"> -->
             <form id="staffRegistrationForm" action="/staffRegisterAuth" method="POST">
                 <div class="form-group">
                     <label for="username">Username <span class="required">*</span></label>
@@ -157,25 +156,41 @@
                     <input type="date" id="date_of_birth" name="date_of_birth" required>
                 </div>
 
-                <!-- <div class="multi-field-container">
-                    <label>Email Addresses <span class="required">*</span></label>
-                    <div id="email-fields">
-                        <div class="multi-field">
-                            <input type="email" name="emails[]" required>
-                            <button type="button" class="add-button" onclick="addEmailField()">+</button>
-                        </div>
+                <div id="phone-list">
+                    <div class="form-group">
+                        <label for="phone number">Phone Number </label>
+                        <input type="text" name="phoneNumbers[0]" class="phone-input" placehold = "Enter phone number" style="flex: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
                     </div>
                 </div>
+                <button type="button" onclick="addPhoneNumber()" style="
+                    background-color: #ff6600;
+                    color: white;
+                    border: none;
+                    padding: 10px 15px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-left: 5px; /* Space between the input and button */
+                ">+</button>
 
-                <div class="multi-field-container">
-					<label>Phone Numbers <span class="optional">(Optional)</span></label>
-                    <div id="phone-fields">
-                        <div class="multi-field">
-                            <input type="tel" name="phones[]" required pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
-                            <button type="button" class="add-button" onclick="addPhoneField()">+</button>
-                        </div>
+                <div id="email-list">
+                    <div class="form-group">
+                        <label for="email address">Email Address <span class="required">*</span></label>
+                        <input type="text" name="email_address[0]" class="email-input" placehold = "Enter email address" required style="flex: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
                     </div>
-                </div> -->
+                </div>
+                <button type="button" onclick="addEmailAddress()" style="
+                    background-color: #ff6600;
+                    color: white;
+                    border: none;
+                    padding: 10px 15px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-left: 5px; /* Space between the input and button */
+                ">+</button>
 
                 <button type="submit">Register</button>
             </form>
@@ -183,23 +198,69 @@
     </div>
 
     <script>
-        function addEmailField() {
-            const container = document.getElementById('email-fields');
-            const newField = document.createElement('div');
-            newField.className = 'multi-field';
-            newField.innerHTML = `
-                <input type="email" name="emails[]" required>
-                <button type="button" class="remove-button" onclick="removeField(this)">-</button>
-            `;
-            container.appendChild(newField);
-        }
+        let phoneNumberCount = 1;
+        let emailNumberCount = 1;
+        function addPhoneNumber() {
+            const phoneList = document.getElementById('phone-list');
 
+            // Create a new phone input group
+            const phoneGroup = document.createElement('div');
+            phoneGroup.classList.add('phone-group');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter phone number';
+            input.classList.add('phone-input');
+            input.name =`phoneNumbers[${phoneNumberCount}]`;
+            phoneGroup.appendChild(input);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => phoneGroup.remove();
+            phoneGroup.appendChild(removeButton);
+
+            phoneList.appendChild(phoneGroup);
+            phoneNumberCount++;
+        }
         function addPhoneField() {
             const container = document.getElementById('phone-fields');
             const newField = document.createElement('div');
             newField.className = 'multi-field';
             newField.innerHTML = `
-                <input type="tel" name="phones[]" required pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
+                <input type="tel" name="phones[]" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
+                <button type="button" class="remove-button" onclick="removeField(this)">-</button>
+            `;
+            container.appendChild(newField);
+        }
+
+        function addEmailAddress() {
+            const emailList = document.getElementById('email-list');
+
+            // Create a new phone input group
+            const emailGroup = document.createElement('div');
+            emailGroup.classList.add('email-group');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter email address';
+            input.classList.add('email-input');
+            input.name =`email_address[${emailNumberCount}]`;
+            emailGroup.appendChild(input);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => emailGroup.remove();
+            emailGroup.appendChild(removeButton);
+
+            emailList.appendChild(emailGroup);
+            emailNumberCount++;
+        }
+        function addEmailField() {
+            const container = document.getElementById('email-fields');
+            const newField = document.createElement('div');
+            newField.className = 'multi-field';
+            newField.innerHTML = `
+                <input type="tel" name="email[]" title="Please enter email address">
                 <button type="button" class="remove-button" onclick="removeField(this)">-</button>
             `;
             container.appendChild(newField);
@@ -209,27 +270,6 @@
             button.parentElement.remove();
         }
 
-        function validateForm(event) {
-            event.preventDefault();
-            
-            // Check if there's at least one email
-            const emails = document.querySelectorAll('input[name="emails[]"]');
-            if (emails.length < 1) {
-                alert('Please add at least one email address');
-                return false;
-            }
-
-            // Check if there's more than one phone number
-            const phones = document.querySelectorAll('input[name="phones[]"]');
-            if (phones.length < 2) {
-                alert('Please add at least two phone numbers');
-                return false;
-            }
-
-            // If validation passes, you can submit the form
-            alert('Registration successful!');
-            return true;
-        }
     </script>
 </body>
 </html>
