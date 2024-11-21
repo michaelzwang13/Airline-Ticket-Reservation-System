@@ -204,6 +204,7 @@ def customer_home():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
+    
     return render_template('customer_home.html', email_address=email_address, posts=data1)
 
 @app.route('/staff_home')
