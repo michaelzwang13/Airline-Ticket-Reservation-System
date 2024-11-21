@@ -222,13 +222,15 @@ def editCustomerProfile():
     cursor.close()
     return render_template('customer_profile.html')
 
-@app.route('/customer_profile')
-def customer_profile():
-    return render_template('customer_profile.html')
 
 @app.route('/customer_flight')
 def customer_flight():
     return render_template('customer_flight.html')
+
+@app.route('/customer_profile')
+def customer_profile():
+    return render_template('customer_profile.html')
+
 
 @app.route('/logout')
 def logout():
