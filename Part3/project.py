@@ -174,7 +174,6 @@ def get_image(filename):
 
 @app.route('/customer_home')
 def customer_home():
-    
     email_address = session['email_address']
     cursor = conn.cursor()
     query = 'SELECT first_name, last_name FROM customer WHERE email_address = %s'
@@ -187,7 +186,6 @@ def customer_home():
 
 @app.route('/staff_home')
 def staff_home():
-    
     username = session['username']
     cursor = conn.cursor()
     query = 'SELECT first_name, last_name FROM airline_staff WHERE username = %s'
@@ -198,6 +196,39 @@ def staff_home():
     cursor.close()
     return render_template('staff_home.html', username=username, posts=data1)
 
+@app.route('/editCustomerProfile',methods=['GET','POST'])
+def editCustomerProfile():
+    updated_profile = {}
+    email_address = session['email_address']
+    for key, value in request.form.items():
+        if value !='':
+            if 'phoneNumbers' in key:  # Handle array-style inputs for phone numbers
+                if 'phoneNumbers' not in updated_profile:
+                    updated_profile['phoneNumbers'] = []
+                updated_profile['phoneNumbers'].append(value)
+            else:
+                updated_profile[key] = value
+    cursor = conn.cursor()
+        
+        # Example SQL Update: Update relevant fields in the database
+    for key, value in updated_profile.items():
+        if key != 'phoneNumbers':
+            cursor.execute(f'UPDATE customer SET {key} = '+'%s WHERE email_address = %s', (value, email_address))
+        else:
+            for num in value:
+                ins = 'INSERT INTO customer_phone_number VALUES(%s, %s)'
+                cursor.execute(ins, (email_address, num))
+    conn.commit()
+    cursor.close()
+    return render_template('customer_profile.html')
+
+@app.route('/customer_profile')
+def customer_profile():
+    return render_template('customer_profile.html')
+
+@app.route('/customer_flight')
+def customer_flight():
+    return render_template('customer_flight.html')
 
 @app.route('/logout')
 def logout():

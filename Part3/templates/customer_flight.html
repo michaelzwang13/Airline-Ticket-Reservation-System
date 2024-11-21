@@ -92,9 +92,9 @@
     <header>
         <div class="logo">Flight Dashboard</div>
         <div class="login-options">
-            <a href="#">Home</a>
-            <a href="#">Manage</a>
-            <a href="#">My Account</a>
+            <a onclick="home()" style="cursor: pointer;">Home</a>
+            <a href="#">My Flight</a>
+            <a onclick="my_account()" style="cursor: pointer;">My Account</a>
             <a onclick="logout()" style="cursor: pointer;">Log Out</a>
         </div>
     </header>
@@ -167,10 +167,17 @@
                 alert('Invalid rating. Please enter a number between 1 and 5.');
             }
         }
+        function home() {
+            window.location.href = '/customer_home';
+        }
 
         function logout() {
             alert("Logging out...");
             window.location.href = '/';
+        }
+
+        function my_account(){
+            window.location.href = '/customer_profile';
         }
 
         // Initialize the page

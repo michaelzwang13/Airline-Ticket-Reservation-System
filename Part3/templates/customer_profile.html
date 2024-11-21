@@ -120,7 +120,7 @@
         <div class="logo">Customer Dashboard</div>
         <div class="nav-options">
             <a onclick="home()" style="cursor: pointer;">Home</a>
-            <a href="#">Manage</a>
+            <a onclick="my_flight()" style="cursor: pointer;">My Flight</a>
             <a href="#">My Account</a>
             <a onclick="logout()" style="cursor: pointer;">Log Out</a>
         </div>
@@ -132,48 +132,50 @@
     <div class="container">
         <section id="edit-profile-info" class="feature-section active">
             <h2>Edit Profile Information</h2>
-            <form id="edit-profile-form">
+            <form id="edit-profile-form" action="/editCustomerProfile" method="POST">
                 <div class="form-group">
                     <label for="first-name">First Name:</label>
-                    <input type="text" id="first-name" placeholder="Enter your first name">
+                    <input type="text" id="first-name" name = "first_name" placeholder="Enter your first name">
                 </div>
                 <div class="form-group">
                     <label for="last-name">Last Name:</label>
-                    <input type="text" id="last-name" placeholder="Enter your last name">
+                    <input type="text" id="last-name" name ="last_name" placeholder="Enter your last name">
                 </div>
                 <div class="form-group">
                     <label for="building-name">Building Name:</label>
-                    <input type="text" id="building-name" placeholder="Enter your building name">
+                    <input type="text" id="building-name" name = "building_name" placeholder="Enter your building name">
                 </div>
                 <div class="form-group">
                     <label for="street-name">Street Name:</label>
-                    <input type="text" id="street-name" placeholder="Enter your street name">
+                    <input type="text" id="street-name" name="street_name" placeholder="Enter your street name">
                 </div>
                 <div class="form-group">
                     <label for="apartment-number">Apartment Number:</label>
-                    <input type="text" id="apartment-number" placeholder="Enter your apartment number">
+                    <input type="text" id="apartment-number" name="apt_num" placeholder="Enter your apartment number">
                 </div>
                 <div class="form-group">
                     <label for="city">City:</label>
-                    <input type="text" id="city" placeholder="Enter your city">
+                    <input type="text" id="city" name= "city" placeholder="Enter your city">
                 </div>
                 <div class="form-group">
                     <label for="state">State:</label>
-                    <input type="text" id="state" placeholder="Enter your state">
+                    <input type="text" id="state" name = "state" placeholder="Enter your state">
                 </div>
                 <div class="form-group">
                     <label for="zipcode">Zip Code:</label>
-                    <input type="text" id="zipcode" placeholder="Enter your zip code">
+                    <input type="text" id="zipcode" name= "zipcode" placeholder="Enter your zip code">
                 </div>
                 <div class="form-group">
                     <label for="dob">Date of Birth:</label>
-                    <input type="date" id="dob">
+                    <input type="date" id="dob" name = "date_of_birth">
                 </div>
                 <div id="phone-list">
                     <h3>Phone Numbers</h3>
                 </div>
                 <button type="button" onclick="addPhoneNumber()">Add Phone Number</button>
-                <button type="button" class="save-button" onclick="saveProfile()">Save Changes</button>
+                <div class="form-actions">
+                    <button type="submit" class="save-button">Save Changes</button>
+                </div>
             </form>
         </section>
 
@@ -185,6 +187,7 @@
     </div>
 
     <script>
+    let phoneNumberCount = 0;
         function addPhoneNumber() {
             const phoneList = document.getElementById('phone-list');
 
@@ -196,6 +199,7 @@
             input.type = 'text';
             input.placeholder = 'Enter phone number';
             input.classList.add('phone-input');
+            input.name =`phoneNumbers[${phoneNumberCount}]`;
             phoneGroup.appendChild(input);
 
             const removeButton = document.createElement('button');
@@ -204,32 +208,34 @@
             phoneGroup.appendChild(removeButton);
 
             phoneList.appendChild(phoneGroup);
+            phoneNumberCount++;
         }
 
-        function saveProfile() {
-            const inputs = document.querySelectorAll('#edit-profile-form input');
-            const phoneInputs = document.querySelectorAll('.phone-input');
-            const updatedProfile = {};
+
+        // function saveProfile() {
+        //     const inputs = document.querySelectorAll('#edit-profile-form input');
+        //     const phoneInputs = document.querySelectorAll('.phone-input');
+        //     const updatedProfile = {};
             
-            inputs.forEach(input => {
-                if (input.value.trim() !== "" && input.classList.contains('phone-input') === false) {
-                    const fieldName = input.id.replace(/-/g, '');
-                    updatedProfile[fieldName] = input.value.trim();
-                }
-            });
+        //     inputs.forEach(input => {
+        //         if (input.value.trim() !== "" && input.classList.contains('phone-input') === false) {
+        //             const fieldName = input.id.replace(/-/g, '');
+        //             updatedProfile[fieldName] = input.value.trim();
+        //         }
+        //     });
 
-            const phoneNumbers = [];
-            phoneInputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    phoneNumbers.push(input.value.trim());
-                }
-            });
+        //     const phoneNumbers = [];
+        //     phoneInputs.forEach(input => {
+        //         if (input.value.trim() !== '') {
+        //             phoneNumbers.push(input.value.trim());
+        //         }
+        //     });
 
-            updatedProfile.phoneNumbers = phoneNumbers;
+        //     updatedProfile.phoneNumbers = phoneNumbers;
 
-            alert('Profile updated successfully!');
-            console.log("Updated Profile:", updatedProfile);
-        }
+        //     alert('Profile updated successfully!');
+        //     console.log("Updated Profile:", updatedProfile);
+        // }
 
         function showFeature(featureId) {
             const sections = document.querySelectorAll('.feature-section');
@@ -239,7 +245,9 @@
                 selectedFeature.classList.add('active');
             }
         }
-
+        function my_flight(){
+            window.location.herf = '/customer_flight';
+        }
         function home() {
             window.location.href = '/customer_home';
         }

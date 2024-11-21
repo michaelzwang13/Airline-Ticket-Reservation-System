@@ -142,8 +142,8 @@
         <div class="logo">Airline</div>
         <div class="login-options">
             <a href="#">Home</a>
-            <a href="my_flight.html">My Flight</a>
-            <a href="my_account.html">My Account</a>
+            <a onclick="my_flight()" style="cursor: pointer;">My Flight</a>
+            <a onclick="my_account()" style="cursor: pointer;">My Account</a>
             <a onclick="logout()" style="cursor: pointer;">Log Out</a>
         </div>
     </header>
@@ -236,8 +236,14 @@
             }
         }
         function logout() {
-            // Add your logout logic here
             window.location.href = '/'; // Redirect to login page after logout
+        }
+        
+        function my_flight(){
+            window.location.herf = '/customer_flight';
+        }
+        function my_account(){
+            window.location.href = '/customer_profile';
         }
 
         function toggleReturnDate() {
