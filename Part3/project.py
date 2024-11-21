@@ -109,7 +109,11 @@ def customerRegisterAuth():
     passport_number = request.form['passport_number']
     passport_expiration = request.form['passport_expiration']
     passport_country = request.form['passport_country']
-
+    phone_number = []
+    for key, value in request.form.items():
+        if value !='':
+            if 'phoneNumbers' in key:  # Handle array-style inputs for phone numbers
+                phone_number.append(value)
     #cursor used to send queries
     cursor = conn.cursor()
     #executes query
@@ -128,6 +132,9 @@ def customerRegisterAuth():
         cursor.execute(ins, (email_address, password, first_name, last_name, building_name,
                             street_name, apt_num, city, state, zipcode, date_of_birth,
                             passport_number, passport_expiration, passport_country))
+        ins_phone = 'INSERT INTO customer_phone_number VALUES(%s, %s)'
+        for num in phone_number:
+            cursor.execute(ins_phone, (email_address,num))
         conn.commit()
         cursor.close()
         return render_template('customer_home.html')
@@ -141,7 +148,16 @@ def staffRegisterAuth():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
     date_of_birth = request.form['date_of_birth']
-
+    phone_number = []
+    for key, value in request.form.items():
+        if value !='':
+            if 'phoneNumbers' in key:  # Handle array-style inputs for phone numbers
+                phone_number.append(value)
+    email_address = []
+    for key, value in request.form.items():
+        if value !='':
+            if 'email_address' in key:  # Handle array-style inputs for phone numbers
+                email_address.append(value)
     #cursor used to send queries
     cursor = conn.cursor()
     #executes query
@@ -158,6 +174,12 @@ def staffRegisterAuth():
     else:
         ins = 'INSERT INTO airline_staff VALUES(%s, %s, %s, %s, %s, %s)'
         cursor.execute(ins, (username, airline_name, password, first_name, last_name, date_of_birth))
+        ins_phone = 'INSERT INTO airline_staff_phone_number VALUES(%s, %s)'
+        for num in phone_number:
+            cursor.execute(ins_phone, (username,num))
+        ins_email = 'INSERT INTO airline_staff_email VALUES(%s, %s)'
+        for email in email_address:
+            cursor.execute(ins_email, (username,email))
         conn.commit()
         cursor.close()
         return render_template('staff_home.html')

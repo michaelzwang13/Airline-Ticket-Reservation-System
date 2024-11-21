@@ -157,11 +157,11 @@
                 <h3 class="form-section-title">Account Information</h3>
                 <div class="form-group">
                     <label for="email_address">Email Address <span class="required">*</span></label>
-                    <input type="email" id="email_address" name="email_address" required>
+                    <input type="email" id="email_address" name="email_address" placeholder = 'Enter email address' required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password <span class="required">*</span></label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" placeholder = 'Enter password' required>
                 </div>
 
                 <!-- Personal Information -->
@@ -169,17 +169,17 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="first_name">First Name <span class="required">*</span></label>
-                        <input type="text" id="first_name" name="first_name" required>
+                        <input type="text" id="first_name" name="first_name" placehold = "Enter first name" required>
                     </div>
                     <div class="form-group">
                         <label for="last_name">Last Name <span class="required">*</span></label>
-                        <input type="text" id="last_name" name="last_name" required>
+                        <input type="text" id="last_name" name="last_name" placehold = "Enter last name" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="date_of_birth">Date of Birth <span class="required">*</span></label>
-                    <input type="date" id="date_of_birth" name="date_of_birth" required>
+                    <input type="date" id="date_of_birth" name="date_of_birth" placehold = "Enter date of birth" required>
                 </div>
 
                 <!-- Address Information -->
@@ -187,62 +187,68 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="building_name">Building Name <span class="required">*</span></label>
-                        <input type="text" id="building_name" name="building_name" required>
+                        <input type="text" id="building_name" name="building_name" placehold = "Enter building name" required>
                     </div>
                     <div class="form-group">
                         <label for="street_name">Street Name <span class="required">*</span></label>
-                        <input type="text" id="street_name" name="street_name" required>
+                        <input type="text" id="street_name" name="street_name" placehold = "Enter street name" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="apt_num">Apartment Number</label>
-                    <input type="number" id="apt_num" name="apt_num">
+                    <input type="text" id="apt_num" name="apt_num" placehold = "Enter apartment number">
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="city">City <span class="required">*</span></label>
-                        <input type="text" id="city" name="city" required>
+                        <input type="text" id="city" name="city" placehold = "Enter city" required>
                     </div>
                     <div class="form-group">
                         <label for="state">State <span class="required">*</span></label>
-                        <input type="text" id="state" name="state" required>
+                        <input type="text" id="state" name="state" placehold = "Enter state" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="zipcode">ZIP Code <span class="required">*</span></label>
-                    <input type="text" id="zipcode" name="zipcode" pattern="[0-9]{5}" title="Five digit ZIP code" required>
+                    <input type="text" id="zipcode" name="zipcode" pattern="[0-9]{5}" placehold = "Enter zip code" title="Five digit ZIP code" required>
                 </div>
 
-                <!-- Contact Information -->
-                <!-- <h3 class="form-section-title">Contact Information</h3>
-                <div class="multi-field-container">
-                    <label>Phone Numbers <span class="required">*</span></label>
-                    <div id="phone-fields">
-                        <div class="multi-field">
-                            <input type="tel" name="phones[]" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
-                            <button type="button" class="add-button" onclick="addPhoneField()">+</button>
-                        </div>
+                <div id="phone-list">
+                    <div class="form-group">
+                        <label for="phone number">Phone Number <span class="required">*</span></label>
+                        <input type="text" name="phoneNumbers[0]" class="phone-input" placehold = "Enter phone number" required style="flex: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
                     </div>
-                </div> -->
-
+                </div>
+                <button type="button" onclick="addPhoneNumber()" style="
+                    background-color: #ff6600;
+                    color: white;
+                    border: none;
+                    padding: 10px 15px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-left: 5px; /* Space between the input and button */
+                ">+</button>
+                
                 <!-- Passport Information -->
                 <h3 class="form-section-title">Passport Information</h3>
                 <div class="form-group">
                     <label for="passport_number">Passport Number <span class="required">*</span></label>
-                    <input type="text" id="passport_number" name="passport_number" required>
+                    <input type="text" id="passport_number" name="passport_number" placehold = "Enter passport number" required>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="passport_expiration">Passport Expiration <span class="required">*</span></label>
-                        <input type="date" id="passport_expiration" name="passport_expiration" required>
+                        <input type="date" id="passport_expiration" name="passport_expiration" placehold = "Enter passport expiration" required>
                     </div>
                     <div class="form-group">
                         <label for="passport_country">Passport Country <span class="required">*</span></label>
-                        <input type="text" id="passport_country" name="passport_country" required>
+                        <input type="text" id="passport_country" name="passport_country" placehold = "Enter passport country" required>
                     </div>
                 </div>
 
@@ -252,6 +258,29 @@
     </div>
 
     <script>
+        let phoneNumberCount = 1;
+        function addPhoneNumber() {
+            const phoneList = document.getElementById('phone-list');
+
+            // Create a new phone input group
+            const phoneGroup = document.createElement('div');
+            phoneGroup.classList.add('phone-group');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter phone number';
+            input.classList.add('phone-input');
+            input.name =`phoneNumbers[${phoneNumberCount}]`;
+            phoneGroup.appendChild(input);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => phoneGroup.remove();
+            phoneGroup.appendChild(removeButton);
+
+            phoneList.appendChild(phoneGroup);
+            phoneNumberCount++;
+        }
         function addPhoneField() {
             const container = document.getElementById('phone-fields');
             const newField = document.createElement('div');
@@ -265,22 +294,6 @@
 
         function removeField(button) {
             button.parentElement.remove();
-        }
-
-        function validateForm(event) {
-            event.preventDefault();
-            
-            // Check if there's at least one phone number
-            const phones = document.querySelectorAll('input[name="phones[]"]');
-            if (phones.length < 1) {
-                alert('Please add at least one phone number');
-                return false;
-            }
-
-            // Add additional validation here if needed
-            
-            alert('Registration successful!');
-            return true;
         }
     </script>
 </body>
