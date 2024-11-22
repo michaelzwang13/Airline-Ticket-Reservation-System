@@ -7,18 +7,18 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        # port = 8889,
-                        # user='root',
-                        # password='root',
-                        # db='ProjectFinal',
-                        # charset='utf8mb4',
-                        # cursorclass=pymysql.cursors.DictCursor)
-                        port = 3306,
+                        port = 8889,
                         user='root',
-                        password='',
-                        db='Airline',
+                        password='root',
+                        db='ProjectFinal',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
+                        # port = 3306,
+                        # user='root',
+                        # password='',
+                        # db='Airline',
+                        # charset='utf8mb4',
+                        # cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
@@ -224,6 +224,30 @@ def staff_home():
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
     return render_template('staff_home.html', username=username, posts=data1)
+
+@app.route('/staff_manage')
+def staff_manage():
+    username = session['username']
+    cursor = conn.cursor()
+    query = 'SELECT first_name, last_name FROM airline_staff WHERE username = %s'
+    cursor.execute(query, (username))
+    data1 = cursor.fetchall() 
+    for each in data1:
+        print(each['first_name'] + " " + each['last_name'])
+    cursor.close()
+    return render_template('staff_manage.html', username=username, posts=data1)
+
+@app.route('/staff_profile')
+def staff_profile():
+    username = session['username']
+    cursor = conn.cursor()
+    query = 'SELECT first_name, last_name FROM airline_staff WHERE username = %s'
+    cursor.execute(query, (username))
+    data1 = cursor.fetchall() 
+    for each in data1:
+        print(each['first_name'] + " " + each['last_name'])
+    cursor.close()
+    return render_template('staff_profile.html', username=username, posts=data1)
 
 @app.route('/editCustomerProfile',methods=['GET','POST'])
 def editCustomerProfile():
