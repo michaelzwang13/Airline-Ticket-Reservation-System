@@ -153,7 +153,7 @@
         <section id="search-flights" class="search-box active">
             <h2>Search Future Flights</h2>
             <p class="section-description">Search available flights by entering your travel details below</p>
-            <form>
+            <form action="/searchFlight" method="POST">
                 <div class="trip-type">
                     <label>
                         <input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturnDate()"> One Way
@@ -166,33 +166,33 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="from-city">From City:</label>
-                        <input type="text" id="from-city" placeholder="Enter city name" required>
+                        <input type="text" id="from-city" name = "from_city" placeholder="Enter city name" required>
                     </div>
                     <div class="form-group">
                         <label for="from-airport">From Airport:</label>
-                        <input type="text" id="from-airport" placeholder="Enter airport name/code">
+                        <input type="text" id="from-airport" name = "from_airport" placeholder="Enter airport name/code">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="to-city">To City:</label>
-                        <input type="text" id="to-city" placeholder="Enter city name" required>
+                        <input type="text" id="to-city" name = "to_city" placeholder="Enter city name" required>
                     </div>
                     <div class="form-group">
                         <label for="to-airport">To Airport:</label>
-                        <input type="text" id="to-airport" placeholder="Enter airport name/code">
+                        <input type="text" id="to-airport" name = "to_airport" placeholder="Enter airport name/code">
                     </div>
                 </div>
 
                 <div class="date-inputs">
                     <div class="form-group">
                         <label for="departure-date">Departure Date:</label>
-                        <input type="date" id="departure-date" required>
+                        <input type="date" id="departure-date" name = "departure_date" required>
                     </div>
                     <div class="form-group return-date">
                         <label for="return-date">Return Date:</label>
-                        <input type="date" id="return-date">
+                        <input type="date" id="return-date" name = "return_date">
                     </div>
                 </div>
 

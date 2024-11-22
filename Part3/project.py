@@ -283,6 +283,12 @@ def editStaffProfile():
     cursor.close()
     return render_template('staff_profile.html')
 
+@app.route('/searchFlight',methods=['POST'])
+def searchFlight():
+    for key, value in request.form.items():
+        print(key,value)
+    return render_template('index.html')
+
 @app.route('/customer_flight')
 def customer_flight():
     return render_template('customer_flight.html')
