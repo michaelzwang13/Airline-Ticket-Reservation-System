@@ -45,7 +45,7 @@ def customer_register():
 def staff_register():
     return render_template('staff_register.html')
 
-#Authenticates the login
+#Authenticates the customer login
 @app.route('/customerLoginAuth', methods=['GET', 'POST'])
 def customerLoginAuth():
     #grabs information from the forms
@@ -194,7 +194,6 @@ def staffRegisterAuth():
 @app.route('/images/<path:filename>')
 def get_image(filename):
     try:
-        # Specify your image directory path
         image_path = os.path.join('images', filename)
         return send_file(image_path, mimetype='image/jpeg')
     except FileNotFoundError:
@@ -275,6 +274,44 @@ def editCustomerProfile():
     cursor.close()
     return render_template('customer_profile.html')
 
+@app.route('/editStaffProfile',methods=['GET','POST'])
+def editStaffProfile():
+    updated_profile = {}
+    username = session['username']
+    for key, value in request.form.items():
+        if value !='':
+            if 'phoneNumbers' in key:  
+                if 'phoneNumbers' not in updated_profile:
+                    updated_profile['phoneNumbers'] = []
+                updated_profile['phoneNumbers'].append(value)
+            elif 'email_address' in key:  
+                if 'email_address' not in updated_profile:
+                    updated_profile['email_address'] = []
+                updated_profile['email_address'].append(value)
+            else:
+                updated_profile[key] = value
+    cursor = conn.cursor()
+        
+    for key, value in updated_profile.items():
+        if key == 'phoneNumbers':
+            for num in value:
+                ins = 'INSERT INTO airline_staff_phone_number VALUES(%s, %s)'
+                cursor.execute(ins, (username, num))
+        elif key == 'email_address':
+            for email in value:
+                ins_email = 'INSERT INTO airline_staff_email VALUES(%s, %s)'
+                cursor.execute(ins_email, (username, email))
+        else:
+            cursor.execute(f'UPDATE customer SET {key} = '+'%s WHERE username = %s', (value, username))
+    conn.commit()
+    cursor.close()
+    return render_template('staff_profile.html')
+
+@app.route('/searchFlight',methods=['POST'])
+def searchFlight():
+    for key, value in request.form.items():
+        print(key,value)
+    return render_template('index.html')
 
 @app.route('/customer_flight')
 def customer_flight():
@@ -285,9 +322,14 @@ def customer_profile():
     return render_template('customer_profile.html')
 
 
-@app.route('/logout')
-def logout():
+@app.route('/logout_customer')
+def logout_customer():
     session.pop('email_address')
+    return redirect('/')
+
+@app.route('/logout_staff')
+def logout_staff():
+    session.pop('username')
     return redirect('/')
         
 app.secret_key = 'some key that you will never guess'
