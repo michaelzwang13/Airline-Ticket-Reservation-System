@@ -135,6 +135,48 @@
             margin-bottom: 20px;
             font-style: italic;
         }
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card .details {
+            max-width: 70%;
+        }
+        .card .details h3 {
+            color: #ff7f27;
+            margin: 0 0 10px 0;
+        }
+        .card .details p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .card .actions {
+            text-align: right;
+        }
+        .card .actions .price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        .card .actions button {
+            padding: 10px 20px;
+            background-color: #f0ad4e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .card .actions button:hover {
+            background-color: #ec971f;
+        }
     </style>
 </head>
 <body>
@@ -153,35 +195,23 @@
         <section id="search-flights" class="search-box active">
             {% if results %}
                 <h2>Search Results</h2>
-                <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; text-align: left; border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th>Airline Name</th>
-                            <th>Flight Number</th>
-                            <th>Departure Date & Time</th>
-                            <th>Arrival Date & Time</th>
-                            <th>Departure Airport</th>
-                            <th>Base Price</th>
-                            <th>Flight Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for flight in results %}
-                        <tr>
-                            <td>{{ flight.airline_name }}</td>
-                            <td>{{ flight.flight_number }}</td>
-                            <td>{{ flight.departure_date }} {{ flight.departure_time }}</td>
-                            <td>{{ flight.arrival_date }} {{ flight.arrival_time }}</td>
-                            <td>{{ flight.departure_airport_code }}</td>
-                            <td>${{ flight.base_price }}</td>
-                            <td>{{ flight.flight_status }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <form action="/" method="GET">
-                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
-                </form>
+                <p>Found {{ results|length }} flights</p>
+                {% for flight in results %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{flight.airline_name}}</h3>
+                            <p>{{ flight.departure_airport }} <strong>{{ flight.departure_date }}</strong> {{ flight.departure_time }} → 
+                            {{ flight.arrival_airport }} <strong>{{ flight.arrival_date }}</strong> {{ flight.arrival_time }}</p>
+                            <p>Status: {{ flight.flight_status }}</p>
+                        </div>
+                        <div class="actions">
+                            <p class="price">Price: {{flight.base_price}}</p>
+                        </div>
+                    </div>
+                    <form action="/" method="GET">
+                        <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                    </form>
+                {% endfor %}
             {% else %}
                 <h2>Search Future Flights</h2>
                 <p class="section-description">Search available flights by entering your travel details below</p>
