@@ -2,23 +2,24 @@
 from flask import Flask, render_template, request, session, url_for, redirect,send_file
 import pymysql.cursors
 import os
+import sys
 #Initialize the app from Flask
 app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        # port = 8889,
-                        # user='root',
-                        # password='root',
-                        # db='ProjectFinal',
-                        # charset='utf8mb4',
-                        # cursorclass=pymysql.cursors.DictCursor)
-                        port = 3306,
+                        port = 8889,
                         user='root',
-                        password='',
-                        db='Airline',
+                        password='root',
+                        db='ProjectFinal',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
+                        # port = 3306,
+                        # user='root',
+                        # password='',
+                        # db='Airline',
+                        # charset='utf8mb4',
+                        # cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
@@ -309,10 +310,43 @@ def editStaffProfile():
 
 @app.route('/searchFlight',methods=['GET','POST'])
 def searchFlight():
-    for key, value in request.form.items():
-        print(key,value)
-    results = [{'airline_name':'b','flight_number':'12345','departure_date':"2024-11-10",'departure_time':'10:30:00','arrival_date':"2024-11-10",'arrival_time':'12:00:00','flight_status':"On-Timed",'base_price':'123','departure_airport_code':"JFK",'arrival_airport_code':"EWR"}]
-    return render_template('index.html',results = results)
+    # Get form inputs
+    departure_city = request.form['departure_city']
+    departure_airport_code = request.form['departure_airport_code']
+    arrival_city = request.form['arrival_city']
+    arrival_airport_code = request.form['arrival_airport_code']
+    departure_date = request.form['departure_date']
+    return_date = request.form['return_date']
+
+    # Prepare the SQL query
+    cursor = conn.cursor()
+    query = """
+        SELECT * FROM flight
+        WHERE 
+            (departure_airport_code in 
+                        (SELECT code from airport
+                            where city = %s)
+                    OR departure_airport_code = %s) 
+            AND
+            (arrival_airport_code in 
+                        (SELECT code from airport
+                            where city = %s)
+                    OR arrival_airport_code = %s) 
+            AND
+            departure_date = %s
+    """
+    params = (departure_city, departure_airport_code, arrival_city, arrival_airport_code, departure_date)
+    
+    # Add return date conditionally for round-trip search
+    if return_date:
+        query += " AND return_date = %s"
+        params += (return_date,)
+
+    cursor.execute(query, params)
+    flights = cursor.fetchall()
+    cursor.close()
+
+    return render_template('index.html',results = flights)
 
 @app.route('/searchStatus',methods=['GET','POST'])
 def searchStatus():

@@ -10,7 +10,8 @@ INSERT INTO airline (name) VALUES
 INSERT INTO airport (code, name, city, country, num_terminals, airport_type) VALUES
 ('JFK', 'John F. Kennedy International Airport', 'New York', 'United States', 6, 'Both'),
 ('LAX', 'Los Angeles International Airport', 'Los Angeles', 'United States', 9, 'Both'),
-('PVG', 'Shanghai Pudong International Airport', 'Shanghai', 'China', 2, 'Both');
+('PVG', 'Shanghai Pudong International Airport', 'Shanghai', 'China', 2, 'Both'),
+('LGA', 'LaGuardia Airport', 'New York', 'United States', 4, 'Domestic');
 
 
 INSERT INTO customer (email_address, password, first_name, last_name, building_name, street_name, apt_num, city, state, zipcode, date_of_birth, passport_number, passport_expiration, passport_country) VALUES
@@ -63,7 +64,13 @@ INSERT INTO flight (airline_name, flight_number, departure_time, departure_date,
 ('Southwest Airlines', 'SW2394C', '12:00:00', '2024-11-11', '2024-11-11', '14:00:00', 180.16, 'On-Time', 'PVG', 'LAX', 4067),
 ('Southwest Airlines', 'SW7418D', '08:30:00', '2024-11-12', '2024-11-12', '11:00:00', 210.74, 'Delayed', 'LAX', 'JFK', 4012),
 ('Alaska Airlines', 'AS7324A', '10:30:00', '2024-11-10', '2024-11-10', '13:45:00', 270.15, 'On-Time', 'JFK', 'LAX', 5021),
-('JetBlue Airways', 'JB6078C', '10:30:00', '2024-11-11', '2024-11-11', '13:15:00', 230.64, 'Canceled', 'JFK', 'PVG', 6014);
+('JetBlue Airways', 'JB6078C', '10:30:00', '2024-11-11', '2024-11-11', '13:15:00', 230.64, 'Canceled', 'JFK', 'PVG', 6014)
+('Delta Air Lines', 'DL1234A', '07:00:00', '2024-11-13', '2024-11-13', '07:30:00', 120.50, 'On-Time', 'LGA', 'JFK', 7050),
+('American Airlines', 'AA5678B', '08:00:00', '2024-11-13', '2024-11-13', '08:30:00', 130.75, 'On-Time', 'JFK', 'LGA', 8055),
+('Southwest Airlines', 'SW4321C', '10:00:00', '2024-11-13', '2024-11-13', '13:30:00', 290.20, 'On-Time', 'LGA', 'LAX', 4059),
+('United Airlines', 'UA9876D', '14:30:00', '2024-11-13', '2024-11-13', '22:30:00', 315.80, 'Delayed', 'LAX', 'LGA', 3054),
+('JetBlue Airways', 'JB3456E', '23:30:00', '2024-11-13', '2024-11-14', '14:00:00', 850.45, 'On-Time', 'LGA', 'PVG', 6067),
+('Delta Air Lines', 'DL6543F', '18:30:00', '2024-11-12', '2024-11-13', '20:30:00', 860.10, 'Canceled', 'PVG', 'LGA', 7032);
 
 INSERT INTO ticket (ID, ticket_price, airline_name, flight_number, departure_time, departure_date) VALUES
 (9845, 251.46, 'Delta Air Lines', 'DL4521A', '08:00:00', '2024-11-10'),
