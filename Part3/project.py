@@ -314,6 +314,11 @@ def searchFlight():
     results = [{'airline_name':'b','flight_number':'12345','departure_date':"2024-11-10",'departure_time':'10:30:00','arrival_date':"2024-11-10",'arrival_time':'12:00:00','flight_status':"On-Timed",'base_price':'123','departure_airport_code':"JFK",'arrival_airport_code':"EWR"}]
     return render_template('index.html',results = results)
 
+@app.route('/searchStatus',methods=['GET','POST'])
+def searchStatus():
+    results = {"status":"On-Time"}
+    return render_template('index.html',results = results)
+
 @app.route('/customer_flight')
 def customer_flight():
     return render_template('customer_flight.html')

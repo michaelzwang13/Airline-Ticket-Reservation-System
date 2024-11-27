@@ -265,29 +265,44 @@
             {% endif %}
         </section>
 
-        
-        
         <section id="check-status" class="search-box">
             <h2>Check Flight Status</h2>
-            <p class="section-description">Track your flight status using flight details</p>
-            <form>
-                <div class="form-group">
-                    <label for="airline-name">Airline Name:</label>
-                    <input type="text" id="airline-name" placeholder="Enter airline name" required>
+            {% if results %}
+                <h2>Status</h2>
+                <div class="card">
+                    <div class="details">
+                        <h3>{{flight.airline_name}}</h3>
+                        <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                        <p>{{ flight.departure_airport_code }} <strong>{{ flight.departure_date }}</strong> {{ flight.departure_time }} → 
+                        {{ flight.arrival_airport_code }} <strong>{{ flight.arrival_date }}</strong> {{ flight.arrival_time }}</p>
+                        <p>Status: {{ flight.flight_status }}</p>
+                    </div>
                 </div>
+                <form action="/" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% else %}
+                <h2>Search Flight status</h2>
+                <p class="section-description">Track your flight status using flight details</p>
+                <form action="/searchStatus" method="POST">
+                    <div class="form-group">
+                        <label for="airline-name">Airline Name:</label>
+                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="flight-number">Flight Number:</label>
-                    <input type="text" id="flight-number" placeholder="Enter flight number" required>
-                </div>
+                    <div class="form-group">
+                        <label for="flight-number">Flight Number:</label>
+                        <input type="text" id="flight-number" name = "flight_number" placeholder="Enter flight number" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="flight-date">Flight Date:</label>
-                    <input type="date" id="flight-date" required>
-                </div>
+                    <div class="form-group">
+                        <label for="flight-date">Flight Date:</label>
+                        <input type="date" id="flight-date" name = "flight_date" required>
+                    </div>
 
-                <button type="submit">Check Status</button>
-            </form>
+                    <button type="submit">Check Status</button>
+                </form>
+            {% endif %}
         </section>
     </div>
     <script>
