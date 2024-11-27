@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, session, url_for, redirect,send_file
 import pymysql.cursors
 import os
+import sys
 #Initialize the app from Flask
 app = Flask(__name__)
 
@@ -307,10 +308,72 @@ def editStaffProfile():
     cursor.close()
     return render_template('staff_profile.html')
 
-@app.route('/searchFlight',methods=['POST'])
-def searchFlight():
-    for key, value in request.form.items():
-        print(key,value)
+@app.route('/search_flights', methods=['GET', 'POST'])
+def search_flights():
+    if request.method == 'POST':
+        # Get form inputs
+        departure_city = request.form['departure_city']
+        departure_airport_code = request.form['departure_airport_code']
+        arrival_city = request.form['arrival_city']
+        arrival_airport_code = request.form['arrival_airport_code']
+        departure_date = request.form['departure_date']
+        return_date = request.form['return_date']
+
+        # Prepare the SQL query
+        cursor = conn.cursor()
+        query = """
+            SELECT * FROM flight
+            WHERE 
+                (departure_airport_code in 
+                            (SELECT code from airport
+                             where city = %s)
+                        OR departure_airport_code = %s) 
+                AND
+                (arrival_airport_code in 
+                            (SELECT code from airport
+                             where city = %s)
+                        OR arrival_airport_code = %s) 
+                AND
+                departure_date = %s
+        """
+        params = (departure_city, departure_airport_code, arrival_city, arrival_airport_code, departure_date)
+        
+        # Add return date conditionally for round-trip search
+        if return_date:
+            query += " AND return_date = %s"
+            params += (return_date,)
+
+        cursor.execute(query, params)
+        flights = cursor.fetchall()
+        cursor.close()
+
+        for data in flights:
+            print(data)
+
+        return render_template('index.html', flights=flights)
+
+    return render_template('index.html')
+
+@app.route('/flight_status', methods=['GET', 'POST'])
+def flight_status():
+    if request.method == 'POST':
+        # Get form inputs
+        airline_name = request.form.get('airline_name')
+        flight_number = request.form.get('flight_number')
+        departure_date = request.form.get('departure_date')
+
+        # Prepare the SQL query
+        cursor = conn.cursor()
+        query = """
+            SELECT * FROM flight 
+            WHERE airline_name = %s AND flight_number = %s AND (departure_date = %s)
+        """
+        cursor.execute(query, (airline_name, flight_number, departure_date))
+        status = cursor.fetchall()
+        cursor.close()
+
+        return render_template('index.html', status=status)
+
     return render_template('index.html')
 
 @app.route('/customer_flight')

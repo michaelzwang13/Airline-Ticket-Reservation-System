@@ -153,7 +153,7 @@
         <section id="search-flights" class="search-box active">
             <h2>Search Future Flights</h2>
             <p class="section-description">Search available flights by entering your travel details below</p>
-            <form action="/searchFlight" method="POST">
+            <form action="/search_flights" method="POST">
                 <div class="trip-type">
                     <label>
                         <input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturnDate()"> One Way
@@ -166,22 +166,22 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="from-city">From City:</label>
-                        <input type="text" id="from-city" name = "source_city" placeholder="Enter city name" required>
+                        <input type="text" id="from-city" name = "departure_city" placeholder="Enter city name">
                     </div>
                     <div class="form-group">
                         <label for="from-airport">From Airport:</label>
-                        <input type="text" id="from-airport" name = "source_airport" placeholder="Enter airport name/code">
+                        <input type="text" id="from-airport" name = "departure_airport_code" placeholder="Enter airport code">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="to-city">To City:</label>
-                        <input type="text" id="to-city" name = "destination_city" placeholder="Enter city name" required>
+                        <input type="text" id="to-city" name = "arrival_city" placeholder="Enter city name">
                     </div>
                     <div class="form-group">
                         <label for="to-airport">To Airport:</label>
-                        <input type="text" id="to-airport" name = "destination_airport" placeholder="Enter airport name/code">
+                        <input type="text" id="to-airport" name = "arrival_airport_code" placeholder="Enter airport code">
                     </div>
                 </div>
 
@@ -203,7 +203,7 @@
         <section id="check-status" class="search-box">
             <h2>Check Flight Status</h2>
             <p class="section-description">Track your flight status using flight details</p>
-            <form>
+            <form action="/flight_status" method="POST">
                 <div class="form-group">
                     <label for="airline-name">Airline Name:</label>
                     <input type="text" id="airline-name" placeholder="Enter airline name" required>
