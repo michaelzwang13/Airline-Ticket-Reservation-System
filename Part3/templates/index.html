@@ -193,7 +193,12 @@
     </nav>
     <div class="container">
         <section id="search-flights" class="search-box {% if section == 'search-flights' %}active{% endif %}">
-            {% if results and 'searchFlight' in results.keys()%}
+            {% if results and 'False' in results.keys() %}
+                <p>Wrong input. Please enter at least one city or airport code.Or correct airport</p>
+                <form action="/index_searchflights" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% elif results and 'searchFlight' in results.keys()%}
                 <h2>Search Results</h2>
                 <p>Found {{ results['searchFlight']|length }} flights</p>
                 {% for flight in results['searchFlight'] %}
@@ -327,6 +332,11 @@
                 returnDateDiv.classList.remove('show');
                 returnDateInput.required = false;
             }
+        }
+
+        function wronginput() {
+            alert("Wrong input. Please enter at least one city or airport code.Or correct airport");
+            window.location.href = '/index_searchflights';
         }
     </script>
 </body>

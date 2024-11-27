@@ -325,7 +325,8 @@ def searchFlight():
     arrival_airport_code = request.form['arrival_airport_code']
     departure_date = request.form['departure_date']
     return_date = request.form['return_date']
-
+    if (departure_airport_code ==''and departure_city=='') or (arrival_airport_code==''and arrival_city=='')or(departure_date==''):
+        return render_template('index.html',results = {'False':False},section = "search-flights")
     # Prepare the SQL query
     cursor = conn.cursor()
     query = """
