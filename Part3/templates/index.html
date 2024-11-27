@@ -200,12 +200,14 @@
                     <div class="card">
                         <div class="details">
                             <h3>{{flight.airline_name}}</h3>
-                            <p>{{ flight.departure_airport }} <strong>{{ flight.departure_date }}</strong> {{ flight.departure_time }} → 
-                            {{ flight.arrival_airport }} <strong>{{ flight.arrival_date }}</strong> {{ flight.arrival_time }}</p>
+                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p>{{ flight.departure_airport_code }} <strong>{{ flight.departure_date }}</strong> {{ flight.departure_time }} → 
+                            {{ flight.arrival_airport_code }} <strong>{{ flight.arrival_date }}</strong> {{ flight.arrival_time }}</p>
                             <p>Status: {{ flight.flight_status }}</p>
                         </div>
-                        <div class="actions">
+                        <div class="price+id">
                             <p class="price">Price: {{flight.base_price}}</p>
+                            <strong>Airplane ID:</strong> {{ flight.airplane_id }}
                         </div>
                     </div>
                     <form action="/" method="GET">
