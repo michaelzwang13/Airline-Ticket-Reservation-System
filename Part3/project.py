@@ -24,7 +24,15 @@ conn = pymysql.connect(host='localhost',
 #Define a route to hello function
 @app.route('/')
 def hello():
-    return render_template('index.html')
+    return render_template('index.html',section = "search-flights") # set default to search flights
+
+@app.route('/index_searchflights')
+def index_searchflights():
+    return render_template('index.html',section = "search-flights")
+
+@app.route('/index_checkstatus')
+def index_checkstatus():
+    return render_template('index.html',section = "check-status")
 
 #Define route for customer login
 @app.route('/customer_login')
@@ -344,14 +352,16 @@ def searchFlight():
 
     cursor.execute(query, params)
     flights = cursor.fetchall()
+    results = {'searchFlight':flights}
     cursor.close()
 
-    return render_template('index.html',results = flights)
+    return render_template('index.html',results = results,section = "search-flights")
 
 @app.route('/flight_status',methods=['GET','POST'])
 def flight_status():
-    results = {"status":"On-Time"}
-    return render_template('index.html',results = results)
+    status = {"status":"On-Time","flight_number":"123"}
+    results = {'flightStatus':status}
+    return render_template('index.html',results = results,section = "check-status")
 
 @app.route('/customer_flight')
 def customer_flight():
