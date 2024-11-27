@@ -7,18 +7,18 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        port = 8889,
-                        user='root',
-                        password='root',
-                        db='ProjectFinal',
-                        charset='utf8mb4',
-                        cursorclass=pymysql.cursors.DictCursor)
-                        # port = 3306,
+                        # port = 8889,
                         # user='root',
-                        # password='',
-                        # db='Airline',
+                        # password='root',
+                        # db='ProjectFinal',
                         # charset='utf8mb4',
                         # cursorclass=pymysql.cursors.DictCursor)
+                        port = 3306,
+                        user='root',
+                        password='',
+                        db='Airline',
+                        charset='utf8mb4',
+                        cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
@@ -307,11 +307,12 @@ def editStaffProfile():
     cursor.close()
     return render_template('staff_profile.html')
 
-@app.route('/searchFlight',methods=['POST'])
+@app.route('/searchFlight',methods=['GET','POST'])
 def searchFlight():
     for key, value in request.form.items():
         print(key,value)
-    return render_template('index.html')
+    results = {'airline_name':'b'}
+    return render_template('index.html',results = results)
 
 @app.route('/customer_flight')
 def customer_flight():
