@@ -8,18 +8,18 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        port = 8889,
+                        #port = 8889,
+                        #user='root',
+                        #password='root',
+                        #db='ProjectFinal',
+                        #charset='utf8mb4',
+                        #cursorclass=pymysql.cursors.DictCursor)
+                        port = 3306,
                         user='root',
-                        password='root',
-                        db='ProjectFinal',
+                        password='',#
+                        db='Airline',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
-                        # port = 3306,
-                        # user='root',
-                        # password='',
-                        # db='Airline',
-                        # charset='utf8mb4',
-                        # cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
@@ -348,8 +348,8 @@ def searchFlight():
 
     return render_template('index.html',results = flights)
 
-@app.route('/searchStatus',methods=['GET','POST'])
-def searchStatus():
+@app.route('/flight_status',methods=['GET','POST'])
+def flight_status():
     results = {"status":"On-Time"}
     return render_template('index.html',results = results)
 
