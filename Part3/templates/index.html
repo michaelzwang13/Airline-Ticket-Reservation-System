@@ -195,7 +195,7 @@
         <section id="search-flights" class="search-box {% if section == 'search-flights' %}active{% endif %}">
             {% if results and 'False' in results.keys() %}
                 <p>Wrong input. Please enter at least one city or airport code.Or correct airport</p>
-                <form action="/index_searchflights" method="GET">
+                <form action="/redirect_searchflights" method="GET">
                     <button type="submit" style="margin-top: 20px;">Back to Search</button>
                 </form>
             {% elif results and 'searchFlight' in results.keys()%}
@@ -217,7 +217,7 @@
                         </div>
                     </div>
                 {% endfor %}
-                <form action="/index_searchflights" method="GET">
+                <form action="/redirect_searchflights" method="GET">
                     <button type="submit" style="margin-top: 20px;">Back to Search</button>
                 </form>
             {% else %}
@@ -282,11 +282,10 @@
                         <p>Status: {{ results['flightStatus'].status }}</p>
                     </div>
                 </div>
-                <form action="/index_checkstatus" method="GET">
+                <form action="/redirect_checkstatus" method="GET">
                     <button type="submit" style="margin-top: 20px;">Back to Search</button>
                 </form>
             {% else %}
-                <h2>Search Flight status</h2>
                 <p class="section-description">Track your flight status using flight details</p>
                 <form action="/flight_status" method="POST">
                     <div class="form-group">
@@ -336,7 +335,7 @@
 
         function wronginput() {
             alert("Wrong input. Please enter at least one city or airport code.Or correct airport");
-            window.location.href = '/index_searchflights';
+            window.location.href = '/redirect_searchflights';
         }
     </script>
 </body>

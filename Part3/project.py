@@ -26,13 +26,27 @@ conn = pymysql.connect(host='localhost',
 def hello():
     return render_template('index.html',section = "search-flights") # set default to search flights
 
-@app.route('/index_searchflights')
-def index_searchflights():
-    return render_template('index.html',section = "search-flights")
+@app.route('/redirect_searchflights')
+def redirect_searchflights():
+    if 'email_address' in session.keys():
+        email_address = session['email_address']
+        return render_template('customer_home.html', email_address=email_address, section='search-flights')
+    elif 'username' in session.keys():
+        username = session['username']
+        return render_template('staff_home.html', username=username, section='search-flights')
+    else:
+        return render_template('index.html', section='search-flights')
 
-@app.route('/index_checkstatus')
-def index_checkstatus():
-    return render_template('index.html',section = "check-status")
+@app.route('/redirect_checkstatus')
+def redirect_checkstatus():
+    if 'email_address' in session.keys():
+        email_address = session['email_address']
+        return render_template('customer_home.html', email_address=email_address, section='check-status')
+    elif 'username' in session.keys():
+        username = session['username']
+        return render_template('staff_home.html', username=username, section='check-status')
+    else:
+        return render_template('index.html', section='check-status')
 
 #Define route for customer login
 @app.route('/customer_login')
@@ -152,7 +166,8 @@ def customerRegisterAuth():
             cursor.execute(ins_phone, (email_address,num))
         conn.commit()
         cursor.close()
-        return render_template('customer_home.html')
+        session['email_address'] = email_address
+        return render_template('customer_home.html',section='search-flights',email_address = email_address)
 
 @app.route('/staffRegisterAuth', methods=['GET', 'POST'])
 def staffRegisterAuth():
@@ -197,7 +212,8 @@ def staffRegisterAuth():
             cursor.execute(ins_email, (username,email))
         conn.commit()
         cursor.close()
-        return render_template('staff_home.html')
+        session['username'] = username
+        return render_template('staff_home.html',username=username,section='search-flights')
     
 
 @app.route('/images/<path:filename>')
@@ -219,7 +235,7 @@ def customer_home():
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
     
-    return render_template('customer_home.html', email_address=email_address, posts=data1)
+    return render_template('customer_home.html', email_address=email_address, posts=data1,section='search-flights')
 
 @app.route('/staff_home')
 def staff_home():
@@ -231,7 +247,7 @@ def staff_home():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    return render_template('staff_home.html', username=username, posts=data1)
+    return render_template('staff_home.html', username=username, posts=data1,section='search-flights')
 
 @app.route('/staff_manage')
 def staff_manage():
@@ -355,15 +371,27 @@ def searchFlight():
     flights = cursor.fetchall()
     results = {'searchFlight':flights}
     cursor.close()
-
-    return render_template('index.html',results = results,section = "search-flights")
-
+    if 'email_address' in session.keys():
+        email_address = session['email_address']
+        return render_template('customer_home.html', email_address=email_address, section='search-flights',results = results)
+    elif 'username' in session.keys():
+        username = session['username']
+        return render_template('staff_home.html', username=username, section='search-flights',results = results)
+    else:
+        return render_template('index.html', section='search-flights',results = results)
 @app.route('/flight_status',methods=['GET','POST'])
 def flight_status():
     status = {"status":"On-Time","flight_number":"123"}
     results = {'flightStatus':status}
-    return render_template('index.html',results = results,section = "check-status")
-
+    if 'email_address' in session.keys():
+        email_address = session['email_address']
+        return render_template('customer_home.html', email_address=email_address, section='check-status',results = results)
+    elif 'username' in session.keys():
+        username = session['username']
+        return render_template('staff_home.html', username=username, section='check-status',results = results)
+    else:
+        return render_template('index.html', section='check-status',results = results)
+    
 @app.route('/customer_flight')
 def customer_flight():
     return render_template('customer_flight.html')

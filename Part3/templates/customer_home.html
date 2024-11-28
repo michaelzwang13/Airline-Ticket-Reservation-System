@@ -135,6 +135,48 @@
             margin-bottom: 20px;
             font-style: italic;
         }
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card .details {
+            max-width: 70%;
+        }
+        .card .details h3 {
+            color: #ff7f27;
+            margin: 0 0 10px 0;
+        }
+        .card .details p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .card .actions {
+            text-align: right;
+        }
+        .card .actions .price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        .card .actions button {
+            padding: 10px 20px;
+            background-color: #f0ad4e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .card .actions button:hover {
+            background-color: #ec971f;
+        }
     </style>
 </head>
 <body>
@@ -152,77 +194,120 @@
         <button onclick="showSection('check-status')">Check Flight Status</button>
     </nav>
     <div class="container">
-        <section id="search-flights" class="search-box active">
-            <h2>Search Future Flights</h2>
-            <p class="section-description">Search available flights by entering your travel details below</p>
-            <form>
-                <div class="trip-type">
-                    <label>
-                        <input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturnDate()"> One Way
-                    </label>
-                    <label>
-                        <input type="radio" name="trip-type" value="round-trip" onchange="toggleReturnDate()"> Round Trip
-                    </label>
-                </div>
+        <section id="search-flights" class="search-box {% if section == 'search-flights' %}active{% endif %}">
+            {% if results and 'False' in results.keys() %}
+                <p>Wrong input. Please enter at least one city or airport code.Or correct airport</p>
+                <form action="/redirect_searchflights" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% elif results and 'searchFlight' in results.keys()%}
+                <h2>Search Results</h2>
+                <p>Found {{ results['searchFlight']|length }} flights</p>
+                {% for flight in results['searchFlight'] %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{flight.airline_name}}</h3>
+                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                            <p>Departure Time: <strong>{{ flight.departure_date }}{{ flight.departure_time }}</strong> ------- 
+                                Arrival Time:<strong>{{ flight.arrival_date }}{{ flight.arrival_time }}</strong></p>
+                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                        </div>
+                        <div class="price+id">
+                            <p class="price">Price: {{flight.base_price}}</p>
+                            Airplane ID: {{ flight.airplane_id}}
+                        </div>
+                    </div>
+                {% endfor %}
+                <form action="/redirect_searchflights" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% else %}
+                <h2>Search Future Flights</h2>
+                <p class="section-description">Search available flights by entering your travel details below</p>
+                <form action="/searchFlight" method="POST">
+                    <div class="trip-type">
+                        <label>
+                            <input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturnDate()"> One Way
+                        </label>
+                        <label>
+                            <input type="radio" name="trip-type" value="round-trip" onchange="toggleReturnDate()"> Round Trip
+                        </label>
+                    </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="from-city">From City:</label>
-                        <input type="text" id="from-city" placeholder="Enter city name" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="from-city">From City:</label>
+                            <input type="text" id="from-city" name = "departure_city" placeholder="Enter city name">
+                        </div>
+                        <div class="form-group">
+                            <label for="from-airport">From Airport:</label>
+                            <input type="text" id="from-airport" name = "departure_airport_code" placeholder="Enter airport name/code">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="from-airport">From Airport:</label>
-                        <input type="text" id="from-airport" placeholder="Enter airport name/code">
-                    </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="to-city">To City:</label>
-                        <input type="text" id="to-city" placeholder="Enter city name" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="to-city">To City:</label>
+                            <input type="text" id="to-city" name = "arrival_city" placeholder="Enter city name">
+                        </div>
+                        <div class="form-group">
+                            <label for="to-airport">To Airport:</label>
+                            <input type="text" id="to-airport" name = "arrival_airport_code" placeholder="Enter airport name/code">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="to-airport">To Airport:</label>
-                        <input type="text" id="to-airport" placeholder="Enter airport name/code">
-                    </div>
-                </div>
 
-                <div class="date-inputs">
-                    <div class="form-group">
-                        <label for="departure-date">Departure Date:</label>
-                        <input type="date" id="departure-date" required>
+                    <div class="date-inputs">
+                        <div class="form-group">
+                            <label for="departure-date">Departure Date:</label>
+                            <input type="date" id="departure-date" name = "departure_date" required>
+                        </div>
+                        <div class="form-group return-date">
+                            <label for="return-date">Return Date:</label>
+                            <input type="date" id="return-date" name = "return_date">
+                        </div>
                     </div>
-                    <div class="form-group return-date">
-                        <label for="return-date">Return Date:</label>
-                        <input type="date" id="return-date">
-                    </div>
-                </div>
 
-                <button type="submit">Search Flights</button>
-            </form>
+                    <button type="submit">Search Flights</button>
+                </form>
+            {% endif %}
         </section>
-        
-        <section id="check-status" class="search-box">
+
+        <section id="check-status" class="search-box {% if section == 'check-status' %}active{% endif %}">
             <h2>Check Flight Status</h2>
-            <p class="section-description">Track your flight status using flight details</p>
-            <form>
-                <div class="form-group">
-                    <label for="airline-name">Airline Name:</label>
-                    <input type="text" id="airline-name" placeholder="Enter airline name" required>
+            {% if results and 'flightStatus' in results%}
+                <h2>Status</h2>
+                <div class="card">
+                    <div class="details">
+                        <h3>{{results['flightStatus'].airline_name}}</h3>
+                        <p><strong>Flight Number:</strong> {{ results['flightStatus'].flight_number }}</p>
+                        <p>Status: {{ results['flightStatus'].status }}</p>
+                    </div>
                 </div>
+                <form action="/redirect_checkstatus" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% else %}
+                <p class="section-description">Track your flight status using flight details</p>
+                <form action="/flight_status" method="POST">
+                    <div class="form-group">
+                        <label for="airline-name">Airline Name:</label>
+                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="flight-number">Flight Number:</label>
-                    <input type="text" id="flight-number" placeholder="Enter flight number" required>
-                </div>
+                    <div class="form-group">
+                        <label for="flight-number">Flight Number:</label>
+                        <input type="text" id="flight-number" name = "flight_number" placeholder="Enter flight number" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="flight-date">Flight Date:</label>
-                    <input type="date" id="flight-date" required>
-                </div>
+                    <div class="form-group">
+                        <label for="flight-date">Flight Date:</label>
+                        <input type="date" id="flight-date" name = "flight_date" required>
+                    </div>
 
-                <button type="submit">Check Status</button>
-            </form>
+                    <button type="submit">Check Status</button>
+                </form>
+            {% endif %}
         </section>
     </div>
     <script>
