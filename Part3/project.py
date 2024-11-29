@@ -8,23 +8,45 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        port = 8889,
+                        #port = 8889,
+                        #user='root',
+                        #password='root',
+                        #db='ProjectFinal',
+                        #charset='utf8mb4',
+                        #cursorclass=pymysql.cursors.DictCursor)
+                        port = 3306,
                         user='root',
-                        password='root',
-                        db='ProjectFinal',
+                        password='',#
+                        db='Airline',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
-                        # port = 3306,
-                        # user='root',
-                        # password='',
-                        # db='Airline',
-                        # charset='utf8mb4',
-                        # cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
 def hello():
-    return render_template('index.html')
+    return render_template('index.html',section = "search-flights") # set default to search flights
+
+@app.route('/redirect_searchflights')
+def redirect_searchflights():
+    if 'email_address' in session.keys():
+        email_address = session['email_address']
+        return render_template('customer_home.html', email_address=email_address, section='search-flights')
+    elif 'username' in session.keys():
+        username = session['username']
+        return render_template('staff_home.html', username=username, section='search-flights')
+    else:
+        return render_template('index.html', section='search-flights')
+
+@app.route('/redirect_checkstatus')
+def redirect_checkstatus():
+    if 'email_address' in session.keys():
+        email_address = session['email_address']
+        return render_template('customer_home.html', email_address=email_address, section='check-status')
+    elif 'username' in session.keys():
+        username = session['username']
+        return render_template('staff_home.html', username=username, section='check-status')
+    else:
+        return render_template('index.html', section='check-status')
 
 #Define route for customer login
 @app.route('/customer_login')
@@ -144,7 +166,8 @@ def customerRegisterAuth():
             cursor.execute(ins_phone, (email_address,num))
         conn.commit()
         cursor.close()
-        return render_template('customer_home.html')
+        session['email_address'] = email_address
+        return render_template('customer_home.html',section='search-flights',email_address = email_address)
 
 @app.route('/staffRegisterAuth', methods=['GET', 'POST'])
 def staffRegisterAuth():
@@ -189,7 +212,8 @@ def staffRegisterAuth():
             cursor.execute(ins_email, (username,email))
         conn.commit()
         cursor.close()
-        return render_template('staff_home.html')
+        session['username'] = username
+        return render_template('staff_home.html',username=username,section='search-flights')
     
 
 @app.route('/images/<path:filename>')
@@ -211,7 +235,7 @@ def customer_home():
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
     
-    return render_template('customer_home.html', email_address=email_address, posts=data1)
+    return render_template('customer_home.html', email_address=email_address, posts=data1,section='search-flights')
 
 @app.route('/staff_home')
 def staff_home():
@@ -223,7 +247,7 @@ def staff_home():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    return render_template('staff_home.html', username=username, posts=data1)
+    return render_template('staff_home.html', username=username, posts=data1,section='search-flights')
 
 @app.route('/staff_manage')
 def staff_manage():
@@ -317,7 +341,8 @@ def searchFlight():
     arrival_airport_code = request.form['arrival_airport_code']
     departure_date = request.form['departure_date']
     return_date = request.form['return_date']
-
+    if (departure_airport_code ==''and departure_city=='') or (arrival_airport_code==''and arrival_city=='')or(departure_date==''):
+        return render_template('index.html',results = {'False':False},section = "search-flights")
     # Prepare the SQL query
     cursor = conn.cursor()
     query = """
@@ -344,10 +369,29 @@ def searchFlight():
 
     cursor.execute(query, params)
     flights = cursor.fetchall()
+    results = {'searchFlight':flights}
     cursor.close()
-
-    return render_template('index.html',results = flights)
-
+    if 'email_address' in session.keys():
+        email_address = session['email_address']
+        return render_template('customer_home.html', email_address=email_address, section='search-flights',results = results)
+    elif 'username' in session.keys():
+        username = session['username']
+        return render_template('staff_home.html', username=username, section='search-flights',results = results)
+    else:
+        return render_template('index.html', section='search-flights',results = results)
+@app.route('/flight_status',methods=['GET','POST'])
+def flight_status():
+    status = {"status":"On-Time","flight_number":"123"}
+    results = {'flightStatus':status}
+    if 'email_address' in session.keys():
+        email_address = session['email_address']
+        return render_template('customer_home.html', email_address=email_address, section='check-status',results = results)
+    elif 'username' in session.keys():
+        username = session['username']
+        return render_template('staff_home.html', username=username, section='check-status',results = results)
+    else:
+        return render_template('index.html', section='check-status',results = results)
+    
 @app.route('/customer_flight')
 def customer_flight():
     return render_template('customer_flight.html')

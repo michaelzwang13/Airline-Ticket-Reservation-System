@@ -192,26 +192,34 @@
         <button onclick="showSection('check-status')">Check Flight Status</button>
     </nav>
     <div class="container">
-        <section id="search-flights" class="search-box active">
-            {% if results %}
+        <section id="search-flights" class="search-box {% if section == 'search-flights' %}active{% endif %}">
+            {% if results and 'False' in results.keys() %}
+                <p>Wrong input. Please enter at least one city or airport code.Or correct airport</p>
+                <form action="/redirect_searchflights" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% elif results and 'searchFlight' in results.keys()%}
                 <h2>Search Results</h2>
-                <p>Found {{ results|length }} flights</p>
-                {% for flight in results %}
+                <p>Found {{ results['searchFlight']|length }} flights</p>
+                {% for flight in results['searchFlight'] %}
                     <div class="card">
                         <div class="details">
                             <h3>{{flight.airline_name}}</h3>
-                            <p>{{ flight.departure_airport }} <strong>{{ flight.departure_date }}</strong> {{ flight.departure_time }} → 
-                            {{ flight.arrival_airport }} <strong>{{ flight.arrival_date }}</strong> {{ flight.arrival_time }}</p>
-                            <p>Status: {{ flight.flight_status }}</p>
+                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                            <p>Departure Time: <strong>{{ flight.departure_date }}{{ flight.departure_time }}</strong> ------- 
+                                Arrival Time:<strong>{{ flight.arrival_date }}{{ flight.arrival_time }}</strong></p>
+                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
                         </div>
-                        <div class="actions">
+                        <div class="price+id">
                             <p class="price">Price: {{flight.base_price}}</p>
+                            Airplane ID: {{ flight.airplane_id}}
                         </div>
                     </div>
-                    <form action="/" method="GET">
-                        <button type="submit" style="margin-top: 20px;">Back to Search</button>
-                    </form>
                 {% endfor %}
+                <form action="/redirect_searchflights" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
             {% else %}
                 <h2>Search Future Flights</h2>
                 <p class="section-description">Search available flights by entering your travel details below</p>
@@ -263,29 +271,41 @@
             {% endif %}
         </section>
 
-        
-        
-        <section id="check-status" class="search-box">
+        <section id="check-status" class="search-box {% if section == 'check-status' %}active{% endif %}">
             <h2>Check Flight Status</h2>
-            <p class="section-description">Track your flight status using flight details</p>
-            <form action="/flight_status" method="POST">
-                <div class="form-group">
-                    <label for="airline-name">Airline Name:</label>
-                    <input type="text" id="airline-name" placeholder="Enter airline name" required>
+            {% if results and 'flightStatus' in results%}
+                <h2>Status</h2>
+                <div class="card">
+                    <div class="details">
+                        <h3>{{results['flightStatus'].airline_name}}</h3>
+                        <p><strong>Flight Number:</strong> {{ results['flightStatus'].flight_number }}</p>
+                        <p>Status: {{ results['flightStatus'].status }}</p>
+                    </div>
                 </div>
+                <form action="/redirect_checkstatus" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% else %}
+                <p class="section-description">Track your flight status using flight details</p>
+                <form action="/flight_status" method="POST">
+                    <div class="form-group">
+                        <label for="airline-name">Airline Name:</label>
+                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="flight-number">Flight Number:</label>
-                    <input type="text" id="flight-number" placeholder="Enter flight number" required>
-                </div>
+                    <div class="form-group">
+                        <label for="flight-number">Flight Number:</label>
+                        <input type="text" id="flight-number" name = "flight_number" placeholder="Enter flight number" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="flight-date">Flight Date:</label>
-                    <input type="date" id="flight-date" required>
-                </div>
+                    <div class="form-group">
+                        <label for="flight-date">Flight Date:</label>
+                        <input type="date" id="flight-date" name = "flight_date" required>
+                    </div>
 
-                <button type="submit">Check Status</button>
-            </form>
+                    <button type="submit">Check Status</button>
+                </form>
+            {% endif %}
         </section>
     </div>
     <script>
@@ -311,6 +331,11 @@
                 returnDateDiv.classList.remove('show');
                 returnDateInput.required = false;
             }
+        }
+
+        function wronginput() {
+            alert("Wrong input. Please enter at least one city or airport code.Or correct airport");
+            window.location.href = '/redirect_searchflights';
         }
     </script>
 </body>
