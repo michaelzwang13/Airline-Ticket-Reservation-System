@@ -259,7 +259,7 @@ def staff_manage():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    return render_template('staff_manage.html', username=username, posts=data1)
+    return render_template('staff_manage.html', username=username,section = 'create-new-flights')
 
 @app.route('/staff_profile')
 def staff_profile():
@@ -271,7 +271,7 @@ def staff_profile():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    return render_template('staff_profile.html', username=username, posts=data1)
+    return render_template('staff_profile.html', username=username)
 
 @app.route('/editCustomerProfile',methods=['GET','POST'])
 def editCustomerProfile():
@@ -425,6 +425,22 @@ def customer_profile():
     spending[1]['June']=360
     return render_template('customer_profile.html',spending =spending,day_range_spending=False,section = 'edit-profile-info')
 
+
+@app.route('/createNewFlights',methods=['GET','POST'])
+def createNewFlights():
+    airline_name = request.form['airline_name']
+    flight_number = request.form['flight_number']
+    departure_time = request.form['departure_time']
+    departure_date = request.form['departure_date']
+    arrival_date = request.form['arrival_date']
+    arrival_time = request.form['arrival_time']
+    flight_status = request.form['flight_status']
+    base_price = request.form['base_price']
+    departure_airport_code = request.form['departure_airport_code']
+    arrival_airport_code = request.form['arrival_airport_code']
+    airplane_id = request.form['airplane_id']
+    print(airline_name,flight_number,departure_time,departure_date,arrival_date,arrival_time,flight_status,base_price,departure_airport_code,arrival_airport_code,airplane_id)
+    return render_template('staff_manage.html',section = 'create-new-flights')
 
 @app.route('/logout_customer')
 def logout_customer():
