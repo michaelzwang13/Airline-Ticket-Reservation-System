@@ -44,29 +44,82 @@
             margin: 20px auto;
             padding: 20px;
         }
-        .flight-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #fffbe6;
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid #ffd966;
-            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .flight-details {
-            flex: 1;
-            margin-right: 20px;
+        .card .details {
+            max-width: 70%;
         }
-        .flight-time {
+        .card .details h3 {
+            color: #ff7f27;
+            margin: 0 0 10px 0;
+        }
+        .card .details p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .card .actions {
+            text-align: right;
+        }
+        .card .actions .price {
             font-size: 1.2em;
             font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 10px;
         }
-        .airline {
+        .card .actions button {
+            padding: 10px 20px;
+            background-color: #f0ad4e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .card .actions button:hover {
+            background-color: #ec971f;
+        }
+        .rating-form {
+            margin-top: 10px;
+            background-color: #fffbe6;
+            padding: 10px;
+            border: 1px solid #ffd966;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rating-form label {
             font-weight: bold;
         }
-        .flight-card .actions {
-            text-align: right;
+
+        .rating-form input,
+        .rating-form textarea,
+        .rating-form button {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .rating-form button {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .rating-form button:hover {
+            background-color: #e65c00;
         }
         .actions button {
             background-color: #ff6600;
@@ -101,72 +154,78 @@
     <div class="container">
         <h2>Upcoming Flights</h2>
         <div id="upcoming-flights">
-            <!-- Placeholder for dynamically added upcoming flights -->
+            {% if results and  'upcomingFlights' in results.keys() %}
+                {% for flight in results['upcomingFlights'] %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{flight.airline_name}}</h3>
+                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                            <p>Departure Time: <strong>{{ flight.departure_date }}{{ flight.departure_time }}</strong> ------- 
+                                Arrival Time:<strong>{{ flight.arrival_date }}{{ flight.arrival_time }}</strong></p>
+                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                        </div>
+                        <div class="price+id">
+                            <p class="price">Price: {{flight.base_price}}</p>
+                            Airplane ID: {{ flight.airplane_id}}
+                        </div>
+                        <form action="/cancel_flight" method="POST" class="cancel-form">
+                            <input type="hidden" name="flight_id" value="{{ flight.id }}">
+                            <button type="submit" class="cancel">Cancel</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No upcoming flights.</p>
+            {% endif %}
         </div>
 
         <h2>Previous Flights</h2>
         <div id="previous-flights">
-            <!-- Placeholder for dynamically added previous flights -->
+            {% if results and  'previousFlights' in results.keys() %}
+                {% for flight in results['previousFlights'] %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{flight.airline_name}}</h3>
+                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                            <p>Departure Time: <strong>{{ flight.departure_date }}{{ flight.departure_time }}</strong> ------- 
+                                Arrival Time:<strong>{{ flight.arrival_date }}{{ flight.arrival_time }}</strong></p>
+                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                        </div>
+                        <div class="price+id">
+                            <p class="price">Price: {{flight.base_price}}</p>
+                            Airplane ID: {{ flight.airplane_id}}
+                        </div>
+                        <button onclick="showRatingForm('{{ flight.id }}')" class="rate">Rate</button>
+                        <form id="rating-form-{{ flight.id }}" class="rating-form" action="/rate_flight" method="POST" style="display: none;">
+                            <input type="hidden" name="flight_id" value="{{ flight.id }}">
+                            <label for="rating">Rating (1-5):</label>
+                            <input type="number" id="rating" name="rating" min="1" max="5" required>
+                            <label for="comment">Comment:</label>
+                            <textarea id="comment" name="comment" rows="3" placeholder="Enter your comment" required></textarea>
+                            <button type="submit">Submit</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No previous flights.</p>
+            {% endif %}
         </div>
     </div>
     <script>
-        // Placeholder for flight data
-        const upcomingFlights = [];
-        const previousFlights = [];
-
-        // Dynamically populate flights
-        function populateFlights() {
-            const upcomingContainer = document.getElementById('upcoming-flights');
-            const previousContainer = document.getElementById('previous-flights');
-
-            // Populate upcoming flights
-            if (upcomingFlights.length === 0) {
-                upcomingContainer.innerHTML = '<p>No upcoming flights.</p>';
-            } else {
-                upcomingContainer.innerHTML = upcomingFlights.map(flight => generateFlightCard(flight, 'upcoming')).join('');
-            }
-
-            // Populate previous flights
-            if (previousFlights.length === 0) {
-                previousContainer.innerHTML = '<p>No previous flights.</p>';
-            } else {
-                previousContainer.innerHTML = previousFlights.map(flight => generateFlightCard(flight, 'previous')).join('');
-            }
-        }
-
-        // Generate flight card HTML
-        function generateFlightCard(flight, type) {
-            return `
-                <div class="flight-card">
-                    <div class="flight-details">
-                        <div>${flight.date}</div>
-                        <div class="flight-time">${flight.from} (${flight.departureTime}) → ${flight.to} (${flight.arrivalTime})</div>
-                        <div class="airline">${flight.airline}, ${flight.seats} Seats, Starting From $${flight.price}</div>
-                    </div>
-                    <div class="actions">
-                        ${type === 'upcoming' 
-                            ? `<button class="cancel" onclick="cancelFlight('${flight.id}')">Cancel</button>`
-                            : `<button onclick="rateFlight('${flight.id}')">Rate</button>`}
-                    </div>
-                </div>
-            `;
-        }
-
-        // Cancel flight logic
-        function cancelFlight(id) {
-            alert(`Flight with ID ${id} has been canceled.`);
-            // Remove from upcomingFlights and refresh UI
-        }
-
         // Rate flight logic
-        function rateFlight(id) {
-            const rating = prompt('Please rate your flight (1-5 stars):');
-            if (rating && parseInt(rating) >= 1 && parseInt(rating) <= 5) {
-                alert(`Thank you for rating the flight: ${rating} stars.`);
+        function showRatingForm(flightId) {
+            // Get the rating form for the specific flight
+            const ratingForm = document.getElementById(`rating-form-${flightId}`);
+            
+            // Toggle visibility of the form
+            if (ratingForm.style.display === 'none' || ratingForm.style.display === '') {
+                ratingForm.style.display = 'block';
             } else {
-                alert('Invalid rating. Please enter a number between 1 and 5.');
+                ratingForm.style.display = 'none';
             }
-        }
+}
         function home() {
             window.location.href = '/customer_home';
         }
@@ -179,9 +238,6 @@
         function my_account(){
             window.location.href = '/customer_profile';
         }
-
-        // Initialize the page
-        populateFlights();
     </script>
 </body>
 </html>
