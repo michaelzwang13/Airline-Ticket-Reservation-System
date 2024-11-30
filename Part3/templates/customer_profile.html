@@ -113,6 +113,49 @@
             padding: 15px;
             margin-top: 20px;
         }
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 300px;
+            border-left: 2px solid #ddd;
+            border-bottom: 2px solid #ddd;
+            padding: 10px;
+            background-color: #fff8f0;
+            margin-top: 20px;
+        }
+
+        .bar {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #ff6600;
+            width: 50px;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bar:hover {
+            background-color: #e65c00;
+            cursor: pointer;
+        }
+
+        .bar .label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .bar .value {
+            margin-bottom: 10px;
+            font-size: 0.8em;
+        }
+      
     </style>
 </head>
 <body>
@@ -126,11 +169,11 @@
         </div>
     </header>
     <nav>
-        <button onclick="showFeature('edit-profile-info')">Edit Profile Info</button>
-        <button onclick="showFeature('track-spending')">Track Spending</button>
+        <button onclick="showSection('edit-profile-info')">Edit Profile Info</button>
+        <button onclick="showSection('track-spending')">Track Spending</button>
     </nav>
     <div class="container">
-        <section id="edit-profile-info" class="feature-section active">
+        <section id="edit-profile-info" class="feature-section {% if section == 'edit-profile-info' %}active{% endif %}">
             <h2>Edit Profile Information</h2>
             <form id="edit-profile-form" action="/editCustomerProfile" method="POST">
                 <div class="form-group">
@@ -179,10 +222,58 @@
             </form>
         </section>
 
-        <section id="track-spending" class="feature-section">
+        <section id="track-spending" class="feature-section {% if section == 'track-spending' %}active{% endif %}">
             <h2>Track Spending</h2>
             <p>Track and monitor your spending here.</p>
-            <button>View Spending Summary</button>
+            {% if day_range_spending %}
+                <div id="spending">
+                    <h3>Total Amount Spent in the Past Year</h3>
+                    <p id="total-spent">${{ spending[0] }}</p>
+            
+                    <h3>Monthly Spending for the Last 6 Months</h3>
+                    <div id="monthly-spending-bar-chart" class="bar-chart">
+                        {% for key, value in spending[1].items() %}
+                            <div 
+                                class="bar" 
+                                style="height: 0%">
+                                <span class="label">{{ key }}</span>
+                                <span class="value">${{ value }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div id="spending">
+                    <h3>Total Amount Spent in the Ranged Year</h3>
+                    <p id="total-spent">${{ spending[0] }}</p>
+            
+                    <h3>Monthly Spending for the Ranged Months</h3>
+                    <div id="ranged-monthly-spending-bar-chart" class="bar-chart">
+                        {% for key, value in spending[1].items() %}
+                            <div 
+                                class="bar" 
+                                style="height : 0%">
+                                <span class="label">{{ key }}</span>
+                                <span class="value">${{ value }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Date Range Picker -->
+            <div id="date-range">
+                <h3>Specify a Date Range</h3>
+                <form id="date-range-form" action = /customer_spending method="POST" >
+                    <label for="start-date">Start Date:</label>
+                    <input type="date" id="start-date" name="start_date" required>
+                    
+                    <label for="end-date">End Date:</label>
+                    <input type="date" id="end-date" name="end_date" required>
+                    
+                    <button type="submit">View Spending</button>
+                </form>
+        
+            </div>
         </section>
     </div>
 
@@ -237,14 +328,37 @@
         //     console.log("Updated Profile:", updatedProfile);
         // }
 
-        function showFeature(featureId) {
+        function showSection(sectionId) {
             const sections = document.querySelectorAll('.feature-section');
             sections.forEach(section => section.classList.remove('active'));
-            const selectedFeature = document.getElementById(featureId);
-            if (selectedFeature) {
-                selectedFeature.classList.add('active');
+            
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
             }
         }
+        function calculateBarHeights() {
+            const charts = document.querySelectorAll('.bar-chart');
+            
+            charts.forEach(chart => {
+                const bars = chart.querySelectorAll('.bar');
+                // Get all values
+                const values = Array.from(bars).map(bar => {
+                    const valueSpan = bar.querySelector('.value');
+                    return parseFloat(valueSpan.textContent.replace('$', ''));
+                });
+                
+                // Find the maximum value
+                const maxValue = Math.max(...values);
+                // Set heights relative to the maximum value
+                bars.forEach(bar => {
+                    const value = parseFloat(bar.querySelector('.value').textContent.replace('$', ''));
+                    const percentage = (value / maxValue * 80); // Using 80% of chart height as maximum
+                    bar.style.height = percentage + '%';
+                });
+            });
+        }
+
         function my_flight(){
             window.location.href = '/customer_flight';
         }
@@ -256,6 +370,9 @@
             alert("Logging out...");
             window.location.href = '/logout_customer';
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateBarHeights();
+        });
     </script>
 </body>
 </html>

@@ -297,7 +297,7 @@ def editCustomerProfile():
                 cursor.execute(ins, (email_address, num))
     conn.commit()
     cursor.close()
-    return render_template('customer_profile.html')
+    return render_template('customer_profile.html',section = "edit-profile-info")
 
 @app.route('/editStaffProfile',methods=['GET','POST'])
 def editStaffProfile():
@@ -331,6 +331,14 @@ def editStaffProfile():
     conn.commit()
     cursor.close()
     return render_template('staff_profile.html')
+
+@app.route('/rate_flight',methods=['POST'])
+def rateFlight():
+    return customer_flight()
+
+@app.route('/cancel_flight',methods=['POST'])
+def cancelFlight():
+    return customer_flight()
 
 @app.route('/searchFlight',methods=['GET','POST'])
 def searchFlight():
@@ -394,11 +402,28 @@ def flight_status():
     
 @app.route('/customer_flight')
 def customer_flight():
-    return render_template('customer_flight.html')
+    results = {}
+    results['upcomingFlights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    results['previousFlights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    return render_template('customer_flight.html',results = results)
+
+@app.route('/customer_spending')
+def customer_spending():
+    spending = []
+    spending.append(0)
+    spending.append({})
+    spending[1]['May']=240
+    spending[1]['June']=360
+    return render_template('customer_profile.html',spending=spending,day_range_spending =True,section = 'track-spending')
 
 @app.route('/customer_profile')
 def customer_profile():
-    return render_template('customer_profile.html')
+    spending = []
+    spending.append(0)
+    spending.append({})
+    spending[1]['May']=240
+    spending[1]['June']=360
+    return render_template('customer_profile.html',spending =spending,day_range_spending=False,section = 'edit-profile-info')
 
 
 @app.route('/logout_customer')
