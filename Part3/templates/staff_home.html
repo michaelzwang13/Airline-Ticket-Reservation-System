@@ -193,8 +193,8 @@
         <div class="logo">Airline</div>
         <div class="login-options">
             <a href="#">Home</a>
-            <a href="/staff_manage">Manage</a>
-            <a href="/staff_profile">My Account</a>
+            <a onclick="manange()" style="cursor: pointer;">Manage</a>
+            <a onclick="profile()" style="cursor: pointer;">My Account</a>
             <a onclick="logout()" style="cursor: pointer;">Logout</a>
         </div>
     </header>
@@ -287,14 +287,18 @@
         <section id="check-status" class="search-box {% if section == 'check-status' %}active{% endif %}">
             <h2>Check Flight Status</h2>
             {% if results and 'flight_status' in results%}
-                <h2>Status</h2>
-                <div class="card">
-                    <div class="details">
-                        <h3>{{results.flight_status[0]['airline_name']}}</h3>
-                        <p><strong>Flight Number:</strong> {{ results.flight_status[0]['flight_number'] }}</p>
-                        <p>Status: {{ results.flight_status[0]['flight_status'] }}</p>
+                <h3>Status</h3>
+                {% if results['flight_status']|length ==0 %}
+                    <p>No Such Flight</p>
+                {% else %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{results.flight_status[0]['airline_name']}}</h3>
+                            <p><strong>Flight Number:</strong> {{ results.flight_status[0]['flight_number'] }}</p>
+                            <p>Status: {{ results.flight_status[0]['flight_status'] }}</p>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
                 <form action="/redirect_checkstatus" method="GET">
                     <button type="submit" style="margin-top: 20px;">Back to Search</button>
                 </form>
@@ -334,6 +338,14 @@
         function logout() {
             alert("Logging out...");
             window.location.href = '/logout_staff';
+        }
+
+        function manange(){
+            window.location.href = '/staff_manage'
+        }
+
+        function profile(){
+            window.location.href = '/staff_profile'
         }
 
         function toggleReturnDate() {

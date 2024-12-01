@@ -36,7 +36,7 @@ def redirect_searchflights():
         return render_template('staff_home.html', username=username, section='search-flights')
     else:
         return render_template('index.html', section='search-flights')
-
+    
 @app.route('/redirect_checkstatus')
 def redirect_checkstatus():
     if 'email_address' in session.keys():
@@ -47,6 +47,26 @@ def redirect_checkstatus():
         return render_template('staff_home.html', username=username, section='check-status')
     else:
         return render_template('index.html', section='check-status')
+    
+@app.route('/redirect_searchcustomer')
+def redirect_searchcustomer():
+        username = session['username']
+        revenue ={}# last year,last month
+        customer = {}
+        revenue['last_month']=0
+        revenue['last_year']=0
+        customer['most'] = 'a@gmai.com'
+        return render_template('staff_profile.html', username = username,customer = customer,revenue = revenue,section='view-frequent-customers')
+
+@app.route('/redirect_searchrates')
+def redirect_searchrates():
+        username = session['username']
+        revenue ={}# last year,last month
+        customer = {}
+        revenue['last_month']=0
+        revenue['last_year']=0
+        customer['most'] = 'a@gmai.com'
+        return render_template('staff_profile.html', username = username,customer = customer,revenue = revenue,section='view-flight-rates')
 
 #Define route for customer login
 @app.route('/customer_login')
@@ -271,7 +291,12 @@ def staff_profile():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    return render_template('staff_profile.html', username=username)
+    revenue ={}# last year,last month
+    customer = {}
+    revenue['last_month']=0
+    revenue['last_year']=0
+    customer['most'] = 'a@gmai.com'
+    return render_template('staff_profile.html', username=username,revenue = revenue,customer = customer, section = 'edit-profile-info')
 
 @app.route('/editCustomerProfile',methods=['GET','POST'])
 def editCustomerProfile():
@@ -330,7 +355,7 @@ def editStaffProfile():
             cursor.execute(f'UPDATE customer SET {key} = '+'%s WHERE username = %s', (value, username))
     conn.commit()
     cursor.close()
-    return render_template('staff_profile.html')
+    return render_template('staff_profile.html',section = 'edit-profile-info')
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():
@@ -414,7 +439,37 @@ def flight_status():
         return render_template('staff_home.html', username=username, section='check-status',results = results)
     else:
         return render_template('index.html', section='check-status',results = results)
+
+@app.route('/staff_searchCustomerFlights',methods=['GET','POST'])
+def staff_searchCustomerFlights():
+    email_address =  request.form['email_address']
+    customer = {}
+    revenue = {}
+    customer['most'] = 'a@gmail.com'
+    customer['customer_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    revenue['last_month']=0
+    revenue['last_year']=0
+    return render_template('staff_profile.html',section = "view-frequent-customers", revenue=revenue , customer = customer)
+
+@app.route('/staff_searchCustomerRates',methods=['GET','POST'])
+def staff_searchCustomerRates():
+    flight_number =  request.form['flight_number']
+    airline_name = "JetBlue Airways"
+    customer,revenue = get_revenue_mostFrequentCustomer(airline_name)
     
+    customer['customer_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    
+    rates = [{"flight_number":123,"rating":5,"name":"a","comments":"abasdf"}]
+    return render_template('staff_profile.html',section = "view-flight-rates", revenue=revenue , customer = customer,rates=rates)
+
+def get_revenue_mostFrequentCustomer(airline_name):
+    customer = {}
+    customer['most'] = 'a@gmail.com'
+    revenue = {}
+    revenue['last_month']=0
+    revenue['last_year']=0
+    return customer,revenue
+
 @app.route('/customer_flight')
 def customer_flight():
     results = {}
@@ -456,6 +511,67 @@ def createNewFlights():
     airplane_id = request.form['airplane_id']
     print(airline_name,flight_number,departure_time,departure_date,arrival_date,arrival_time,flight_status,base_price,departure_airport_code,arrival_airport_code,airplane_id)
     return render_template('staff_manage.html',section = 'create-new-flights')
+
+@app.route('/changeFlightStatus',methods=['GET','POST'])
+def changeFlightStatus():
+    
+    flight_number = request.form['flight_number']
+    flight_status = request.form['flight_status']
+
+    print(flight_number,flight_status)
+    return render_template('staff_manage.html',section = 'change-flight-status')
+
+@app.route('/addAirplane',methods=['GET','POST'])
+def addAirplane():
+    
+    airline_name = request.form['airline_name']
+    airplane_id = request.form['airplane_id']
+    num_seats = request.form['capacity']
+    manufacturing_company = request.form['manufacturing_company']
+    model_num = request.form['airplane_model']
+    manufacturing_date = request.form['manufacturing_date']
+    age = 0
+    print(airline_name,airplane_id,num_seats,manufacturing_company,model_num,manufacturing_date)
+    return render_template('staff_manage.html',section = 'add-airplane')
+
+@app.route('/addAirport',methods=['GET','POST'])
+def addAirport():
+    
+    code = request.form['airport_code']
+    name = request.form['airport_name']
+    num_terminals = request.form['num_terminals']
+    city = request.form['city']
+    country = request.form['country']
+    airport_type = request.form['airport_type']
+    print(code,name,num_terminals,city,country,airport_type)
+    return render_template('staff_manage.html',section = 'add-airport')
+
+@app.route('/scheduleMaintenance',methods=['GET','POST'])
+def scheduleMaintenance():
+    
+    airline_name = request.form['airline_name']
+    airplane_id = request.form['airplane_id']
+
+    maintenance_start_date = request.form['maintenance_start_date']
+    maintenance_start_time = request.form['maintenance_start_time']
+    maintenance_end_date = request.form['maintenance_end_date']
+    maintenance_end_time = request.form['maintenance_end_time']
+    print(airline_name,airplane_id,maintenance_start_date,maintenance_start_time,maintenance_end_date,maintenance_end_time)
+    return render_template('staff_manage.html',section = 'schedule-maintenance')
+
+
+
+@app.route('/purchase_flights',methods=['GET','POST'])
+def purchaseFlights():
+    
+    flight_number = request.form['flight_number']
+    airline_name = request.form['airline_name']
+
+    departure_date = request.form['departure_date']
+    departure_time = request.form['departure_time']
+    print("purchasing")
+    print(airline_name,flight_number,departure_date,departure_time)
+    return customer_home()
 
 @app.route('/logout_customer')
 def logout_customer():
