@@ -271,6 +271,7 @@ def staff_profile():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
+    
     return render_template('staff_profile.html', username=username)
 
 @app.route('/editCustomerProfile',methods=['GET','POST'])
@@ -330,7 +331,7 @@ def editStaffProfile():
             cursor.execute(f'UPDATE customer SET {key} = '+'%s WHERE username = %s', (value, username))
     conn.commit()
     cursor.close()
-    return render_template('staff_profile.html')
+    return render_template('staff_profile.html',section = 'edit-profile-info')
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():
@@ -503,6 +504,20 @@ def scheduleMaintenance():
     maintenance_end_time = request.form['maintenance_end_time']
     print(airline_name,airplane_id,maintenance_start_date,maintenance_start_time,maintenance_end_date,maintenance_end_time)
     return render_template('staff_manage.html',section = 'schedule-maintenance')
+
+
+
+@app.route('/purchase_flights',methods=['GET','POST'])
+def purchaseFlights():
+    
+    flight_number = request.form['flight_number']
+    airline_name = request.form['airline_name']
+
+    departure_date = request.form['departure_date']
+    departure_time = request.form['departure_time']
+    print("purchasing")
+    print(airline_name,flight_number,departure_date,departure_time)
+    return customer_home()
 
 @app.route('/logout_customer')
 def logout_customer():

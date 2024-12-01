@@ -227,6 +227,13 @@
                             <p class="price">Price: ${{flight.base_price}}</p>
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
+                        <form action="/purchase_flights" method="POST">
+                            <input type="hidden" name="flight_number" value="{{ flight.flight_number }}">
+                            <input type="hidden" name="airline_name" value="{{ flight.airline_name }}">
+                            <input type="hidden" name="departure_date" value="{{ flight.departure_date }}">
+                            <input type="hidden" name="departure_time" value="{{ flight.departure_time}}">
+                            <button type="submit" style="margin-top: 20px;" onclick="purchase()">Purchase</button>
+                        </form>
                     </div>
                 {% endfor %}
                 <form action="/redirect_searchflights" method="GET">
@@ -341,6 +348,10 @@
         }
         function my_account(){
             window.location.href = '/customer_profile';
+        }
+
+        function purchase(){
+            alert("Purchase successfully");
         }
 
         function toggleReturnDate() {
