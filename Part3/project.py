@@ -442,6 +442,53 @@ def createNewFlights():
     print(airline_name,flight_number,departure_time,departure_date,arrival_date,arrival_time,flight_status,base_price,departure_airport_code,arrival_airport_code,airplane_id)
     return render_template('staff_manage.html',section = 'create-new-flights')
 
+@app.route('/changeFlightStatus',methods=['GET','POST'])
+def changeFlightStatus():
+    
+    flight_number = request.form['flight_number']
+    flight_status = request.form['flight_status']
+
+    print(flight_number,flight_status)
+    return render_template('staff_manage.html',section = 'change-flight-status')
+
+@app.route('/addAirplane',methods=['GET','POST'])
+def addAirplane():
+    
+    airline_name = request.form['airline_name']
+    airplane_id = request.form['airplane_id']
+    num_seats = request.form['capacity']
+    manufacturing_company = request.form['manufacturing_company']
+    model_num = request.form['airplane_model']
+    manufacturing_date = request.form['manufacturing_date']
+    age = 0
+    print(airline_name,airplane_id,num_seats,manufacturing_company,model_num,manufacturing_date)
+    return render_template('staff_manage.html',section = 'add-airplane')
+
+@app.route('/addAirport',methods=['GET','POST'])
+def addAirport():
+    
+    code = request.form['airport_code']
+    name = request.form['airport_name']
+    num_terminals = request.form['num_terminals']
+    city = request.form['city']
+    country = request.form['country']
+    airport_type = request.form['airport_type']
+    print(code,name,num_terminals,city,country,airport_type)
+    return render_template('staff_manage.html',section = 'add-airport')
+
+@app.route('/scheduleMaintenance',methods=['GET','POST'])
+def scheduleMaintenance():
+    
+    airline_name = request.form['airline_name']
+    airplane_id = request.form['airplane_id']
+
+    manufacturing_start_date = request.form['manufacturing_start_date']
+    manufacturing_start_time = request.form['manufacturing_start_time']
+    manufacturing_end_date = request.form['manufacturing_end_date']
+    manufacturing_end_time = request.form['manufacturing_end_time']
+    print(airline_name,airplane_id,manufacturing_start_date,manufacturing_start_time,manufacturing_end_date,manufacturing_end_time)
+    return render_template('staff_manage.html',section = 'schedule-maintenance')
+
 @app.route('/logout_customer')
 def logout_customer():
     session.pop('email_address')

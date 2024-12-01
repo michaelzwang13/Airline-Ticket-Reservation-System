@@ -180,11 +180,11 @@
             <form id="change-status-form" action = /changeFlightStatus method = 'POST'>
                 <div class="form-group">
                     <label for="flight-status-number">Flight Number:</label>
-                    <input type="text" id="flight-status-number" placeholder="Enter flight number">
+                    <input type="text" name = "flight_number" id="flight-status-number" placeholder="Enter flight number">
                 </div>
                 <div class="form-group">
                     <label for="new-status">New Status:</label>
-                    <select id="new-status">
+                    <select id="new-status" name = "flight_status">
                         <option value="On-Time">On-Time</option>
                         <option value="Delayed">Delayed</option>
                     </select>
@@ -194,32 +194,32 @@
         </section>
 
         <!-- Add Airplane -->
-        <section id="add-airplane" class="feature-section">
+        <section id="add-airplane" class="feature-section {% if section == 'add-airplane' %}active{% endif %}">
             <h2>Add Airplane</h2>
             <form id="add-airplane-form" action = /addAirplane method = 'POST'>
                 <div class="form-group">
                     <label for="airline-name">Airline Name:</label>
-                    <input type="text" id="airline-name" placeholder="Enter airpline name">
+                    <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airpline name">
                 </div>
                 <div class="form-group">
                     <label for="ID">Airplane ID:</label>
-                    <input type="number" id="ID" placeholder="Enter airplane ID">
+                    <input type="number" id="ID" name = "airplane_id" placeholder="Enter airplane ID">
                 </div>
                 <div class="manufacturing-company">
                     <label for="manufacturing-company">Manufacturing Company:</label>
-                    <input type="number" id="manufacturing-company" placeholder="Enter manufacturing company">
+                    <input type="text" id="manufacturing-company" name = "manufacturing_company" placeholder="Enter manufacturing company">
                 </div>
                 <div class="form-group">
                     <label for="airplane-model">Airplane Model:</label>
-                    <input type="text" id="airplane-model" placeholder="Enter airplane model">
+                    <input type="text" id="airplane-model" name = "airplane_model" placeholder="Enter airplane model">
                 </div>
                 <div class="form-group">
                     <label for="capacity">Capacity:</label>
-                    <input type="number" id="capacity" placeholder="Enter passenger capacity">
+                    <input type="number" id="capacity" name = "capacity" placeholder="Enter passenger capacity">
                 </div>
                 <div class="form-group">
                     <label for="maintenance-date">Maintenance Date:</label>
-                    <input type="date" id="maintenance-date">
+                    <input type="date" id="manufacturing-date" name = "manufacturing_date">
                 </div>
                 <button type="submit" onclick="addAirplane()">Add Airplane</button>
             </form>
@@ -231,27 +231,27 @@
             <form id="add-airport-form" action = '/addAirport' method = 'POST'>
                 <div class="form-group">
                     <label for="airport-code">Airport Code:</label>
-                    <input type="text" id="airport-code" placeholder="Enter airport code">
+                    <input type="text" id="airport-code" name = "airport_code" placeholder="Enter airport code">
                 </div>
                 <div class="form-group">
                     <label for="airport-name">Airport Name:</label>
-                    <input type="text" id="airport-name" placeholder="Enter airport name">
+                    <input type="text" id="airport-name" name = "airport_name" placeholder="Enter airport name">
                 </div>
                 <div class="form-group">
                     <label for="city">City:</label>
-                    <input type="text" id="city" placeholder="Enter airport city">
+                    <input type="text" id="city" name = "city" placeholder="Enter airport city">
                 </div>
                 <div class="form-group">
                     <label for="country">Country:</label>
-                    <input type="text" id="country" placeholder="Enter airport country">
+                    <input type="text" id="country" name = "country" placeholder="Enter airport country">
                 </div>
                 <div class="form-group">
                     <label for="num-of-terminals">Number of Terminals:</label>
-                    <input type="number" id="num-of-terminals" placeholder="Enter number of terminals">
+                    <input type="number" id="num-terminals" name = "num_terminals"placeholder="Enter number of terminals">
                 </div>
                 <div class="form-group">
                     <label for="airport-type">Airport Type:</label>
-                    <select id="airport-type">
+                    <select id="airport-type" name = "airport_type">
                         <option value="Domestic">Domestic</option>
                         <option value="International">International</option>
                         <option value="Both">Both</option>
@@ -267,27 +267,27 @@
             <form id="schedule-maintenance-form" action = '/scheduleMaintenance' method = 'POST'>
                 <div class="form-group">
                     <label for="airline-name">Airline Name:</label>
-                    <input type="text" id="airline-name" placeholder="Enter airline name">
+                    <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name">
                 </div>
                 <div class="form-group">
                     <label for="ID">Airplane ID:</label>
-                    <input type="number" id="ID" placeholder="Enter airplane ID">
+                    <input type="number" id="ID" name = "airplane_id" placeholder="Enter airplane ID">
                 </div>
                 <div class="form-group">
                     <label for="maintenance-start-date">Maintenance Start Date:</label>
-                    <input type="date" id="maintenance-start-date">
+                    <input type="date" id="maintenance-start-date" name = "maintenance_start_date">
                 </div>
                 <div class="form-group">
                     <label for="maintenance-start-time">Maintenance Start Time:</label>
-                    <input type="time" id="maintenance-start-time">
+                    <input type="time" id="maintenance-start-time" name = "maintenance_start_time">
                 </div>
                 <div class="form-group">
                     <label for="maintenance-end-date">Maintenance End Date:</label>
-                    <input type="date" id="maintenance-end-date">
+                    <input type="date" id="maintenance-end-date" name = "maintenance_end_date">
                 </div>
                 <div class="form-group">
                     <label for="maintenance-end-time">Maintenance End Time:</label>
-                    <input type="time" id="maintenance-end-time">
+                    <input type="time" id="maintenance-end-time" name = "maintenance_end_time">
                 </div>
                 <button type="submit" onclick="scheduleMaintenance()">Schedule Maintenance</button>
             </form>
