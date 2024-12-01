@@ -102,11 +102,21 @@
             background-color: #e65c00;
         }
         .trip-type {
-            margin-bottom: 15px;
+            display: flex;
+            justify-content: left;
+            gap: 20px; 
+        }
+        .trip-option {
+            display: flex;
+            text-align: center;
+        }
+        input[type="radio"] {
+            margin-bottom: 5px; 
         }
         .trip-type label {
             display: inline-block;
-            margin-right: 20px;
+            margin-right: 10px;
+            margin-bottom: 15px;
             color: #333;
         }
         .form-row {
@@ -195,7 +205,7 @@
     <div class="container">
         <section id="search-flights" class="search-box {% if section == 'search-flights' %}active{% endif %}">
             {% if results and 'False' in results.keys() %}
-                <p>Wrong input. Please enter at least one city or airport code.Or correct airport</p>
+                <p>Wrong input. Please enter at least one city or airport code for both departure and arrival</p>
                 <form action="/redirect_searchflights" method="GET">
                     <button type="submit" style="margin-top: 20px;">Back to Search</button>
                 </form>
@@ -208,12 +218,12 @@
                             <h3>{{flight.airline_name}}</h3>
                             <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
                             <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
-                            <p>Departure Time: <strong>{{ flight.departure_date }}{{ flight.departure_time }}</strong> ------- 
-                                Arrival Time:<strong>{{ flight.arrival_date }}{{ flight.arrival_time }}</strong></p>
+                            <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
+                                Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
                             <p>Status: <strong>{{ flight.flight_status }}</strong></p>
                         </div>
                         <div class="price+id">
-                            <p class="price">Price: {{flight.base_price}}</p>
+                            <p class="price">Price: ${{flight.base_price}}</p>
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
                     </div>
@@ -226,11 +236,13 @@
                 <p class="section-description">Search available flights by entering your travel details below</p>
                 <form action="/searchFlight" method="POST">
                     <div class="trip-type">
-                        <label>
-                            <input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturnDate()"> One Way
+                        <label class="trip-option">
+                            <input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturnDate()"> 
+                            <span>One Way</span>
                         </label>
-                        <label>
-                            <input type="radio" name="trip-type" value="round-trip" onchange="toggleReturnDate()"> Round Trip
+                        <label class="trip-option">
+                            <input type="radio" name="trip-type" value="round-trip" onchange="toggleReturnDate()"> 
+                            <span>Round Trip</span>
                         </label>
                     </div>
 
@@ -274,13 +286,13 @@
 
         <section id="check-status" class="search-box {% if section == 'check-status' %}active{% endif %}">
             <h2>Check Flight Status</h2>
-            {% if results and 'flightStatus' in results%}
+            {% if results and 'flight_status' in results%}
                 <h2>Status</h2>
                 <div class="card">
                     <div class="details">
-                        <h3>{{results['flightStatus'].airline_name}}</h3>
-                        <p><strong>Flight Number:</strong> {{ results['flightStatus'].flight_number }}</p>
-                        <p>Status: {{ results['flightStatus'].status }}</p>
+                        <h3>{{results.flight_status[0]['airline_name']}}</h3>
+                        <p><strong>Flight Number:</strong> {{ results.flight_status[0]['flight_number'] }}</p>
+                        <p>Status: {{ results.flight_status[0]['flight_status'] }}</p>
                     </div>
                 </div>
                 <form action="/redirect_checkstatus" method="GET">
@@ -301,7 +313,7 @@
 
                     <div class="form-group">
                         <label for="flight-date">Flight Date:</label>
-                        <input type="date" id="flight-date" name = "flight_date" required>
+                        <input type="date" id="flight-date" name = "departure_date" required>
                     </div>
 
                     <button type="submit">Check Status</button>

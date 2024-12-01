@@ -16,7 +16,7 @@ conn = pymysql.connect(host='localhost',
                         #cursorclass=pymysql.cursors.DictCursor)
                         port = 3306,
                         user='root',
-                        password='',#
+                        password='',
                         db='Airline',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
@@ -387,10 +387,25 @@ def searchFlight():
         return render_template('staff_home.html', username=username, section='search-flights',results = results)
     else:
         return render_template('index.html', section='search-flights',results = results)
+
 @app.route('/flight_status',methods=['GET','POST'])
 def flight_status():
-    status = {"status":"On-Time","flight_number":"123"}
-    results = {'flightStatus':status}
+    airline_name = request.form['airline_name']
+    flight_number = request.form['flight_number']
+    departure_date = request.form['departure_date']
+
+    cursor = conn.cursor()
+    query = """
+        SELECT * FROM flight
+        WHERE airline_name = %s AND flight_number = %s AND departure_date = %s
+    """
+
+    params = (airline_name, flight_number, departure_date)
+    cursor.execute(query, params)
+    flights = cursor.fetchall()
+    results = {'flight_status':flights}
+    cursor.close()
+
     if 'email_address' in session.keys():
         email_address = session['email_address']
         return render_template('customer_home.html', email_address=email_address, section='check-status',results = results)
