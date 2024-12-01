@@ -36,7 +36,7 @@ def redirect_searchflights():
         return render_template('staff_home.html', username=username, section='search-flights')
     else:
         return render_template('index.html', section='search-flights')
-
+    
 @app.route('/redirect_checkstatus')
 def redirect_checkstatus():
     if 'email_address' in session.keys():
@@ -47,6 +47,26 @@ def redirect_checkstatus():
         return render_template('staff_home.html', username=username, section='check-status')
     else:
         return render_template('index.html', section='check-status')
+    
+@app.route('/redirect_searchcustomer')
+def redirect_searchcustomer():
+        username = session['username']
+        revenue ={}# last year,last month
+        customer = {}
+        revenue['last_month']=0
+        revenue['last_year']=0
+        customer['most'] = 'a@gmai.com'
+        return render_template('staff_profile.html', username = username,customer = customer,revenue = revenue,section='view-frequent-customers')
+
+@app.route('/redirect_searchrates')
+def redirect_searchrates():
+        username = session['username']
+        revenue ={}# last year,last month
+        customer = {}
+        revenue['last_month']=0
+        revenue['last_year']=0
+        customer['most'] = 'a@gmai.com'
+        return render_template('staff_profile.html', username = username,customer = customer,revenue = revenue,section='view-flight-rates')
 
 #Define route for customer login
 @app.route('/customer_login')
@@ -271,8 +291,12 @@ def staff_profile():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    
-    return render_template('staff_profile.html', username=username)
+    revenue ={}# last year,last month
+    customer = {}
+    revenue['last_month']=0
+    revenue['last_year']=0
+    customer['most'] = 'a@gmai.com'
+    return render_template('staff_profile.html', username=username,revenue = revenue,customer = customer, section = 'edit-profile-info')
 
 @app.route('/editCustomerProfile',methods=['GET','POST'])
 def editCustomerProfile():
@@ -415,7 +439,37 @@ def flight_status():
         return render_template('staff_home.html', username=username, section='check-status',results = results)
     else:
         return render_template('index.html', section='check-status',results = results)
+
+@app.route('/staff_searchCustomerFlights',methods=['GET','POST'])
+def staff_searchCustomerFlights():
+    email_address =  request.form['email_address']
+    customer = {}
+    revenue = {}
+    customer['most'] = 'a@gmail.com'
+    customer['customer_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    revenue['last_month']=0
+    revenue['last_year']=0
+    return render_template('staff_profile.html',section = "view-frequent-customers", revenue=revenue , customer = customer)
+
+@app.route('/staff_searchCustomerRates',methods=['GET','POST'])
+def staff_searchCustomerRates():
+    flight_number =  request.form['flight_number']
+    airline_name = "JetBlue Airways"
+    customer,revenue = get_revenue_mostFrequentCustomer(airline_name)
     
+    customer['customer_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    
+    rates = [{"flight_number":123,"rating":5,"name":"a","comments":"abasdf"}]
+    return render_template('staff_profile.html',section = "view-flight-rates", revenue=revenue , customer = customer,rates=rates)
+
+def get_revenue_mostFrequentCustomer(airline_name):
+    customer = {}
+    customer['most'] = 'a@gmail.com'
+    revenue = {}
+    revenue['last_month']=0
+    revenue['last_year']=0
+    return customer,revenue
+
 @app.route('/customer_flight')
 def customer_flight():
     results = {}

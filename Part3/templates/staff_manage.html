@@ -107,7 +107,7 @@
         <div class="nav-options">
             <a onclick="home()" style="cursor: pointer;">Home</a>
             <a href="#">Manage</a>
-            <a href="/staff_profile">My Account</a>
+            <a onclick="profile()" style="cursor: pointer;">My Account</a>
             <a onclick="logout()" style="cursor: pointer;">Log Out</a>
         </div>
     </header>
@@ -331,6 +331,9 @@
 
         function scheduleMaintenance() {
             alert("Maintenance scheduled successfully!");
+        }
+        function profile(){
+            window.location.href = '/staff_profile'
         }
     </script>
 </body>

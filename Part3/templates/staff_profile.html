@@ -113,6 +113,48 @@
             padding: 15px;
             margin-top: 20px;
         }
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card .details {
+            max-width: 70%;
+        }
+        .card .details h3 {
+            color: #ff7f27;
+            margin: 0 0 10px 0;
+        }
+        .card .details p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .card .actions {
+            text-align: right;
+        }
+        .card .actions .price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        .card .actions button {
+            padding: 10px 20px;
+            background-color: #f0ad4e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .card .actions button:hover {
+            background-color: #ec971f;
+        }
     </style>
 </head>
 <body>
@@ -120,7 +162,7 @@
         <div class="logo">Staff Dashboard</div>
         <div class="nav-options">
             <a onclick="home()" style="cursor: pointer;">Home</a>
-            <a href="/staff_manage">Manage</a>
+            <a onclick="staff_manage()" style="cursor: pointer;">Manage</a>
             <a href="#">My Account</a>
             <a onclick="logout()" style="cursor: pointer;">Log Out</a>
         </div>
@@ -163,19 +205,77 @@
         <!-- View Flight Rates -->
         <section id="view-flight-rates" class="feature-section {% if section == 'view-flight-rates' %}active{% endif %}">
             <h2>View Flight Rates</h2>
-            <p>Flight rates data will be displayed here.</p>
+            {% if rates %}
+                {% for rate in rates %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{rate.airline_name}}</h3>
+                            <p><strong>Flight Number:</strong> {{ rate.flight_number }}</p>
+                            <p><strong>Customer:</strong> {{ rate.name }}</p>
+                            <p><strong>Rates:</strong> {{ rate.rating }}</p>
+                            <p><strong>Comments:</strong> {{ rate.comments }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+                <form action="/redirect_searchrates" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% else %}
+                <h2>Search Customer's rates</h2>
+                <form action="/staff_searchCustomerRates" method="POST">
+                    <label for="flight_number">Flight Number:</label>
+                    <input type="text" id="flight-number" name="flight_number" required>
+                    <button type="submit">Search Rates</button>
+                </form>
+
+            {% endif %}
         </section>
 
         <!-- View Frequent Customers -->
         <section id="view-frequent-customers" class="feature-section {% if section == 'view-frequent-customers' %}active{% endif %}">
-            <h2>View Frequent Customers</h2>
-            <p>Frequent customer data will be displayed here.</p>
+            <h3>Most Frequent Customer in the Past Year</h3>
+            <p id="Frequent Customer">{{ customer['most'] }}</p>
+            {% if 'customer_flights' in customer.keys() %}
+                <h2>View Customer's Flights</h2>
+                {% for flight in customer['customer_flights'] %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{flight.airline_name}}</h3>
+                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                            <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
+                                Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
+                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                        </div>
+                        <div class="price+id">
+                            <p class="price">Price: ${{flight.base_price}}</p>
+                            Airplane ID: {{ flight.airplane_id}}
+                        </div>
+                        
+                    </div>
+                {% endfor %}
+                <form action="/redirect_searchcustomer" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to Search</button>
+                </form>
+            {% else %}
+                <h2>Search Customer's Flights</h2>
+                <form action="/staff_searchCustomerFlights" method="POST">
+                    <label for="customer_email">Customer Email:</label>
+                    <input type="text" id="customer-email" name="email_address" required>
+                    <button type="submit">Search Customer</button>
+                </form>
+            {% endif %}
+                
+
         </section>
 
         <!-- View Earned Revenue -->
         <section id="view-earned-revenue" class="feature-section {% if section == 'view-earned-revenue' %}active{% endif %}">
             <h2>View Earned Revenue</h2>
-            <p>Revenue data will be displayed here.</p>
+            <h3>Total Revenue in the Past Year</h3>
+            <p id="total-revenue">${{ revenue['last_year'] }}</p>
+            <h3>Total Revenue in the Past Month</h3>
+            <p id="total-revenue">${{ revenue['last_month'] }}</p>
         </section>
     </div>
 
@@ -263,8 +363,12 @@
             }
         }
 
+
         function home() {
             window.location.href = '/staff_home';
+        }
+        function staff_manage(){
+            window.location.href = '/staff_manage'
         }
 
         function logout() {
