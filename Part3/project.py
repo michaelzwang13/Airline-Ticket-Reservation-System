@@ -497,11 +497,11 @@ def scheduleMaintenance():
     airline_name = request.form['airline_name']
     airplane_id = request.form['airplane_id']
 
-    manufacturing_start_date = request.form['manufacturing_start_date']
-    manufacturing_start_time = request.form['manufacturing_start_time']
-    manufacturing_end_date = request.form['manufacturing_end_date']
-    manufacturing_end_time = request.form['manufacturing_end_time']
-    print(airline_name,airplane_id,manufacturing_start_date,manufacturing_start_time,manufacturing_end_date,manufacturing_end_time)
+    maintenance_start_date = request.form['maintenance_start_date']
+    maintenance_start_time = request.form['maintenance_start_time']
+    maintenance_end_date = request.form['maintenance_end_date']
+    maintenance_end_time = request.form['maintenance_end_time']
+    print(airline_name,airplane_id,maintenance_start_date,maintenance_start_time,maintenance_end_date,maintenance_end_time)
     return render_template('staff_manage.html',section = 'schedule-maintenance')
 
 @app.route('/logout_customer')
