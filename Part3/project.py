@@ -570,7 +570,9 @@ def purchaseFlights():
     departure_date = request.form['departure_date']
     departure_time = request.form['departure_time']
     print("purchasing")
-    print(airline_name,flight_number,departure_date,departure_time)
+    card_number = request.form['card_number']
+    card_name = request.form['card_name']
+    print(airline_name,flight_number,departure_date,departure_time,card_number,card_name)
     return customer_home()
 
 @app.route('/logout_customer')
