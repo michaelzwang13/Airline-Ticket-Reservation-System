@@ -295,7 +295,7 @@ def staff_profile():
     customer = {}
     revenue['last_month']=0
     revenue['last_year']=0
-    customer['most'] = 'a@gmai.com'
+    customer['most'] = 'a@gmail.com'
     return render_template('staff_profile.html', username=username,revenue = revenue,customer = customer, section = 'edit-profile-info')
 
 @app.route('/editCustomerProfile',methods=['GET','POST'])
@@ -472,9 +472,35 @@ def get_revenue_mostFrequentCustomer(airline_name):
 
 @app.route('/customer_flight')
 def customer_flight():
-    results = {}
-    results['upcomingFlights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
-    results['previousFlights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    email_address = session['email_address']
+
+    cursor = conn.cursor()
+    query = """
+        SELECT * FROM purchase natural join ticket natural join flight
+        WHERE 
+            (email_address = %s) AND (departure_date < CURDATE() OR
+                                        (departure_date = CURDATE() AND
+                                            departure_time < CURTIME()))
+    """
+    params = (email_address)
+
+    cursor.execute(query, params)
+    previous_flights = cursor.fetchall()
+    results = {'previousFlights':previous_flights}
+
+    query = """
+        SELECT * FROM purchase natural join ticket natural join flight
+        WHERE 
+            (email_address = %s) AND (departure_date > CURDATE() OR
+                                        (departure_date = CURDATE() AND
+                                            departure_time > CURTIME()))
+    """
+    params = (email_address)
+
+    cursor.execute(query, params)
+    upcoming_flights = cursor.fetchall()
+    results['upcomingFlights'] = upcoming_flights
+
     return render_template('customer_flight.html',results = results)
 
 @app.route('/customer_spending')
@@ -494,7 +520,7 @@ def customer_profile():
     spending[1]['May']=240
     spending[1]['June']=360
     return render_template('customer_profile.html',spending =spending,day_range_spending=False,section = 'edit-profile-info')
-
+    # return render_template('customer_profile.html',section = 'edit-profile-info')
 
 @app.route('/createNewFlights',methods=['GET','POST'])
 def createNewFlights():
@@ -523,7 +549,6 @@ def changeFlightStatus():
 
 @app.route('/addAirplane',methods=['GET','POST'])
 def addAirplane():
-    
     airline_name = request.form['airline_name']
     airplane_id = request.form['airplane_id']
     num_seats = request.form['capacity']
@@ -559,8 +584,6 @@ def scheduleMaintenance():
     print(airline_name,airplane_id,maintenance_start_date,maintenance_start_time,maintenance_end_date,maintenance_end_time)
     return render_template('staff_manage.html',section = 'schedule-maintenance')
 
-
-
 @app.route('/purchase_flights',methods=['GET','POST'])
 def purchaseFlights():
     
@@ -569,8 +592,33 @@ def purchaseFlights():
 
     departure_date = request.form['departure_date']
     departure_time = request.form['departure_time']
-    print("purchasing")
-    print(airline_name,flight_number,departure_date,departure_time)
+
+    ticket_price = request.form['ticket_price']
+
+    ticket_first_name = request.form['ticket_first_name']
+    ticket_last_name = request.form['ticket_last_name']
+    ticket_DOB = request.form['ticket_DOB']
+
+    card_type = request.form['card_type']
+    card_number = request.form['card_number']
+    card_name = request.form['card_name']
+    expiration_date = request.form['expiration_date']
+
+    last_ticket_id_query = 'SELECT MAX(ID) FROM ticket'
+    new_ticket_id = (last_ticket_id_query[0].id + 1)
+
+    # purchase_date = # FILL IN
+    # purhcase_time = # FILL IN
+                                
+    ins = 'INSERT INTO ticket VALUES(%s, %s, %s, %s, %s, %s)'
+    cursor.execute(ins, (new_ticket_id, ticket_price, airline_name, flight_number, 
+                        departure_time, departure_date))
+
+    ins = 'INSERT INTO purchase VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+    cursor.execute(ins, (session['email_address'], new_ticket_id, ticket_first_name, 
+                            ticket_last_name, ticket_DOB, purchase_date, purchase_time,
+                            card_type, card_number, expiration_date))
+    
     return customer_home()
 
 @app.route('/logout_customer')
