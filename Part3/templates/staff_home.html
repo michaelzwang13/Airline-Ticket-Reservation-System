@@ -202,6 +202,8 @@
         <button onclick="showSection('search-flights')">Search Flights</button>
         <button onclick="showSection('check-status')">Check Flight Status</button>
         <button onclick="showSection('view-flights')">View Flights</button>
+        <button onclick="showSection('view-customers')">View Customers On A Flight</button>
+        <button onclick="showSection('view-delayed-ontime')">View On-Time/Delayed Flights</button>
     </nav>
     <div class="container">
         <section id="search-flights" class="search-box {% if section == 'search-flights' %}active{% endif %}">
@@ -356,7 +358,7 @@
                         <p>Status: <strong>{{ flight.flight_status }}</strong></p>
                     </div>
                     <div class="price+id">
-                        <p class="price">Price: ${{flight.base_price}}</p>
+                        <p> class="price">Price: ${{flight.base_price}}</p>
                         Airplane ID: {{ flight.airplane_id}}
                     </div>
                 </div>
@@ -377,6 +379,83 @@
             </form>
             
 
+        </section>
+        <section id="view-customers" class="search-box {% if section == 'view-customers' %}active{% endif %}">
+            { % if results and 'view_customer' in results%}
+                {%for customer in results.'view_customer%}
+                    <p><strong>Customer Name:</strong>{{customer.first_name}} {{customer.last_name}}</p>
+                {%endfor%}
+            {%else%}
+                <form action="/staff_view_customer" method="POST">
+                    <div class="form-group">
+                        <label for="airline-name">Airline Name:</label>
+                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="flight-number">Flight Number:</label>
+                        <input type="text" id="flight-number" name = "flight_number" placeholder="Enter flight number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="flight-date">Flight Date:</label>
+                        <input type="date" id="flight-date" name = "departure_date" required>
+                    </div>
+
+                    <button type="submit">View Customers</button>
+                </form>
+            {%endif%}
+        </section>
+
+        <section id="view-delayed-ontime" class="search-box {% if section == 'view-delayed-ontime' %}active{% endif %}">
+            <h2>Delayed Flights</h2>
+        <div id="delayed-flights">
+            {% if results and  'delayedFlights' in results.keys() %}
+                {% for flight in results['delayedFlights'] %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{flight.airline_name}}</h3>
+                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                            <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
+                                Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
+                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                        </div>
+                        <div class="price+id">
+                            <p class="price">Price: {{flight.base_price}}</p>
+                            Airplane ID: {{ flight.airplane_id}}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No delayed flights.</p>
+            {% endif %}
+        </div>
+
+        <h2>On-Time Flights</h2>
+        <div id="on-time-flights">
+            {% if results and  'ontimeFlights' in results.keys() %}
+                {% for flight in results['ontimeFlights'] %}
+                    <div class="card">
+                        <div class="details">
+                            <h3>{{flight.airline_name}}</h3>
+                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                            <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
+                                Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
+                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                        </div>
+                        <div class="price+id">
+                            <p class="price">Price: {{flight.base_price}}</p>
+                            Airplane ID: {{ flight.airplane_id}}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No on-time flights.</p>
+            {% endif %}
+        </div>
+    
         </section>
     </div>
     <script>
