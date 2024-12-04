@@ -535,16 +535,33 @@ def createNewFlights():
     departure_airport_code = request.form['departure_airport_code']
     arrival_airport_code = request.form['arrival_airport_code']
     airplane_id = request.form['airplane_id']
-    print(airline_name,flight_number,departure_time,departure_date,arrival_date,arrival_time,flight_status,base_price,departure_airport_code,arrival_airport_code,airplane_id)
+
+    cursor = conn.cursor()   
+
+    ins = 'INSERT INTO flight VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+    cursor.execute(ins, (airline_name, flight_number, departure_time, departure_date, 
+                        arrival_date, arrival_time, base_price, flight_status,
+                        departure_airport_code, arrival_airport_code, airplane_id))
+
+    conn.commit()
+    cursor.close()
+
     return render_template('staff_manage.html',section = 'create-new-flights')
 
 @app.route('/changeFlightStatus',methods=['GET','POST'])
 def changeFlightStatus():
-    
     flight_number = request.form['flight_number']
     flight_status = request.form['flight_status']
 
-    print(flight_number,flight_status)
+    cursor = conn.cursor()   
+
+    ins = '''UPDATE flight SET flight_status = %s 
+             WHERE flight_number = %s'''
+    cursor.execute(ins, (flight_status, flight_number))
+
+    conn.commit()
+    cursor.close()
+
     return render_template('staff_manage.html',section = 'change-flight-status')
 
 @app.route('/addAirplane',methods=['GET','POST'])
@@ -556,7 +573,16 @@ def addAirplane():
     model_num = request.form['airplane_model']
     manufacturing_date = request.form['manufacturing_date']
     age = 0
-    print(airline_name,airplane_id,num_seats,manufacturing_company,model_num,manufacturing_date)
+    
+    cursor = conn.cursor()   
+
+    ins = 'INSERT INTO airplane VALUES(%s, %s, %s, %s, %s, %s, %s)'
+    cursor.execute(ins, (airline_name, airplane_id, num_seats, manufacturing_company, 
+                        model_num, manufacturing_date, age))
+
+    conn.commit()
+    cursor.close()
+
     return render_template('staff_manage.html',section = 'add-airplane')
 
 @app.route('/addAirport',methods=['GET','POST'])
@@ -568,12 +594,19 @@ def addAirport():
     city = request.form['city']
     country = request.form['country']
     airport_type = request.form['airport_type']
-    print(code,name,num_terminals,city,country,airport_type)
+
+    cursor = conn.cursor()   
+
+    ins = 'INSERT INTO airport VALUES(%s, %s, %s, %s, %s, %s)'
+    cursor.execute(ins, (code, name, city, country, num_terminals, airport_type))
+
+    conn.commit()
+    cursor.close()
+    
     return render_template('staff_manage.html',section = 'add-airport')
 
 @app.route('/scheduleMaintenance',methods=['GET','POST'])
 def scheduleMaintenance():
-    
     airline_name = request.form['airline_name']
     airplane_id = request.form['airplane_id']
 
@@ -581,23 +614,31 @@ def scheduleMaintenance():
     maintenance_start_time = request.form['maintenance_start_time']
     maintenance_end_date = request.form['maintenance_end_date']
     maintenance_end_time = request.form['maintenance_end_time']
-    print(airline_name,airplane_id,maintenance_start_date,maintenance_start_time,maintenance_end_date,maintenance_end_time)
+
+    cursor = conn.cursor()   
+
+    ins = 'INSERT INTO maintenance_procedure VALUES(%s, %s, %s, %s, %s, %s)'
+    cursor.execute(ins, (airline_name, airplane_id, maintenance_start_time,
+                        maintenance_start_date, maintenance_end_time, maintenance_end_date))
+
+    conn.commit()
+    cursor.close()
+
     return render_template('staff_manage.html',section = 'schedule-maintenance')
 
 @app.route('/purchase_flights',methods=['GET','POST'])
 def purchaseFlights():
-    
     flight_number = request.form['flight_number']
     airline_name = request.form['airline_name']
 
     departure_date = request.form['departure_date']
     departure_time = request.form['departure_time']
 
-    ticket_price = request.form['ticket_price']
+    base_price = request.form['base_price']
 
-    ticket_first_name = request.form['ticket_first_name']
-    ticket_last_name = request.form['ticket_last_name']
-    ticket_DOB = request.form['ticket_DOB']
+    ticket_user_first_name = request.form['ticket_user_first_name']
+    ticket_user_last_name = request.form['ticket_user_last_name']
+    ticket_user_date_of_birth = request.form['ticket_user_date_of_birth']
 
     card_type = request.form['card_type']
     card_number = request.form['card_number']
@@ -605,19 +646,25 @@ def purchaseFlights():
     expiration_date = request.form['expiration_date']
 
     last_ticket_id_query = 'SELECT MAX(ID) FROM ticket'
-    new_ticket_id = (last_ticket_id_query[0].id + 1)
 
-    # purchase_date = # FILL IN
-    # purhcase_time = # FILL IN
-                                
+    cursor = conn.cursor()   
+    cursor.execute(last_ticket_id_query)
+
+    last_ticket_id_result = cursor.fetchone()['MAX(ID)']
+
+    new_ticket_id = (int(last_ticket_id_result) + 1) if last_ticket_id_result else 1
+
     ins = 'INSERT INTO ticket VALUES(%s, %s, %s, %s, %s, %s)'
-    cursor.execute(ins, (new_ticket_id, ticket_price, airline_name, flight_number, 
+    cursor.execute(ins, (new_ticket_id, base_price, airline_name, flight_number, 
                         departure_time, departure_date))
 
-    ins = 'INSERT INTO purchase VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-    cursor.execute(ins, (session['email_address'], new_ticket_id, ticket_first_name, 
-                            ticket_last_name, ticket_DOB, purchase_date, purchase_time,
-                            card_type, card_number, expiration_date))
+    ins = 'INSERT INTO purchase VALUES(%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, %s, %s)'
+    cursor.execute(ins, (session['email_address'], new_ticket_id, ticket_user_first_name, 
+                            ticket_user_last_name, ticket_user_date_of_birth, card_type, card_number, 
+                            card_name, expiration_date))
+
+    conn.commit()
+    cursor.close()
     
     return customer_home()
 
