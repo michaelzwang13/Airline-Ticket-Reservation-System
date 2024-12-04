@@ -154,6 +154,7 @@
         <h2>Upcoming Flights</h2>
         <div id="upcoming-flights">
             {% if results and  'upcomingFlights' in results.keys() %}
+                <p>Found {{ results['upcomingFlights']|length }} upcoming flights</p>
                 {% for flight in results['upcomingFlights'] %}
                     <div class="card">
                         <div class="details">
@@ -182,6 +183,7 @@
         <h2>Previous Flights</h2>
         <div id="previous-flights">
             {% if results and  'previousFlights' in results.keys() %}
+                <p>Found {{ results['previousFlights']|length }} previous flights</p>
                 {% for flight in results['previousFlights'] %}
                     <div class="card">
                         <div class="details">

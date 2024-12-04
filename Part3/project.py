@@ -1,5 +1,5 @@
 #Import Flask Library
-from flask import Flask, render_template, request, session, url_for, redirect,send_file
+from flask import Flask, render_template, request, session, url_for, redirect,send_file,jsonify
 import pymysql.cursors
 import os
 import sys
@@ -574,8 +574,9 @@ def changeFlightStatus():
 
     conn.commit()
     cursor.close()
-
-    return render_template('staff_manage.html',section = 'change-flight-status')
+    error = "test"
+    print(error)
+    return render_template('staff_manage.html',section = 'change-flight-status',error = error)
 
 @app.route('/addAirplane',methods=['GET','POST'])
 def addAirplane():
