@@ -264,6 +264,18 @@
                                 <h2>Enter Card Information</h2>
                                 <form id="card-info-form" action="/purchase_flights" method="POST">
                                     <div class="form-group">
+                                        <label for="passenger-first-name">Passenger First Name:</label>
+                                        <input type="text" id="passenger-first-name" name="ticket_user_first_name" placeholder="Enter the passenger's first name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="passenger-last-name">Passenger Last Name:</label>
+                                        <input type="text" id="passenger-last-name" name="ticket_user_last_name" placeholder="Enter the passenger's last name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="passenger-dob">Passenger Date of Birth:</label>
+                                        <input type="date" id="passenger-dob" name="ticket_user_date_of_birth" placeholder="Enter the passenger's date of birth" required>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="card-number">Card Number:</label>
                                         <input type="text" id="card-number" name="card_number" placeholder="Enter your card number" required>
                                     </div>
@@ -288,6 +300,7 @@
                                         <input type="hidden" name="airline_name" value="{{ flight.airline_name }}">
                                         <input type="hidden" name="departure_date" value="{{ flight.departure_date }}">
                                         <input type="hidden" name="departure_time" value="{{ flight.departure_time}}">
+                                        <input type="hidden" name="base_price" value="{{ flight.base_price}}">
                                     </div>
                                     <button type="submit" style="margin-top: 20px;" onclick="purchase()">Purchase</button>
                                 </form>
