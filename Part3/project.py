@@ -8,18 +8,18 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        port = 8889,
+                        #port = 8889,
+                        #user='root',
+                        #password='root',
+                        #db='ProjectFinal',
+                        #charset='utf8mb4',
+                        #cursorclass=pymysql.cursors.DictCursor)
+                        port = 3306,
                         user='root',
-                        password='root',
-                        db='ProjectFinal',
+                        password='',
+                        db='Airline',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
-                        # port = 3306,
-                        # user='root',
-                        # password='',
-                        # db='Airline',
-                        # charset='utf8mb4',
-                        # cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
@@ -570,7 +570,9 @@ def purchaseFlights():
     departure_date = request.form['departure_date']
     departure_time = request.form['departure_time']
     print("purchasing")
-    print(airline_name,flight_number,departure_date,departure_time)
+    card_number = request.form['card_number']
+    card_name = request.form['card_name']
+    print(airline_name,flight_number,departure_date,departure_time,card_number,card_name)
     return customer_home()
 
 @app.route('/logout_customer')
