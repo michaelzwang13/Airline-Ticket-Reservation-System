@@ -151,7 +151,6 @@
         <div class="form-section">
             <a href="/customer_login" class="back-link">Back</a>
             <h1>Customer Registration</h1>
-            <!-- <form id="customerRegistrationForm" onsubmit="return validateForm(event)"> -->
             <form id="customerRegistrationForm" action="/customerRegisterAuth" method="POST">
                 <!-- Account Information -->
                 <h3 class="form-section-title">Account Information</h3>
@@ -261,8 +260,6 @@
         let phoneNumberCount = 1;
         function addPhoneNumber() {
             const phoneList = document.getElementById('phone-list');
-
-            // Create a new phone input group
             const phoneGroup = document.createElement('div');
             phoneGroup.classList.add('phone-group');
 

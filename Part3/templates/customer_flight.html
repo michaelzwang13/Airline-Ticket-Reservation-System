@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flight Dashboard</title>
     <style>
-        /* Adopted styles from the user file */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -214,27 +213,27 @@
         </div>
     </div>
     <script>
-        // Rate flight logic
+        // rate flight 
         function showRatingForm(flightId) {
-            // Get the rating form for the specific flight
             const ratingForm = document.getElementById(`rating-form-${flightId}`);
             
-            // Toggle visibility of the form
+            // Toggle visibility of the form. When click, the rate window will display, with a close button
             if (ratingForm.style.display === 'none' || ratingForm.style.display === '') {
                 ratingForm.style.display = 'block';
             } else {
                 ratingForm.style.display = 'none';
             }
-}
+        }
+        // back to home
         function home() {
             window.location.href = '/customer_home';
         }
-
+        // log out
         function logout() {
             alert("Logging out...");
             window.location.href = '/logout_customer';
         }
-
+        // go to customer profile
         function my_account(){
             window.location.href = '/customer_profile';
         }
