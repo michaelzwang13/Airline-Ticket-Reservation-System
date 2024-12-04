@@ -111,22 +111,32 @@
 </head>
 <body>
     <div class="container">
-        <div class="image-section"></div>
-        <div class="form-section">
-            <h1>Staff Log In</h1>
-            <form action="/staffLoginAuth" method="POST">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
-                
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                
-                <button type="submit">Log in</button>
-            </form>
+        {% if error %}
+            <script>
+                alert("Invalid username or password ");
+                setTimeout(() => {
+                    window.location.href = "/staff_login";
+                }, 1000); // Redirect after 3 seconds
+            </script>
+        {% else %}
+            <div class="image-section"></div>
+            <div class="form-section">
+                <h1>Staff Log In</h1>
+                <form action="/staffLoginAuth" method="POST">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                    
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    
+                    <button type="submit">Log in</button>
+                </form>
+            
             <p>Don't have an account? <a href="/staff_register">Sign Up</a></p>
             <p>Customer? <a href="/customer_login">Log In</a></p>
         </div>
         <button onclick="window.location.href='/'" class="back-link">Back to home</button>
+        {% endif %}
         </div>
         </div>
     </div>
