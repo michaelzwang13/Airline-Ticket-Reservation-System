@@ -1,5 +1,5 @@
 #Import Flask Library
-from flask import Flask, render_template, request, session, url_for, redirect,send_file
+from flask import Flask, render_template, request, session, url_for, redirect, send_file
 from datetime import date
 import pymysql.cursors
 import os
@@ -27,13 +27,6 @@ conn = pymysql.connect(host='localhost',
 def hello():
     return render_template('index.html',section = "search-flights") # set default to search flights
 
-def staff_default_flights():
-    username = session['username']
-    results = {}
-    results['default_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
-    #results['view_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
-    return results
-
 @app.route('/redirect_searchflights')
 def redirect_searchflights():
     if 'email_address' in session.keys():
@@ -41,8 +34,9 @@ def redirect_searchflights():
         return render_template('customer_home.html', email_address=email_address, section='search-flights')
     elif 'username' in session.keys():
         username = session['username']
-        results = staff_default_flights()
-        return render_template('staff_home.html', username=username, results = results,section='search-flights')
+        # results = staff_default_flights()
+        # return render_template('staff_home.html', username=username, results = results,section='search-flights')
+        return render_template('staff_home.html', username=username, section='search-flights')
     else:
         return render_template('index.html', section='search-flights')
     
@@ -53,10 +47,19 @@ def redirect_checkstatus():
         return render_template('customer_home.html', email_address=email_address, section='check-status')
     elif 'username' in session.keys():
         username = session['username']
-        results = staff_default_flights()
-        return render_template('staff_home.html', username=username, results = results,section='check-status')
+        return render_template('staff_home.html', username=username, section='check-status')
     else:
         return render_template('index.html', section='check-status')
+
+@app.route('/redirect_viewflights')
+def redirect_viewflights():
+    username = session['username']
+    return render_template('staff_home.html', username=username, section='view-flights')
+
+@app.route('/redirect_viewcustomers')
+def redirect_viewcustomers():
+    username = session['username']
+    return render_template('staff_home.html', username=username, section='view-customers')
     
 @app.route('/redirect_searchcustomer')
 def redirect_searchcustomer():
@@ -253,8 +256,7 @@ def staffRegisterAuth():
         conn.commit()
         cursor.close()
         session['username'] = username
-        results = staff_default_flights()
-        return render_template('staff_home.html',username=username,results = results,section='search-flights')
+        return render_template('staff_home.html',username=username, section='search-flights')
     
 
 @app.route('/images/<path:filename>')
@@ -274,7 +276,7 @@ def customer_home():
     data1 = cursor.fetchall() 
     cursor.close()
     
-    return render_template('customer_home.html', email_address=email_address, posts=data1,section='search-flights')
+    return render_template('customer_home.html', email_address=email_address, posts=data1, section='search-flights')
 
 @app.route('/staff_home')
 def staff_home():
@@ -284,8 +286,7 @@ def staff_home():
     cursor.execute(query, (username))
     data1 = cursor.fetchall() 
     cursor.close()
-    results = staff_default_flights()
-    return render_template('staff_home.html', username=username, results = results,posts=data1,section='search-flights')
+    return render_template('staff_home.html', username=username, posts=data1, section='search-flights')
 
 @app.route('/staff_manage')
 def staff_manage():
@@ -460,7 +461,6 @@ def searchFlight():
     cursor.execute(query, params)
     flights = cursor.fetchall()
     results = {'searchFlight':flights}
-    results['default_flights'] = staff_default_flights()['defaults_flights']
     cursor.close()
     if 'email_address' in session.keys():
         email_address = session['email_address']
@@ -494,7 +494,6 @@ def flight_status():
         return render_template('customer_home.html', email_address=email_address, section='check-status',results = results)
     elif 'username' in session.keys():
         username = session['username']
-        results['default_flights'] = staff_default_flights()['default_flights']
         return render_template('staff_home.html', username=username, section='check-status',results = results)
     else:
         return render_template('index.html', section='check-status',results = results)
@@ -537,6 +536,8 @@ def staff_searchCustomerRates():
     params = (username)
     cursor.execute(query, params)
     airline_name = cursor.fetchone()['airline_name']
+    cursor.close()
+
     return render_template('staff_profile.html',section = "view-flight-rates", revenue=revenue , customer = customer,rates=rates)
 
 def get_revenue_mostFrequentCustomer(airline_name):
@@ -590,14 +591,57 @@ def customer_flight():
 
     return render_template('customer_flight.html',results = results)
 
-# @app.route('/customer_spending')
-# def customer_spending():
-#     spending = []
-#     spending.append(0)
-#     spending.append({})
-#     spending[1]['May']=240
-#     spending[1]['June']=360
-#     return render_template('customer_profile.html',spending=spending,day_range_spending =True,section = 'track-spending')
+@app.route('/default_customer_spending')
+def default_customer_spending():
+    email_address = session['email_address']
+    start_date = request.form['start_date']
+    end_date = request.form['end_date']
+
+    cursor = conn.cursor()
+
+    query = '''SELECT SUM(ticket_price) FROM purchase natural join ticket
+               WHERE email_address = %s AND purchase_date >= DATEADD(YEAR, -1, GETDATE())'''
+
+    params = (email_address)
+    cursor.execute(query, params)
+    total_spending = cursor.fetchone()['SUM(ticket_price)']
+
+    query = '''SELECT FORMAT(transaction_date, 'yyyy-MM') AS month, SUM(amount) AS total_spent
+               FROM purchase natural join ticket
+               WHERE email_address = %s AND purchase_date >= DATEADD(MONTH, -6, GETDATE())
+               GROUP BY FORMAT(transaction_date, 'yyyy-MM')
+               ORDER BY month'''
+    params = (email_address)
+    cursor.execute(query, params)
+
+    cursor.close()
+
+    return render_template('customer_profile.html',spending=spending,day_range_spending =True,section = 'track-spending')
+
+@app.route('/customer_spending')
+def customer_spending():
+    email_address = session['email_address']
+    start_date = request.form['start_date']
+    end_date = request.form['end_date']
+
+    cursor = conn.cursor()
+
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
+
+    query = '''SELECT SUM(ticket_price) FROM purchase natural join ticket
+               WHERE email_address = %s AND purchase_date >= DATEADD(YEAR, -1, GETDATE())'''
+
+    params = (email_address)
+    cursor.execute(query, params)
+    total_spending = cursor.fetchone()['SUM(ticket_price)']
+
+    cursor.close()
+
+    return render_template('customer_profile.html',spending=spending,day_range_spending =True,section = 'track-spending')
 
 @app.route('/customer_profile')
 def customer_profile():
@@ -735,8 +779,81 @@ def staff_view_flights():
     username = session['username']
     start_date = request.form['start_date']
     end_date = request.form['end_date']
-    results = staff_default_flights()
-    return render_template('staff_home.html',section = 'view_flights',username = username,results = results)
+
+    cursor = conn.cursor()
+
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+
+    cursor.execute(query, (username,))
+    airline_name = cursor.fetchone()['airline_name']
+
+    query = '''SELECT * FROM flight
+               WHERE airline_name = %s AND departure_date >= %s 
+               AND departure_date <= %s'''
+    cursor.execute(query, (airline_name, start_date, end_date))
+    flights = cursor.fetchall()
+
+    results = {"flights":flights}
+    cursor.close()
+    
+    return render_template('staff_home.html',section = 'view-flights',username = username,results = results)
+
+
+@app.route('/staff_view_customer',methods=['GET','POST'])
+def staff_view_customer():
+    username = session['username']
+    flight_number = request.form['flight_number']
+    departure_date = request.form['departure_date']
+
+    cursor = conn.cursor()
+
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+
+    cursor.execute(query, (username,))
+    airline_name = cursor.fetchone()['airline_name']
+
+    query = '''SELECT * FROM flight natural join ticket natural join purchase
+               WHERE airline_name = %s AND flight_number = %s 
+               AND departure_date = %s'''
+    cursor.execute(query, (airline_name, flight_number, departure_date))
+    customers = cursor.fetchall()
+
+    results = {"customers":customers}
+    cursor.close()
+    
+    return render_template('staff_home.html',section = 'view-customers',username = username,results = results)
+
+
+@app.route('/staff_view_delayed_ontime',methods=['GET','POST'])
+def staff_view_delayed_ontime():
+    username = session['username']
+
+    cursor = conn.cursor()
+
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+
+    cursor.execute(query, (username,))
+    airline_name = cursor.fetchone()['airline_name']
+
+    query = '''SELECT * FROM flight 
+               WHERE airline_name = %s AND flight_status = %s'''
+    cursor.execute(query, (airline_name, "Delayed"))
+    delayed_flights = cursor.fetchall()
+
+    results = {"delayedFlights":delayed_flights}
+
+    query = '''SELECT * FROM flight 
+               WHERE airline_name = %s AND flight_status = %s'''
+    cursor.execute(query, (airline_name, "On-Time"))
+    ontime_flights = cursor.fetchall()
+
+    results["ontimeFlights"] = ontime_flights
+    cursor.close()
+    
+    return render_template('staff_home.html',section = 'view-delayed-ontime',username = username,results = results)
 
 
 @app.route('/purchase_flights',methods=['GET','POST'])

@@ -193,7 +193,7 @@
         <div class="logo">Airline</div>
         <div class="login-options">
             <a href="#">Home</a>
-            <a onclick="manange()" style="cursor: pointer;">Manage</a>
+            <a onclick="manage()" style="cursor: pointer;">Manage</a>
             <a onclick="profile()" style="cursor: pointer;">My Account</a>
             <a onclick="logout()" style="cursor: pointer;">Logout</a>
         </div>
@@ -203,7 +203,8 @@
         <button onclick="showSection('check-status')">Check Flight Status</button>
         <button onclick="showSection('view-flights')">View Flights</button>
         <button onclick="showSection('view-customers')">View Customers On A Flight</button>
-        <button onclick="showSection('view-delayed-ontime')">View On-Time/Delayed Flights</button>
+        <button onclick="window.location.href='/staff_view_delayed_ontime'">View On-Time/Delayed Flights</button>
+        <!-- <button onclick="showSection('view-delayed-ontime')">View On-Time/Delayed Flights</button> -->
     </nav>
     <div class="container">
         <section id="search-flights" class="search-box {% if section == 'search-flights' %}active{% endif %}">
@@ -327,71 +328,68 @@
                 </form>
             {% endif %}
         </section>
+        
         <section id="view-flights" class="search-box {% if section == 'view-flights' %}active{% endif %}">
             <h2>View Flights</h2>
-            {% if results and 'view_flights' in results%}
-                {% for flight in results['view_flights'] %}
-                    <div class="card">
-                        <div class="details">
-                            <h3>{{flight.airline_name}}</h3>
-                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
-                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
-                            <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
-                                Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
-                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+            {% if results and 'flights' in results%}
+                <h3>Flights Found</h3>
+                {% if results['flights']|length ==0 %}
+                    <p>No flights found</p>
+                {% else %}
+                    {% for flight in results['flights'] %}
+                        <div class="card">
+                            <div class="details">
+                                <h3>{{flight.airline_name}}</h3>
+                                <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                                <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                                <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
+                                    Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
+                                <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                            </div>
+                            <div class="price+id">
+                                <p class="price">Price: ${{flight.base_price}}</p>
+                                Airplane ID: {{ flight.airplane_id}}
+                            </div>
                         </div>
-                        <div class="price+id">
-                            <p class="price">Price: ${{flight.base_price}}</p>
-                            Airplane ID: {{ flight.airplane_id}}
+                    {% endfor %}
+                {% endif %}
+                <form action="/redirect_viewflights" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to View Flights</button>
+                </form>
+            {% else %}
+                <p class="section-description">View flights under a specified time range</p>
+                <form action="/staff_view_flights" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start-date">Start Date</label>
+                            <input type="date" id="start-date" name = "start_date" placeholder="Enter start date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end-date">End Date</label>
+                            <input type="date" id="end-date" name = "end_date" placeholder="Enter end date" required>
                         </div>
                     </div>
-                {% endfor %}
-            {%else%}
-                {% for flight in results['default_flights'] %}
-                <div class="card">
-                    <div class="details">
-                        <h3>{{flight.airline_name}}</h3>
-                        <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
-                        <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
-                        <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
-                            Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
-                        <p>Status: <strong>{{ flight.flight_status }}</strong></p>
-                    </div>
-                    <div class="price+id">
-                        <p> class="price">Price: ${{flight.base_price}}</p>
-                        Airplane ID: {{ flight.airplane_id}}
-                    </div>
-                </div>
-                {% endfor %}
+                    <button type="submit">View Flights</button>
+                </form>
             {%endif%}
-            <form action="/staff_view_flights" method="POST">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="start-date">Start Date</label>
-                        <input type="date" id="start-date" name = "start_date" placeholder="Enter start date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="end-date">End Date</label>
-                        <input type="date" id="end-date" name = "end_date" placeholder="Enter end date" required>
-                    </div>
-                </div>
-                <button type="submit">View Flights</button>
-            </form>
-            
-
         </section>
-        <section id="view-customers" class="search-box {% if section == 'view-customers' %}active{% endif %}">
-            { % if results and 'view_customer' in results%}
-                {%for customer in results.'view_customer%}
-                    <p><strong>Customer Name:</strong>{{customer.first_name}} {{customer.last_name}}</p>
-                {%endfor%}
-            {%else%}
-                <form action="/staff_view_customer" method="POST">
-                    <div class="form-group">
-                        <label for="airline-name">Airline Name:</label>
-                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name" required>
-                    </div>
 
+        <section id="view-customers" class="search-box {% if section == 'view-customers' %}active{% endif %}">
+            {% if results and 'customers' in results%}
+                <h3>Customers Found</h3>
+                {% if results['customers']|length ==0 %}
+                    <p>No flight exists or no customers found</p>
+                {% else %}
+                    {%for customer in results['customers'] %}
+                        <p><strong>Customer Name: </strong>{{customer.ticket_user_first_name}} {{customer.ticket_user_last_name}}</p>
+                    {% endfor %}
+                {% endif %}
+                <form action="/redirect_viewcustomers" method="GET">
+                    <button type="submit" style="margin-top: 20px;">Back to View Customers</button>
+                </form>
+            {%else%}
+                <p class="section-description">View customers from flights under your airline</p>
+                <form action="/staff_view_customer" method="POST">
                     <div class="form-group">
                         <label for="flight-number">Flight Number:</label>
                         <input type="text" id="flight-number" name = "flight_number" placeholder="Enter flight number" required>
@@ -473,7 +471,7 @@
             window.location.href = '/logout_staff';
         }
 
-        function manange(){
+        function manage(){
             window.location.href = '/staff_manage'
         }
 
