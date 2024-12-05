@@ -4,6 +4,9 @@ from datetime import date
 import pymysql.cursors
 import os
 import sys
+from flask_sqlalchemy import SQLAlchemy
+import bcrypt
+import hashlib
 #Initialize the app from Flask
 app = Flask(__name__)
 
@@ -121,20 +124,26 @@ def customerLoginAuth():
     #cursor used to send queries
     cursor = conn.cursor()
     #executes query
-    query = 'SELECT * FROM customer WHERE email_address = %s and password = %s'
-    cursor.execute(query, (email_address, password))
+    query = 'SELECT * FROM customer WHERE email_address = %s'
+    cursor.execute(query, (email_address))
     #stores the results in a variable
     data = cursor.fetchone()
     #use fetchall() if you are expecting more than 1 data row
     cursor.close()
     error = None
     if(data):
+        #if bcrypt.checkpw(password.encode('utf-8'), data['password'].encode('utf-8')):
+        if hash_password_md5(password)==data['password']:
         #creates a session for the the user
         #session is a built in
-        session['email_address'] = email_address
-        return redirect(url_for('customer_home'))
+            session['email_address'] = email_address
+            return redirect(url_for('customer_home'))
+        else:
+            error = 'Invalid login or email_address'
+            return render_template('customer_login.html', error=error)
+            
     else:
-        #returns an error message to the html page
+           #returns an error message to the html page
         error = 'Invalid login or email_address'
         return render_template('customer_login.html', error=error)
     
@@ -157,12 +166,24 @@ def staffLoginAuth():
     if(data):
         #creates a session for the the user
         #session is a built in
-        session['username'] = username
-        return redirect(url_for('staff_home'))
+        #if bcrypt.checkpw(password.encode('utf-8'), data['password'].encode('utf-8')):
+        if hash_password_md5(password)==data['password']:
+            session['username'] = username
+            return redirect(url_for('staff_home'))
+        else:
+            error = 'Invalid login or username'
+            return render_template('staff_login.html', error=error)
+
     else:
         #returns an error message to the html page
         error = 'Invalid login or username'
         return render_template('staff_login.html', error=error)
+def hash_password_md5(password):
+    # Create an MD5 hash object
+    md5 = hashlib.md5()
+    # Encode and hash the password
+    md5.update(password.encode('utf-8'))
+    return md5.hexdigest()
 
 @app.route('/customerRegisterAuth', methods=['GET', 'POST'])
 def customerRegisterAuth():
@@ -182,6 +203,7 @@ def customerRegisterAuth():
     passport_expiration = request.form['passport_expiration']
     passport_country = request.form['passport_country']
     phone_number = []
+    hashed_password = hash_password_md5(password)#bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     for key, value in request.form.items():
         if value !='':
             if 'phoneNumbers' in key:  # Handle array-style inputs for phone numbers
@@ -201,7 +223,7 @@ def customerRegisterAuth():
         return render_template('customer_register.html', error = error)
     else:
         ins = 'INSERT INTO customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-        cursor.execute(ins, (email_address, password, first_name, last_name, building_name,
+        cursor.execute(ins, (email_address, hashed_password, first_name, last_name, building_name,
                             street_name, apt_num, city, state, zipcode, date_of_birth,
                             passport_number, passport_expiration, passport_country))
         ins_phone = 'INSERT INTO customer_phone_number VALUES(%s, %s)'
@@ -222,6 +244,7 @@ def staffRegisterAuth():
     last_name = request.form['last_name']
     date_of_birth = request.form['date_of_birth']
     phone_number = []
+    hashed_password = hash_password_md5(password)#bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     for key, value in request.form.items():
         if value !='':
             if 'phoneNumbers' in key:  # Handle array-style inputs for phone numbers
@@ -246,7 +269,7 @@ def staffRegisterAuth():
         return render_template('staff_register.html', error = error)
     else:
         ins = 'INSERT INTO airline_staff VALUES(%s, %s, %s, %s, %s, %s)'
-        cursor.execute(ins, (username, airline_name, password, first_name, last_name, date_of_birth))
+        cursor.execute(ins, (username, airline_name, hashed_password, first_name, last_name, date_of_birth))
         ins_phone = 'INSERT INTO airline_staff_phone_number VALUES(%s, %s)'
         for num in phone_number:
             cursor.execute(ins_phone, (username,num))
