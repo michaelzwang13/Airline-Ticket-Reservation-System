@@ -5,6 +5,7 @@ import os
 import sys
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
+import hashlib
 #Initialize the app from Flask
 app = Flask(__name__)
 
@@ -117,7 +118,8 @@ def customerLoginAuth():
     cursor.close()
     error = None
     if(data):
-        if bcrypt.checkpw(password.encode('utf-8'), data['password'].encode('utf-8')):
+        #if bcrypt.checkpw(password.encode('utf-8'), data['password'].encode('utf-8')):
+        if hash_password_md5(password)==data['password']:
         #creates a session for the the user
         #session is a built in
             session['email_address'] = email_address
@@ -150,7 +152,8 @@ def staffLoginAuth():
     if(data):
         #creates a session for the the user
         #session is a built in
-        if bcrypt.checkpw(password.encode('utf-8'), data['password'].encode('utf-8')):
+        #if bcrypt.checkpw(password.encode('utf-8'), data['password'].encode('utf-8')):
+        if hash_password_md5(password)==data['password']:
             session['username'] = username
             return redirect(url_for('staff_home'))
         else:
@@ -161,6 +164,12 @@ def staffLoginAuth():
         #returns an error message to the html page
         error = 'Invalid login or username'
         return render_template('staff_login.html', error=error)
+def hash_password_md5(password):
+    # Create an MD5 hash object
+    md5 = hashlib.md5()
+    # Encode and hash the password
+    md5.update(password.encode('utf-8'))
+    return md5.hexdigest()
 
 @app.route('/customerRegisterAuth', methods=['GET', 'POST'])
 def customerRegisterAuth():
@@ -180,7 +189,7 @@ def customerRegisterAuth():
     passport_expiration = request.form['passport_expiration']
     passport_country = request.form['passport_country']
     phone_number = []
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    hashed_password = hash_password_md5(password)#bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     for key, value in request.form.items():
         if value !='':
             if 'phoneNumbers' in key:  # Handle array-style inputs for phone numbers
@@ -221,7 +230,7 @@ def staffRegisterAuth():
     last_name = request.form['last_name']
     date_of_birth = request.form['date_of_birth']
     phone_number = []
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    hashed_password = hash_password_md5(password)#bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     for key, value in request.form.items():
         if value !='':
             if 'phoneNumbers' in key:  # Handle array-style inputs for phone numbers
