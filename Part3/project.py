@@ -1,5 +1,5 @@
 #Import Flask Library
-from flask import Flask, render_template, request, session, url_for, redirect,send_file
+from flask import Flask, render_template, request, session, url_for, redirect,send_file,jsonify
 import pymysql.cursors
 import os
 import sys
@@ -8,23 +8,30 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        port = 8889,
+                        #port = 8889,
+                        #user='root',
+                        #password='root',
+                        #db='ProjectFinal',
+                        #charset='utf8mb4',
+                        #cursorclass=pymysql.cursors.DictCursor)
+                        port = 3306,
                         user='root',
-                        password='root',
-                        db='ProjectFinal',
+                        password='',
+                        db='Airline',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
-                        # port = 3306,
-                        # user='root',
-                        # password='',
-                        # db='Airline',
-                        # charset='utf8mb4',
-                        # cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
 def hello():
     return render_template('index.html',section = "search-flights") # set default to search flights
+
+def staff_default_flights():
+    username = session['username']
+    results = {}
+    results['default_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    #results['view_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
+    return results
 
 @app.route('/redirect_searchflights')
 def redirect_searchflights():
@@ -33,7 +40,8 @@ def redirect_searchflights():
         return render_template('customer_home.html', email_address=email_address, section='search-flights')
     elif 'username' in session.keys():
         username = session['username']
-        return render_template('staff_home.html', username=username, section='search-flights')
+        results = staff_default_flights()
+        return render_template('staff_home.html', username=username, results = results,section='search-flights')
     else:
         return render_template('index.html', section='search-flights')
     
@@ -44,7 +52,8 @@ def redirect_checkstatus():
         return render_template('customer_home.html', email_address=email_address, section='check-status')
     elif 'username' in session.keys():
         username = session['username']
-        return render_template('staff_home.html', username=username, section='check-status')
+        results = staff_default_flights()
+        return render_template('staff_home.html', username=username, results = results,section='check-status')
     else:
         return render_template('index.html', section='check-status')
     
@@ -233,7 +242,8 @@ def staffRegisterAuth():
         conn.commit()
         cursor.close()
         session['username'] = username
-        return render_template('staff_home.html',username=username,section='search-flights')
+        results = staff_default_flights()
+        return render_template('staff_home.html',username=username,results = results,section='search-flights')
     
 
 @app.route('/images/<path:filename>')
@@ -267,7 +277,8 @@ def staff_home():
     for each in data1:
         print(each['first_name'] + " " + each['last_name'])
     cursor.close()
-    return render_template('staff_home.html', username=username, posts=data1,section='search-flights')
+    results = staff_default_flights()
+    return render_template('staff_home.html', username=username, results = results,posts=data1,section='search-flights')
 
 @app.route('/staff_manage')
 def staff_manage():
@@ -403,6 +414,7 @@ def searchFlight():
     cursor.execute(query, params)
     flights = cursor.fetchall()
     results = {'searchFlight':flights}
+    results['default_flights'] = staff_default_flights()['defaults_flights']
     cursor.close()
     if 'email_address' in session.keys():
         email_address = session['email_address']
@@ -436,6 +448,7 @@ def flight_status():
         return render_template('customer_home.html', email_address=email_address, section='check-status',results = results)
     elif 'username' in session.keys():
         username = session['username']
+        results['default_flights'] = staff_default_flights()['default_flights']
         return render_template('staff_home.html', username=username, section='check-status',results = results)
     else:
         return render_template('index.html', section='check-status',results = results)
@@ -561,8 +574,9 @@ def changeFlightStatus():
 
     conn.commit()
     cursor.close()
-
-    return render_template('staff_manage.html',section = 'change-flight-status')
+    error = "test"
+    print(error)
+    return render_template('staff_manage.html',section = 'change-flight-status',error = error)
 
 @app.route('/addAirplane',methods=['GET','POST'])
 def addAirplane():
@@ -625,6 +639,15 @@ def scheduleMaintenance():
     cursor.close()
 
     return render_template('staff_manage.html',section = 'schedule-maintenance')
+
+@app.route('/staff_view_flights',methods=['GET','POST'])
+def staff_view_flights():
+    username = session['username']
+    start_date = request.form['start_date']
+    end_date = request.form['end_date']
+    results = staff_default_flights()
+    return render_template('staff_home.html',section = 'view_flights',username = username,results = results)
+
 
 @app.route('/purchase_flights',methods=['GET','POST'])
 def purchaseFlights():
