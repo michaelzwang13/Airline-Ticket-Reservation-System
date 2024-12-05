@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flight Dashboard</title>
     <style>
-        /* Adopted styles from the user file */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -155,6 +154,7 @@
         <h2>Upcoming Flights</h2>
         <div id="upcoming-flights">
             {% if results and  'upcomingFlights' in results.keys() %}
+                <p>Found {{ results['upcomingFlights']|length }} upcoming flights</p>
                 {% for flight in results['upcomingFlights'] %}
                     <div class="card">
                         <div class="details">
@@ -184,6 +184,7 @@
         <h2>Previous Flights</h2>
         <div id="previous-flights">
             {% if results and  'previousFlights' in results.keys() %}
+                <p>Found {{ results['previousFlights']|length }} previous flights</p>
                 {% for flight in results['previousFlights'] %}
                     <div class="card">
                         <div class="details">
@@ -218,37 +219,40 @@
         </div>
     </div>
     <script>
-        // Rate flight logic
+        // rate flight 
         function showRatingForm(flightId) {
-            // Get the rating form for the specific flight
             const ratingForm = document.getElementById(`rating-form-${flightId}`);
             
-            // Toggle visibility of the form
+            // Toggle visibility of the form. When click, the rate window will display, with a close button
             if (ratingForm.style.display === 'none' || ratingForm.style.display === '') {
                 ratingForm.style.display = 'block';
             } else {
                 ratingForm.style.display = 'none';
             }
-}
+        }
+        // back to home
         function home() {
             window.location.href = '/customer_home';
         }
-
+        // log out
         function logout() {
             alert("Logging out...");
             window.location.href = '/logout_customer';
         }
 
+        // cancel
         function cancel() {
             alert("Successfully canceled flight");
             window.location.href = '/customer_flight';
         }
 
+        // rate
         function rate() {
             alert("Successfully submitted rating");
             window.location.href = '/customer_flight';
         }
 
+        // go to customer profile
         function my_account(){
             window.location.href = '/customer_profile';
         }

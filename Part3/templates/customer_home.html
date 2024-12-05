@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flight Search - Public Access</title>
     <style>
-        /* All existing styles remain the same */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -409,6 +408,7 @@
         </section>
     </div>
     <script>
+        //show different section on the same page
         function showSection(sectionId) {
             const sections = document.querySelectorAll('.search-box');
             sections.forEach(section => section.classList.remove('active'));
@@ -418,28 +418,31 @@
                 selectedSection.classList.add('active');
             }
         }
+        //Redirect to login page after logout
         function logout() {
-            window.location.href = '/logout_customer'; // Redirect to login page after logout
+            window.location.href = '/logout_customer'; 
         }
-
+        // show purchase windows
         function openPurchaseWindow() {
             document.getElementById('purchase-modal').style.display = 'flex';
         }
-
+        // close purchase windows
         function closePurchaseWindow() {
             document.getElementById('purchase-modal').style.display = 'none';
         }
+        // redirect to customer flight
         function my_flight(){
             window.location.href = '/customer_flight';
         }
+        //redirect to customer profile
         function my_account(){
             window.location.href = '/customer_profile';
         }
-
+        // purchase flights
         function purchase(){
             alert("Purchase successfully");
         }
-
+        // toggle the return date when it is round trip
         function toggleReturnDate() {
             const returnDateDiv = document.querySelector('.return-date');
             const returnDateInput = document.getElementById('return-date');

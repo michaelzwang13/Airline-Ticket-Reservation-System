@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Management</title>
     <style>
-        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -121,108 +120,129 @@
     <div class="container">
         <!-- Create New Flights -->
         <section id="create-new-flights" class="feature-section {% if section == 'create-new-flights' %}active{% endif %}">
-            <h2>Create New Flights</h2>
-            <form id="create-flight-form" action = /createNewFlights method = 'POST'>
-                <div class="form-group">
-                    <label for="airline-name">Airline Name:</label>
-                    <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name">
-                </div>
-                <div class="form-group">
-                    <label for="flight-number">Flight Number:</label>
-                    <input type="text" id="flight-number" name = "flight_number" placeholder="Enter flight number">
-                </div>
-                <div class="form-group">
-                    <label for="departure-date">Departure Date:</label>
-                    <input type="date" id="departure-date" name = "departure_date">
-                </div>
-                <div class="form-group">
-                    <label for="departure-time">Departure Time:</label>
-                    <input type="time" id="departure-time" name = "departure_time">
-                </div>
-                <div class="form-group">
-                    <label for="arrival-date">Arrival Date:</label>
-                    <input type="date" id="arrival-date" name = "arrival_date">
-                </div>
-                <div class="form-group">
-                    <label for="arrival-time">Arrival Time:</label>
-                    <input type="time" id="arrival-time" name = "arrival_time">
-                </div>
-                <div class="form-group">
-                    <label for="base-price">Base Price:</label>
-                    <input type="number" id="base-price" placeholder="Enter base price" name = "base_price">
-                </div>
-                <div class="form-group">
-                    <label for="flight-status">Flight Status:</label>
-                    <select id="flight-status" name = "flight_status">
-                        <option value="On-Time">On-Time</option>
-                        <option value="Delayed">Delayed</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="departure-airport-code">Departure Airport Code:</label>
-                    <input type="text" id="departure-airport-code" name = "departure_airport_code" placeholder="Enter departure airport code">
-                </div>
-                <div class="form-group">
-                    <label for="arrival-airport-code">Arrival Airport Code:</label>
-                    <input type="text" id="arrival-airport-code" name = "arrival_airport_code" placeholder="Enter arrival airport code">
-                </div>
-                <div class="form-group">
-                    <label for="airplane-id">Airplane ID:</label>
-                    <input type="text" id="airplane-id" name = "airplane_id" placeholder="Enter airplane ID">
-                </div>
-                <button type="submit" onclick="createFlight()">Create Flight</button>
-            </form>
+            {% if error %}
+                <script>
+                    alert("Can Not create flight")
+                    window.location.href = '/staff_manage';
+                </script>
+            {% else %}
+                <h2>Create New Flights</h2>
+                <form id="create-flight-form" action = /createNewFlights method = 'POST'>
+                    <div class="form-group">
+                        <label for="airline-name">Airline Name:</label>
+                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name">
+                    </div>
+                    <div class="form-group">
+                        <label for="flight-number">Flight Number:</label>
+                        <input type="text" id="flight-number" name = "flight_number" placeholder="Enter flight number">
+                    </div>
+                    <div class="form-group">
+                        <label for="departure-date">Departure Date:</label>
+                        <input type="date" id="departure-date" name = "departure_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="departure-time">Departure Time:</label>
+                        <input type="time" id="departure-time" name = "departure_time">
+                    </div>
+                    <div class="form-group">
+                        <label for="arrival-date">Arrival Date:</label>
+                        <input type="date" id="arrival-date" name = "arrival_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="arrival-time">Arrival Time:</label>
+                        <input type="time" id="arrival-time" name = "arrival_time">
+                    </div>
+                    <div class="form-group">
+                        <label for="base-price">Base Price:</label>
+                        <input type="number" id="base-price" placeholder="Enter base price" name = "base_price" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="flight-status">Flight Status:</label>
+                        <select id="flight-status" name = "flight_status">
+                            <option value="On-Time">On-Time</option>
+                            <option value="Delayed">Delayed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="departure-airport-code">Departure Airport Code:</label>
+                        <input type="text" id="departure-airport-code" name = "departure_airport_code" placeholder="Enter departure airport code">
+                    </div>
+                    <div class="form-group">
+                        <label for="arrival-airport-code">Arrival Airport Code:</label>
+                        <input type="text" id="arrival-airport-code" name = "arrival_airport_code" placeholder="Enter arrival airport code">
+                    </div>
+                    <div class="form-group">
+                        <label for="airplane-id">Airplane ID:</label>
+                        <input type="text" id="airplane-id" name = "airplane_id" placeholder="Enter airplane ID">
+                    </div>
+                    <button type="submit" onclick="createFlight()">Create Flight</button>
+                </form>
+            {% endif %}
         </section>
 
         <!-- Change Status of Flight -->
         <section id="change-flight-status" class="feature-section {% if section == 'change-flight-status' %}active{% endif %}">
-            <h2>Change Status of Flight</h2>
-            <form id="change-status-form" action = /changeFlightStatus method = 'POST'>
-                <div class="form-group">
-                    <label for="flight-status-number">Flight Number:</label>
-                    <input type="text" name = "flight_number" id="flight-status-number" placeholder="Enter flight number">
-                </div>
-                <div class="form-group">
-                    <label for="new-status">New Status:</label>
-                    <select id="new-status" name = "flight_status">
-                        <option value="On-Time">On-Time</option>
-                        <option value="Delayed">Delayed</option>
-                    </select>
-                </div>
-                <button type="submit" onclick="changeFlightStatus()">Change Status</button>
-            </form>
+            {% if error %}
+                <script>
+                    alert("Invalid flight number")
+                    window.location.href = '/staff_manage';
+                </script>
+            {% else %}
+                <h2>Change Status of Flight</h2>
+                <form id="change-status-form" action = /changeFlightStatus method = 'POST'>
+                    <div class="form-group">
+                        <label for="flight-status-number">Flight Number:</label>
+                        <input type="text" name = "flight_number" id="flight-status-number" placeholder="Enter flight number">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-status">New Status:</label>
+                        <select id="new-status" name = "flight_status">
+                            <option value="On-Time">On-Time</option>
+                            <option value="Delayed">Delayed</option>
+                        </select>
+                    </div>
+                    <button type="submit" onclick="changeFlightStatus()">Change Status</button>
+                </form>
+            {%endif%}
         </section>
 
         <!-- Add Airplane -->
         <section id="add-airplane" class="feature-section {% if section == 'add-airplane' %}active{% endif %}">
-            <h2>Add Airplane</h2>
-            <form id="add-airplane-form" action = /addAirplane method = 'POST'>
-                <div class="form-group">
-                    <label for="airline-name">Airline Name:</label>
-                    <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airpline name">
-                </div>
-                <div class="form-group">
-                    <label for="ID">Airplane ID:</label>
-                    <input type="number" id="ID" name = "airplane_id" placeholder="Enter airplane ID">
-                </div>
-                <div class="manufacturing-company">
-                    <label for="manufacturing-company">Manufacturing Company:</label>
-                    <input type="text" id="manufacturing-company" name = "manufacturing_company" placeholder="Enter manufacturing company">
-                </div>
-                <div class="form-group">
-                    <label for="airplane-model">Airplane Model:</label>
-                    <input type="text" id="airplane-model" name = "airplane_model" placeholder="Enter airplane model">
-                </div>
-                <div class="form-group">
-                    <label for="capacity">Capacity:</label>
-                    <input type="number" id="capacity" name = "capacity" placeholder="Enter passenger capacity">
-                </div>
-                <div class="form-group">
-                    <label for="manufacturing-date">Manufacturing Date:</label>
-                    <input type="date" id="manufacturing-date" name = "manufacturing_date">
-                </div>
-                <button type="submit" onclick="addAirplane()">Add Airplane</button>
-            </form>
+            {% if error %}
+                <script>
+                    alert("Invalid Airline Name")
+                    window.location.href = '/staff_manage';
+                </script>
+            {% else %}
+                <h2>Add Airplane</h2>
+                <form id="add-airplane-form" action = /addAirplane method = 'POST'>
+                    <div class="form-group">
+                        <label for="airline-name">Airline Name:</label>
+                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airpline name">
+                    </div>
+                    <div class="form-group">
+                        <label for="ID">Airplane ID:</label>
+                        <input type="number" id="ID" name = "airplane_id" placeholder="Enter airplane ID">
+                    </div>
+                    <div class="manufacturing-company">
+                        <label for="manufacturing-company">Manufacturing Company:</label>
+                        <input type="text" id="manufacturing-company" name = "manufacturing_company" placeholder="Enter manufacturing company">
+                    </div>
+                    <div class="form-group">
+                        <label for="airplane-model">Airplane Model:</label>
+                        <input type="text" id="airplane-model" name = "airplane_model" placeholder="Enter airplane model">
+                    </div>
+                    <div class="form-group">
+                        <label for="capacity">Capacity:</label>
+                        <input type="number" id="capacity" name = "capacity" placeholder="Enter passenger capacity">
+                    </div>
+                    <div class="form-group">
+                        <label for="manufacturing-date">Manufacturing Date:</label>
+                        <input type="date" id="manufacturing-date" name = "manufacturing_date">
+                    </div>
+                    <button type="submit" onclick="addAirplane()">Add Airplane</button>
+                </form>
+            {%endif%}
         </section>
 
         <!-- Add New Airport -->
@@ -263,34 +283,41 @@
 
         <!-- Schedule Maintenance -->
         <section id="schedule-maintenance" class="feature-section {% if section == 'schedule-maintenance' %}active{% endif %}">
-            <h2>Schedule Maintenance</h2>
-            <form id="schedule-maintenance-form" action = '/scheduleMaintenance' method = 'POST'>
-                <div class="form-group">
-                    <label for="airline-name">Airline Name:</label>
-                    <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name">
-                </div>
-                <div class="form-group">
-                    <label for="ID">Airplane ID:</label>
-                    <input type="number" id="ID" name = "airplane_id" placeholder="Enter airplane ID">
-                </div>
-                <div class="form-group">
-                    <label for="maintenance-start-date">Maintenance Start Date:</label>
-                    <input type="date" id="maintenance-start-date" name = "maintenance_start_date">
-                </div>
-                <div class="form-group">
-                    <label for="maintenance-start-time">Maintenance Start Time:</label>
-                    <input type="time" id="maintenance-start-time" name = "maintenance_start_time">
-                </div>
-                <div class="form-group">
-                    <label for="maintenance-end-date">Maintenance End Date:</label>
-                    <input type="date" id="maintenance-end-date" name = "maintenance_end_date">
-                </div>
-                <div class="form-group">
-                    <label for="maintenance-end-time">Maintenance End Time:</label>
-                    <input type="time" id="maintenance-end-time" name = "maintenance_end_time">
-                </div>
-                <button type="submit" onclick="scheduleMaintenance()">Schedule Maintenance</button>
-            </form>
+            {% if error %}
+                <script>
+                    alert("Invalid Airline Name")
+                    window.location.href = '/staff_manage';
+                </script>
+            {% else %}
+                <h2>Schedule Maintenance</h2>
+                <form id="schedule-maintenance-form" action = '/scheduleMaintenance' method = 'POST'>
+                    <div class="form-group">
+                        <label for="airline-name">Airline Name:</label>
+                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name">
+                    </div>
+                    <div class="form-group">
+                        <label for="ID">Airplane ID:</label>
+                        <input type="number" id="ID" name = "airplane_id" placeholder="Enter airplane ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="maintenance-start-date">Maintenance Start Date:</label>
+                        <input type="date" id="maintenance-start-date" name = "maintenance_start_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="maintenance-start-time">Maintenance Start Time:</label>
+                        <input type="time" id="maintenance-start-time" name = "maintenance_start_time">
+                    </div>
+                    <div class="form-group">
+                        <label for="maintenance-end-date">Maintenance End Date:</label>
+                        <input type="date" id="maintenance-end-date" name = "maintenance_end_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="maintenance-end-time">Maintenance End Time:</label>
+                        <input type="time" id="maintenance-end-time" name = "maintenance_end_time">
+                    </div>
+                    <button type="submit" onclick="scheduleMaintenance()">Schedule Maintenance</button>
+                </form>
+            {%endif%}
         </section>
     </div>
 
@@ -307,6 +334,7 @@
         function home() {
             window.location.href = '/staff_home';
         }
+        
 
         function logout() {
             alert("Logging out...");
@@ -315,10 +343,10 @@
 
         function createFlight() {
             alert("Flight created successfully!");
+            
         }
 
         function changeFlightStatus() {
-            alert("Flight status updated successfully!");
         }
 
         function addAirplane() {

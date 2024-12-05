@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Dashboard</title>
     <style>
-        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -260,7 +259,6 @@
                     </div>
                 </div>
             {% endif %}
-            
             <div id="date-range">
                 <h3>Specify a Date Range</h3>
                 <form id="date-range-form" action = /customer_spending method="POST" >
@@ -282,7 +280,6 @@
         function addPhoneNumber() {
             const phoneList = document.getElementById('phone-list');
 
-            // Create a new phone input group
             const phoneGroup = document.createElement('div');
             phoneGroup.classList.add('phone-group');
 
@@ -302,32 +299,6 @@
             phoneNumberCount++;
         }
 
-
-        // function saveProfile() {
-        //     const inputs = document.querySelectorAll('#edit-profile-form input');
-        //     const phoneInputs = document.querySelectorAll('.phone-input');
-        //     const updatedProfile = {};
-            
-        //     inputs.forEach(input => {
-        //         if (input.value.trim() !== "" && input.classList.contains('phone-input') === false) {
-        //             const fieldName = input.id.replace(/-/g, '');
-        //             updatedProfile[fieldName] = input.value.trim();
-        //         }
-        //     });
-
-        //     const phoneNumbers = [];
-        //     phoneInputs.forEach(input => {
-        //         if (input.value.trim() !== '') {
-        //             phoneNumbers.push(input.value.trim());
-        //         }
-        //     });
-
-        //     updatedProfile.phoneNumbers = phoneNumbers;
-
-        //     alert('Profile updated successfully!');
-        //     console.log("Updated Profile:", updatedProfile);
-        // }
-
         function showSection(sectionId) {
             const sections = document.querySelectorAll('.feature-section');
             sections.forEach(section => section.classList.remove('active'));
@@ -342,18 +313,18 @@
             
             charts.forEach(chart => {
                 const bars = chart.querySelectorAll('.bar');
-                // Get all values
+                
                 const values = Array.from(bars).map(bar => {
                     const valueSpan = bar.querySelector('.value');
                     return parseFloat(valueSpan.textContent.replace('$', ''));
                 });
                 
-                // Find the maximum value
+                // find the maximum value to determine the height of the bar
                 const maxValue = Math.max(...values);
-                // Set heights relative to the maximum value
+                // set heights relative to the maximum value
                 bars.forEach(bar => {
                     const value = parseFloat(bar.querySelector('.value').textContent.replace('$', ''));
-                    const percentage = (value / maxValue * 80); // Using 80% of chart height as maximum
+                    const percentage = (value / maxValue * 100); 
                     bar.style.height = percentage + '%';
                 });
             });

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <style>
-        /* General styles for the layout */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -113,25 +112,34 @@
 </head>
 <body>
     <div class="container">
-        <!-- Left Form Section -->
-        <div class="image-section"></div>
-        <!-- Right Form Section -->
-        <div class="form-section">
-            <h1>Customer Log In</h1>
-            <form action="/customerLoginAuth" method="POST">
-                <label for="email_address">Email Address</label>
-                <input type="email" id="email_address" name="email_address" placeholder="Enter your email" required>
+        {%if error %}
+                <script>
+                    alert("Invalid email or password ");
+                    setTimeout(() => {
+                        window.location.href = "/customer_login";
+                    }, 1000); 
+                </script>
+        {% else %}
+            <div class="image-section"></div>
+            <div class="form-section">
+                <h1>Customer Log In</h1>
+                <form action="/customerLoginAuth" method="POST">
+                    <label for="email_address">Email Address</label>
+                    <input type="email" id="email_address" name="email_address" placeholder="Enter your email" required>
+                        
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        
+                    <button type="submit">Log in</button>
+                </form>
+                <p>Don't have an account? <a href="/customer_register">Sign Up</a></p>
+                <p>Airline staff? <a href="/staff_login">Log In</a></p>
                 
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                
-                <button type="submit">Log in</button>
-            </form>
-            <p>Don't have an account? <a href="/customer_register">Sign Up</a></p>
-            <p>Airline staff? <a href="/staff_login">Log In</a></p>
-        </div>
-        <button onclick="window.location.href='/'" class="back-link">Back to home</button>
-        </div>
+            </div>
+            
+            <button onclick="window.location.href='/'" class="back-link">Back to home</button>
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>
