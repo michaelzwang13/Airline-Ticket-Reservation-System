@@ -255,9 +255,11 @@
                             <p class="price">Price: ${{flight.base_price}}</p>
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
-                        <div>
-                            <button class="button" style="margin-top: 20px;" onclick="openPurchaseWindow()">Purchase</button>
-                        </div>
+                        {% if flight.departure_date > current_date %}
+                            <div>
+                                <button class="button" style="margin-top: 20px;" onclick="openPurchaseWindow()">Purchase</button>
+                            </div>
+                        {% endif %}
                         
                         <div id="purchase-modal" class="modal">
                             <div class="modal-content">

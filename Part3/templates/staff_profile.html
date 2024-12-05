@@ -169,7 +169,7 @@
     </header>
     <nav>
         <button onclick="showFeature('edit-profile-info')">Edit Profile Info</button>
-        <button onclick="showFeature('view-flight-rates')">View Flight Rates</button>
+        <button onclick="showFeature('view-flight-rates')">View Flight Ratings</button>
         <button onclick="showFeature('view-frequent-customers')">View Frequent Customers</button>
         <button onclick="showFeature('view-earned-revenue')">View Earned Revenue</button>
     </nav>
@@ -177,7 +177,7 @@
         <!-- Edit Profile Info -->
         <section id="edit-profile-info" class="feature-section {% if section == 'edit-profile-info' %}active{% endif %}">
             <h2>Edit Profile Information</h2>
-            <form id="edit-profile-form">
+            <form id="edit-profile-form" action="/editStaffProfile" method="POST">
                 <div class="form-group">
                     <label for="first-name">First Name:</label>
                     <input type="text" id="first-name" placeholder="Enter your first name">
@@ -187,8 +187,8 @@
                     <input type="text" id="last-name" placeholder="Enter your last name">
                 </div>
                 <div class="form-group">
-                    <label for="city">City:</label>
-                    <input type="text" id="city" placeholder="Enter your city">
+                    <label for="dob">Date of Birth:</label>
+                    <input type="date" id="dob" name = "date_of_birth">
                 </div>
                 <div id="phone-list">
                     <h3>Phone Numbers</h3>
@@ -204,7 +204,7 @@
 
         <!-- View Flight Rates -->
         <section id="view-flight-rates" class="feature-section {% if section == 'view-flight-rates' %}active{% endif %}">
-            <h2>View Flight Rates</h2>
+            <h2>View Flight Ratings</h2>
             {% if rates %}
                 {% for rate in rates %}
                     <div class="card">
@@ -212,7 +212,7 @@
                             <h3>{{rate.airline_name}}</h3>
                             <p><strong>Flight Number:</strong> {{ rate.flight_number }}</p>
                             <p><strong>Customer:</strong> {{ rate.name }}</p>
-                            <p><strong>Rates:</strong> {{ rate.rating }}</p>
+                            <p><strong>Ratings:</strong> {{ rate.rating }}</p>
                             <p><strong>Comments:</strong> {{ rate.comments }}</p>
                         </div>
                     </div>
@@ -221,11 +221,11 @@
                     <button type="submit" style="margin-top: 20px;">Back to Search</button>
                 </form>
             {% else %}
-                <h2>Search Customer's rates</h2>
+                <h2>Search Customer's ratings</h2>
                 <form action="/staff_searchCustomerRates" method="POST">
                     <label for="flight_number">Flight Number:</label>
                     <input type="text" id="flight-number" name="flight_number" required>
-                    <button type="submit">Search Rates</button>
+                    <button type="submit">Search Ratings</button>
                 </form>
 
             {% endif %}

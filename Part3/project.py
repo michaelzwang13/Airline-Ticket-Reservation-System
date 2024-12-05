@@ -1,5 +1,6 @@
 #Import Flask Library
 from flask import Flask, render_template, request, session, url_for, redirect,send_file
+from datetime import date
 import pymysql.cursors
 import os
 import sys
@@ -50,23 +51,33 @@ def redirect_checkstatus():
     
 @app.route('/redirect_searchcustomer')
 def redirect_searchcustomer():
-        username = session['username']
-        revenue ={}# last year,last month
-        customer = {}
-        revenue['last_month']=0
-        revenue['last_year']=0
-        customer['most'] = 'a@gmai.com'
-        return render_template('staff_profile.html', username = username,customer = customer,revenue = revenue,section='view-frequent-customers')
+    username = session['username']
+    cursor = conn.cursor()
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
+    cursor.close()
+
+    freq_customer, revenue = get_revenue_mostFrequentCustomer(airline_name)
+    customer = {"most":freq_customer}
+    return render_template('staff_profile.html', username = username,customer = customer,revenue = revenue,section='view-frequent-customers')
 
 @app.route('/redirect_searchrates')
 def redirect_searchrates():
-        username = session['username']
-        revenue ={}# last year,last month
-        customer = {}
-        revenue['last_month']=0
-        revenue['last_year']=0
-        customer['most'] = 'a@gmai.com'
-        return render_template('staff_profile.html', username = username,customer = customer,revenue = revenue,section='view-flight-rates')
+    username = session['username']
+
+    cursor = conn.cursor()
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
+    cursor.close()
+
+    customer, revenue = get_revenue_mostFrequentCustomer(airline_name)
+    return render_template('staff_profile.html', username = username,customer = customer,revenue = revenue,section='view-flight-rates')
 
 #Define route for customer login
 @app.route('/customer_login')
@@ -251,8 +262,6 @@ def customer_home():
     query = 'SELECT first_name, last_name FROM customer WHERE email_address = %s'
     cursor.execute(query, (email_address))
     data1 = cursor.fetchall() 
-    for each in data1:
-        print(each['first_name'] + " " + each['last_name'])
     cursor.close()
     
     return render_template('customer_home.html', email_address=email_address, posts=data1,section='search-flights')
@@ -264,8 +273,6 @@ def staff_home():
     query = 'SELECT first_name, last_name FROM airline_staff WHERE username = %s'
     cursor.execute(query, (username))
     data1 = cursor.fetchall() 
-    for each in data1:
-        print(each['first_name'] + " " + each['last_name'])
     cursor.close()
     return render_template('staff_home.html', username=username, posts=data1,section='search-flights')
 
@@ -276,8 +283,6 @@ def staff_manage():
     query = 'SELECT first_name, last_name FROM airline_staff WHERE username = %s'
     cursor.execute(query, (username))
     data1 = cursor.fetchall() 
-    for each in data1:
-        print(each['first_name'] + " " + each['last_name'])
     cursor.close()
     return render_template('staff_manage.html', username=username,section = 'create-new-flights')
 
@@ -288,15 +293,19 @@ def staff_profile():
     query = 'SELECT first_name, last_name FROM airline_staff WHERE username = %s'
     cursor.execute(query, (username))
     data1 = cursor.fetchall() 
-    for each in data1:
-        print(each['first_name'] + " " + each['last_name'])
+
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
+
     cursor.close()
-    revenue ={}# last year,last month
-    customer = {}
-    revenue['last_month']=0
-    revenue['last_year']=0
-    customer['most'] = 'a@gmail.com'
-    return render_template('staff_profile.html', username=username,revenue = revenue,customer = customer, section = 'edit-profile-info')
+
+    freq_customer, revenue = get_revenue_mostFrequentCustomer(airline_name)
+    customer = {'most':freq_customer}
+
+    return render_template('staff_profile.html', spending=[0, {}], username=username,revenue = revenue,customer = customer, section = 'edit-profile-info')
 
 @app.route('/editCustomerProfile',methods=['GET','POST'])
 def editCustomerProfile():
@@ -312,7 +321,7 @@ def editCustomerProfile():
                 updated_profile[key] = value
     cursor = conn.cursor()
         
-        # Example SQL Update: Update relevant fields in the database
+    # Example SQL Update: Update relevant fields in the database
     for key, value in updated_profile.items():
         if key != 'phoneNumbers':
             cursor.execute(f'UPDATE customer SET {key} = '+'%s WHERE email_address = %s', (value, email_address))
@@ -322,7 +331,7 @@ def editCustomerProfile():
                 cursor.execute(ins, (email_address, num))
     conn.commit()
     cursor.close()
-    return render_template('customer_profile.html',section = "edit-profile-info")
+    return render_template('customer_profile.html',spending = [0,{}], section = "edit-profile-info")
 
 @app.route('/editStaffProfile',methods=['GET','POST'])
 def editStaffProfile():
@@ -352,17 +361,54 @@ def editStaffProfile():
                 ins_email = 'INSERT INTO airline_staff_email VALUES(%s, %s)'
                 cursor.execute(ins_email, (username, email))
         else:
-            cursor.execute(f'UPDATE customer SET {key} = '+'%s WHERE username = %s', (value, username))
+            cursor.execute(f'UPDATE airline_staff SET {key} = '+'%s WHERE username = %s', (value, username))
     conn.commit()
     cursor.close()
-    return render_template('staff_profile.html',section = 'edit-profile-info')
+    return render_template('staff_profile.html',spending = [0,{}], section = 'edit-profile-info')
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():
+    email_address = session['email_address']
+    flight_number = request.form['flight_number']
+    airline_name = request.form['airline_name']
+    departure_date = request.form['departure_date']
+    departure_time = request.form['departure_time']
+    rating = request.form['rating']
+    comment = request.form['comment']
+
+    cursor = conn.cursor()   
+
+    query = '''SELECT * FROM rate 
+            WHERE email_address = %s AND flight_number = %s AND
+                  airline_name = %s AND departure_date = %s AND
+                  departure_time = %s'''
+    cursor.execute(query, (email_address, flight_number, airline_name, departure_date,
+                            departure_time))
+    rating = cursor.fetchone()
+    if rating:
+        return customer_flight()
+
+    ins = 'INSERT INTO rate VALUES(%s, %s, %s, %s, %s, %s, %s)'
+    cursor.execute(ins, (email_address, airline_name, flight_number, departure_time, 
+                        departure_date, comment, rating))
+
+    conn.commit()
+    cursor.close()
+
     return customer_flight()
 
 @app.route('/cancel_flight',methods=['POST'])
 def cancelFlight():
+    ticket_id = request.form['flight_id']
+
+    cursor = conn.cursor()   
+
+    ins = 'DELETE FROM purchase WHERE ID =  %s'
+    cursor.execute(ins, (ticket_id))
+
+    conn.commit()
+    cursor.close()
+
     return customer_flight()
 
 @app.route('/searchFlight',methods=['GET','POST'])
@@ -406,7 +452,7 @@ def searchFlight():
     cursor.close()
     if 'email_address' in session.keys():
         email_address = session['email_address']
-        return render_template('customer_home.html', email_address=email_address, section='search-flights',results = results)
+        return render_template('customer_home.html', email_address=email_address, current_date=date.today(), section='search-flights',results = results)
     elif 'username' in session.keys():
         username = session['username']
         return render_template('staff_home.html', username=username, section='search-flights',results = results)
@@ -442,33 +488,61 @@ def flight_status():
 
 @app.route('/staff_searchCustomerFlights',methods=['GET','POST'])
 def staff_searchCustomerFlights():
-    email_address =  request.form['email_address']
-    customer = {}
-    revenue = {}
-    customer['most'] = 'a@gmail.com'
-    customer['customer_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
-    revenue['last_month']=0
-    revenue['last_year']=0
+    username = session['username']
+    email_address = request.form['email_address']
+
+    cursor = conn.cursor()
+    query = ''' SELECT * FROM flight natural join purchase natural join ticket
+                WHERE airline_name IN (SELECT airline_name FROM airline_staff
+                                WHERE username = %s) AND
+                email_address = %s
+            ''' 
+
+    params = (username, email_address)
+    cursor.execute(query, params)
+    flights = cursor.fetchall()
+    customer = {'customer_flights':flights}
+
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
+    cursor.close()
+
+    freq_customer, revenue = get_revenue_mostFrequentCustomer(airline_name) 
+    customer['most'] = freq_customer
+
     return render_template('staff_profile.html',section = "view-frequent-customers", revenue=revenue , customer = customer)
 
 @app.route('/staff_searchCustomerRates',methods=['GET','POST'])
 def staff_searchCustomerRates():
     flight_number =  request.form['flight_number']
-    airline_name = "JetBlue Airways"
-    customer,revenue = get_revenue_mostFrequentCustomer(airline_name)
-    
-    customer['customer_flights'] = [{'flight_number':'123','airline_name':"jetBlue","":"123"},{'flight_number':'123','airline_name':"jetBlue","":"123"}]
-    
-    rates = [{"flight_number":123,"rating":5,"name":"a","comments":"abasdf"}]
+    cursor = comm.cursor()
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
     return render_template('staff_profile.html',section = "view-flight-rates", revenue=revenue , customer = customer,rates=rates)
 
 def get_revenue_mostFrequentCustomer(airline_name):
-    customer = {}
-    customer['most'] = 'a@gmail.com'
-    revenue = {}
-    revenue['last_month']=0
-    revenue['last_year']=0
-    return customer,revenue
+    username = session['username']
+
+    cursor = conn.cursor()
+    query = ''' SELECT email_address, SUM(ticket_price) as revenue
+                FROM flight natural join purchase natural join ticket
+                WHERE airline_name = %s
+                GROUP BY email_address
+                ORDER BY revenue DESC
+            ''' 
+
+    params = (airline_name)
+    cursor.execute(query, params)
+    user = cursor.fetchone()
+    customer = user['email_address']
+    revenue = user['revenue']
+    return customer, revenue
 
 @app.route('/customer_flight')
 def customer_flight():
@@ -503,23 +577,23 @@ def customer_flight():
 
     return render_template('customer_flight.html',results = results)
 
-@app.route('/customer_spending')
-def customer_spending():
-    spending = []
-    spending.append(0)
-    spending.append({})
-    spending[1]['May']=240
-    spending[1]['June']=360
-    return render_template('customer_profile.html',spending=spending,day_range_spending =True,section = 'track-spending')
+# @app.route('/customer_spending')
+# def customer_spending():
+#     spending = []
+#     spending.append(0)
+#     spending.append({})
+#     spending[1]['May']=240
+#     spending[1]['June']=360
+#     return render_template('customer_profile.html',spending=spending,day_range_spending =True,section = 'track-spending')
 
 @app.route('/customer_profile')
 def customer_profile():
-    spending = []
-    spending.append(0)
-    spending.append({})
-    spending[1]['May']=240
-    spending[1]['June']=360
-    return render_template('customer_profile.html',spending =spending,day_range_spending=False,section = 'edit-profile-info')
+    # spending = []
+    # spending.append(0)
+    # spending.append({})
+    # spending[1]['May']=240
+    # spending[1]['June']=360
+    return render_template('customer_profile.html', spending = [0,{}], section = 'edit-profile-info')
     # return render_template('customer_profile.html',section = 'edit-profile-info')
 
 @app.route('/createNewFlights',methods=['GET','POST'])
@@ -542,6 +616,22 @@ def createNewFlights():
     cursor.execute(ins, (airline_name, flight_number, departure_time, departure_date, 
                         arrival_date, arrival_time, base_price, flight_status,
                         departure_airport_code, arrival_airport_code, airplane_id))
+
+    query = '''SELECT num_seats FROM airplane
+               WHERE ID = %s'''
+    cursor.execute(query, (airplane_id))
+    num_seats = cursor.fetchone()['num_seats']
+
+    last_ticket_id_query = 'SELECT MAX(ID) FROM ticket'  
+    cursor.execute(last_ticket_id_query)
+
+    last_ticket_id_result = cursor.fetchone()['MAX(ID)']
+    new_ticket_id = (int(last_ticket_id_result) + 1) if last_ticket_id_result else 1
+
+    for i in range(new_ticket_id, new_ticket_id + num_seats):
+        ins = 'INSERT INTO ticket VALUES(%s, %s, %s, %s, %s, %s)'
+        cursor.execute(ins, (i, base_price, airline_name, flight_number, 
+                        departure_time, departure_date))
 
     conn.commit()
     cursor.close()
@@ -645,23 +735,31 @@ def purchaseFlights():
     card_name = request.form['card_name']
     expiration_date = request.form['expiration_date']
 
-    last_ticket_id_query = 'SELECT MAX(ID) FROM ticket'
+    cursor = conn.cursor()
 
-    cursor = conn.cursor()   
-    cursor.execute(last_ticket_id_query)
+    query = '''SELECT ID FROM ticket
+               WHERE flight_number = %s AND airline_name = %s AND
+               departure_date = %s AND departure_time = %s'''
+    cursor.execute(query, (flight_number, airline_name, departure_date, departure_time))
+    tickets = cursor.fetchall()
 
-    last_ticket_id_result = cursor.fetchone()['MAX(ID)']
+    purchased = False
+    for ticket in tickets:
+        if_purchased = '''SELECT * FROM purchase
+                          WHERE ID = %s'''
+        cursor.execute(if_purchased, (ticket['ID']))
+        ticket_id = cursor.fetchone()
 
-    new_ticket_id = (int(last_ticket_id_result) + 1) if last_ticket_id_result else 1
-
-    ins = 'INSERT INTO ticket VALUES(%s, %s, %s, %s, %s, %s)'
-    cursor.execute(ins, (new_ticket_id, base_price, airline_name, flight_number, 
-                        departure_time, departure_date))
-
-    ins = 'INSERT INTO purchase VALUES(%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, %s, %s)'
-    cursor.execute(ins, (session['email_address'], new_ticket_id, ticket_user_first_name, 
+        if not ticket_id:
+            ins = 'INSERT INTO purchase VALUES(%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, %s, %s)'
+            cursor.execute(ins, (session['email_address'], ticket['ID'], ticket_user_first_name, 
                             ticket_user_last_name, ticket_user_date_of_birth, card_type, card_number, 
                             card_name, expiration_date))
+            purchased = True
+            break
+
+    if not purchased:
+        return render_template('customer_home.html',section = 'search-flights')
 
     conn.commit()
     cursor.close()

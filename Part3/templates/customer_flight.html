@@ -160,6 +160,7 @@
                         <div class="details">
                             <h3>{{flight.airline_name}}</h3>
                             <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                            <p><strong>Passenger Name: </strong> {{ flight.ticket_user_first_name }} {{ flight.ticket_user_last_name }}</p>
                             <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
                             <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
                                 Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
@@ -170,8 +171,8 @@
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
                         <form action="/cancel_flight" method="POST" class="cancel-form">
-                            <input type="hidden" name="flight_id" value="{{ flight.id }}">
-                            <button type="submit" class="cancel">Cancel</button>
+                            <input type="hidden" name="flight_id" value="{{ flight.ID }}">
+                            <button type="submit" onclick="cancel()" class="cancel">Cancel</button>
                         </form>
                     </div>
                 {% endfor %}
@@ -199,12 +200,15 @@
                         </div>
                         <button onclick="showRatingForm('{{ flight.id }}')" class="rate">Rate</button>
                         <form id="rating-form-{{ flight.id }}" class="rating-form" action="/rate_flight" method="POST" style="display: none;">
-                            <input type="hidden" name="flight_id" value="{{ flight.id }}">
+                            <input type="hidden" name="flight_number" value="{{ flight.flight_number }}">
+                            <input type="hidden" name="airline_name" value="{{ flight.airline_name }}">
+                            <input type="hidden" name="departure_time" value="{{ flight.departure_time }}">
+                            <input type="hidden" name="departure_date" value="{{ flight.departure_date }}">
                             <label for="rating">Rating (1-5):</label>
                             <input type="number" id="rating" name="rating" min="1" max="5" required>
                             <label for="comment">Comment:</label>
                             <textarea id="comment" name="comment" rows="3" placeholder="Enter your comment" required></textarea>
-                            <button type="submit">Submit</button>
+                            <button type="submit" onclick="rate()">Submit</button>
                         </form>
                     </div>
                 {% endfor %}
@@ -233,6 +237,16 @@
         function logout() {
             alert("Logging out...");
             window.location.href = '/logout_customer';
+        }
+
+        function cancel() {
+            alert("Successfully canceled flight");
+            window.location.href = '/customer_flight';
+        }
+
+        function rate() {
+            alert("Successfully submitted rating");
+            window.location.href = '/customer_flight';
         }
 
         function my_account(){
