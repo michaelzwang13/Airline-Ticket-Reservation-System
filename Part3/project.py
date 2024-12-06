@@ -366,7 +366,7 @@ def editCustomerProfile():
                 cursor.execute(ins, (email_address, num))
     conn.commit()
     cursor.close()
-    return render_template('customer_profile.html',spending = [0,{}], section = "edit-profile-info")
+    return render_template('customer_profile.html',spending = {}, section = "edit-profile-info")
 
 @app.route('/editStaffProfile',methods=['GET','POST'])
 def editStaffProfile():
@@ -399,7 +399,7 @@ def editStaffProfile():
             cursor.execute(f'UPDATE airline_staff SET {key} = '+'%s WHERE username = %s', (value, username))
     conn.commit()
     cursor.close()
-    return render_template('staff_profile.html',spending = [0,{}], section = 'edit-profile-info')
+    return render_template('staff_profile.html',spending = {}, section = 'edit-profile-info')
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():
@@ -478,11 +478,23 @@ def searchFlight():
     
     # Add return date conditionally for round-trip search
     if return_date:
-        query += " AND return_date = %s"
+        query += " OR departure_date = %s"
         params += (return_date,)
 
     cursor.execute(query, params)
     flights = cursor.fetchall()
+
+    for flight in flights: 
+        query = '''SELECT * FROM flight natural join airplane
+                   WHERE flight_number = %s AND num_seats = (SELECT COUNT(*) FROM flight natural join purchase natural join ticket 
+                                                                    WHERE flight_number = %s)'''
+        cursor.execute(query, (flight['flight_number'], flight['flight_number']))
+        full = cursor.fetchone()
+        if full:
+            flight['full'] = True
+        else:
+            flight['full'] = False
+            
     results = {'searchFlight':flights}
     cursor.close()
     if 'email_address' in session.keys():
@@ -617,50 +629,60 @@ def customer_flight():
 @app.route('/default_customer_spending')
 def default_customer_spending():
     email_address = session['email_address']
-    start_date = request.form['start_date']
-    end_date = request.form['end_date']
 
     cursor = conn.cursor()
 
-    query = '''SELECT SUM(ticket_price) FROM purchase natural join ticket
-               WHERE email_address = %s AND purchase_date >= DATEADD(YEAR, -1, GETDATE())'''
+    query = '''SELECT ROUND(SUM(ticket_price), 2) as total FROM purchase natural join ticket
+               WHERE email_address = %s AND purchase_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)'''
 
     params = (email_address)
     cursor.execute(query, params)
-    total_spending = cursor.fetchone()['SUM(ticket_price)']
+    total_spending = cursor.fetchone()['total']
+    if not total_spending:
+        total_spending = 0.00
 
-    query = '''SELECT FORMAT(transaction_date, 'yyyy-MM') AS month, SUM(amount) AS total_spent
+    query = '''SELECT DATE_FORMAT(purchase_date, '%%M') AS month, ROUND(SUM(ticket_price), 2) AS total_spent
                FROM purchase natural join ticket
-               WHERE email_address = %s AND purchase_date >= DATEADD(MONTH, -6, GETDATE())
-               GROUP BY FORMAT(transaction_date, 'yyyy-MM')
+               WHERE email_address = %s AND purchase_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+               GROUP BY month
                ORDER BY month'''
     params = (email_address)
     cursor.execute(query, params)
+    spending_months = cursor.fetchall()
+
+    spending = {"total_spending":total_spending, "spending_months":spending_months}
 
     cursor.close()
 
-    return render_template('customer_profile.html',spending=spending,day_range_spending =True,section = 'track-spending')
+    return render_template('customer_profile.html',spending=spending,day_range_spending =False,section = 'track-spending')
 
-@app.route('/customer_spending')
-def customer_spending():
+@app.route('/range_customer_spending',methods=['GET','POST'])
+def range_customer_spending():
     email_address = session['email_address']
     start_date = request.form['start_date']
     end_date = request.form['end_date']
 
     cursor = conn.cursor()
 
-    query = ''' SELECT airline_name FROM airline_staff
-                                WHERE username = %s'''
-    params = (username)
-    cursor.execute(query, params)
-    airline_name = cursor.fetchone()['airline_name']
+    query = '''SELECT ROUND(SUM(ticket_price), 2) as total FROM purchase natural join ticket
+               WHERE email_address = %s AND purchase_date >= %s AND purchase_date <= %s'''
 
-    query = '''SELECT SUM(ticket_price) FROM purchase natural join ticket
-               WHERE email_address = %s AND purchase_date >= DATEADD(YEAR, -1, GETDATE())'''
-
-    params = (email_address)
+    params = (email_address, start_date, end_date)
     cursor.execute(query, params)
-    total_spending = cursor.fetchone()['SUM(ticket_price)']
+    total_spending = cursor.fetchone()['total']
+    if not total_spending:
+        total_spending = 0.00
+
+    query = '''SELECT DATE_FORMAT(purchase_date, '%%M') AS month, ROUND(SUM(ticket_price), 2) AS total_spent
+               FROM purchase natural join ticket
+               WHERE email_address = %s AND purchase_date >= %s AND purchase_date <= %s
+               GROUP BY month
+               ORDER BY month'''
+    params = (email_address, start_date, end_date)
+    cursor.execute(query, params)
+    spending_months = cursor.fetchall()
+
+    spending = {"total_spending":total_spending, "spending_months":spending_months}
 
     cursor.close()
 
@@ -668,13 +690,7 @@ def customer_spending():
 
 @app.route('/customer_profile')
 def customer_profile():
-    # spending = []
-    # spending.append(0)
-    # spending.append({})
-    # spending[1]['May']=240
-    # spending[1]['June']=360
-    return render_template('customer_profile.html', spending = [0,{}], section = 'edit-profile-info')
-    # return render_template('customer_profile.html',section = 'edit-profile-info')
+    return render_template('customer_profile.html', section = 'edit-profile-info')
 
 @app.route('/createNewFlights',methods=['GET','POST'])
 def createNewFlights():

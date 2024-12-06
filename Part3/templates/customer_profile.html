@@ -130,7 +130,7 @@
             justify-content: flex-end;
             align-items: center;
             background-color: #ff6600;
-            width: 50px;
+            width: 100px;
             border-radius: 5px 5px 0 0;
             position: relative;
             text-align: center;
@@ -153,6 +153,7 @@
         .bar .value {
             margin-bottom: 10px;
             font-size: 0.8em;
+            color: black;
         }
       
     </style>
@@ -169,7 +170,7 @@
     </header>
     <nav>
         <button onclick="showSection('edit-profile-info')">Edit Profile Info</button>
-        <button onclick="showSection('track-spending')">Track Spending</button>
+        <button onclick="window.location.href='/default_customer_spending'">Track Spending</button>
     </nav>
     <div class="container">
         <section id="edit-profile-info" class="feature-section {% if section == 'edit-profile-info' %}active{% endif %}">
@@ -224,53 +225,55 @@
         <section id="track-spending" class="feature-section {% if section == 'track-spending' %}active{% endif %}">
             <h2>Track Spending</h2>
             <p>Track and monitor your spending here.</p>
-            {% if day_range_spending %}
-                <div id="spending">
-                    <h3>Total Amount Spent in the Past Year</h3>
-                    <p id="total-spent">${{ spending[0] }}</p>
-            
-                    <h3>Monthly Spending for the Last 6 Months</h3>
-                    <div id="monthly-spending-bar-chart" class="bar-chart">
-                        {% for key, value in spending[1].items() %}
-                            <div 
-                                class="bar" 
-                                style="height: 0%">
-                                <span class="label">{{ key }}</span>
-                                <span class="value">${{ value }}</span>
-                            </div>
-                        {% endfor %}
+            {% if spending %}
+                {% if not day_range_spending %}
+                    <div id="spending">
+                        <h3>Total Amount Spent in the Past Year</h3>
+                        <p id="total-spent">${{ spending['total_spending'] }}</p>
+                
+                        <h3>Monthly Spending for the Last 6 Months</h3>
+                        <div id="monthly-spending-bar-chart" class="bar-chart">
+                            {% for month in spending['spending_months'] %}
+                                <div 
+                                    class="bar" 
+                                    style="height: 0%">
+                                    <span class="label">{{ month['month'] }}</span>
+                                    <span class="value">${{ month['total_spent'] }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-            {% else %}
-                <div id="spending">
-                    <h3>Total Amount Spent in the Ranged Year</h3>
-                    <p id="total-spent">${{ spending[0] }}</p>
-            
-                    <h3>Monthly Spending for the Ranged Months</h3>
-                    <div id="ranged-monthly-spending-bar-chart" class="bar-chart">
-                        {% for key, value in spending[1].items() %}
-                            <div 
-                                class="bar" 
-                                style="height : 0%">
-                                <span class="label">{{ key }}</span>
-                                <span class="value">${{ value }}</span>
-                            </div>
-                        {% endfor %}
+                {% else %}
+                    <div id="spending">
+                        <h3>Total Amount Spent in the Ranged Year</h3>
+                        <p id="total-spent">${{ spending['total_spending'] }}</p>
+                
+                        <h3>Monthly Spending for the Ranged Months</h3>
+                        <div id="ranged-monthly-spending-bar-chart" class="bar-chart">
+                            {% for month in spending['spending_months'] %}
+                                <div 
+                                    class="bar" 
+                                    style="height : 0%">
+                                    <span class="label">{{ month['month'] }}</span>
+                                    <span class="value">${{ month['total_spent'] }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
+                {% endif %}
+                <div id="date-range">
+                    <h3>Specify a Date Range</h3>
+                    <form id="date-range-form" action = '/range_customer_spending' method="POST" >
+                        <label for="start-date">Start Date:</label>
+                        <input type="date" id="start-date" name="start_date" required>
+                        
+                        <label for="end-date">End Date:</label>
+                        <input type="date" id="end-date" name="end_date" required>
+                        
+                        <button type="submit">View Spending</button>
+                    </form>
                 </div>
             {% endif %}
-            <div id="date-range">
-                <h3>Specify a Date Range</h3>
-                <form id="date-range-form" action = /customer_spending method="POST" >
-                    <label for="start-date">Start Date:</label>
-                    <input type="date" id="start-date" name="start_date" required>
-                    
-                    <label for="end-date">End Date:</label>
-                    <input type="date" id="end-date" name="end_date" required>
-                    
-                    <button type="submit">View Spending</button>
-                </form>
-            </div>
         </section>
     </div>
 

@@ -214,6 +214,12 @@
             color: #aaa;
             cursor: pointer;
         }
+        .notice {
+            margin-top: 20px;
+            margin-right: 10px;
+            font-weight: bold;
+            display: inline;
+        }
     </style>
 </head>
 <body>
@@ -255,9 +261,15 @@
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
                         {% if flight.departure_date > current_date %}
-                            <div>
-                                <button class="button" style="margin-top: 20px;" onclick="openPurchaseWindow()">Purchase</button>
-                            </div>
+                            {% if flight['full'] %}
+                                <div>
+                                    <div class="notice">Flight Full</div>
+                                </div>
+                            {% else %}
+                                <div>
+                                    <button class="button" style="margin-top: 20px;" onclick="openPurchaseWindow()">Purchase</button>
+                                </div>
+                            {% endif %}
                         {% endif %}
                         
                         <div id="purchase-modal" class="modal">
