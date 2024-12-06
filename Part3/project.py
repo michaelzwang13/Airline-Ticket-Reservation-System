@@ -4,8 +4,6 @@ from datetime import date
 import pymysql.cursors
 import os
 import sys
-from flask_sqlalchemy import SQLAlchemy
-import bcrypt
 import hashlib
 #Initialize the app from Flask
 app = Flask(__name__)
@@ -156,8 +154,8 @@ def staffLoginAuth():
     #cursor used to send queries
     cursor = conn.cursor()
     #executes query
-    query = 'SELECT * FROM airline_staff WHERE username = %s and password = %s'
-    cursor.execute(query, (username, password))
+    query = 'SELECT * FROM airline_staff WHERE username = %s'
+    cursor.execute(query, (username))
     #stores the results in a variable
     data = cursor.fetchone()
     #use fetchall() if you are expecting more than 1 data row
@@ -438,6 +436,16 @@ def cancelFlight():
 
     cursor = conn.cursor()   
 
+    query = '''SELECT base_price FROM flight natural join ticket natural join purchase
+               WHERE ID = %s'''
+    cursor.execute(query, (ticket_id))
+    base_price = cursor.fetchone()['base_price']
+    conn.commit()
+
+    query = '''UPDATE ticket SET ticket_price = %s 
+                        WHERE ID = %s'''
+    cursor.execute(query, (base_price, ticket_id))
+
     ins = 'DELETE FROM purchase WHERE ID =  %s'
     cursor.execute(ins, (ticket_id))
 
@@ -485,15 +493,22 @@ def searchFlight():
     flights = cursor.fetchall()
 
     for flight in flights: 
-        query = '''SELECT * FROM flight natural join airplane
-                   WHERE flight_number = %s AND num_seats = (SELECT COUNT(*) FROM flight natural join purchase natural join ticket 
-                                                                    WHERE flight_number = %s)'''
-        cursor.execute(query, (flight['flight_number'], flight['flight_number']))
-        full = cursor.fetchone()
-        if full:
-            flight['full'] = True
+        query_num_seats = '''SELECT num_seats FROM flight natural join airplane
+                   WHERE flight_number = %s'''
+        cursor.execute(query_num_seats, (flight['flight_number']))
+        num_seats = cursor.fetchone()['num_seats']
+
+        query_purchase_count = '''SELECT COUNT(*) FROM flight natural join purchase natural join ticket 
+                                                                    WHERE flight_number = %s'''
+        cursor.execute(query_purchase_count, (flight['flight_number']))
+        total_purchased = cursor.fetchone()['COUNT(*)']
+
+        if num_seats == total_purchased:
+            flight['status'] = "Full"
+        elif num_seats * 0.8 <= total_purchased:
+            flight['status'] = "Nearly Full"
         else:
-            flight['full'] = False
+            flight['status'] = "Not Full"
             
     results = {'searchFlight':flights}
     cursor.close()
@@ -914,6 +929,8 @@ def purchaseFlights():
     card_name = request.form['card_name']
     expiration_date = request.form['expiration_date']
 
+    capacity_status = request.form['capacity_status']
+
     cursor = conn.cursor()
 
     query = '''SELECT ID FROM ticket
@@ -930,6 +947,12 @@ def purchaseFlights():
         ticket_id = cursor.fetchone()
 
         if not ticket_id:
+            if capacity_status == "Nearly Full":
+                query = '''UPDATE ticket SET ticket_price = %s 
+                        WHERE ID = %s'''
+                cursor.execute(query, (float(base_price) * 1.25, ticket['ID']))
+                conn.commit()
+                
             ins = 'INSERT INTO purchase VALUES(%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, %s, %s)'
             cursor.execute(ins, (session['email_address'], ticket['ID'], ticket_user_first_name, 
                             ticket_user_last_name, ticket_user_date_of_birth, card_type, card_number, 

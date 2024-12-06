@@ -257,11 +257,15 @@
                             <p>Status: <strong>{{ flight.flight_status }}</strong></p>
                         </div>
                         <div class="price+id">
-                            <p class="price">Price: ${{flight.base_price}}</p>
+                            {% if flight['status'] == 'Nearly Full' %}
+                                <p class="price">Price: ${{flight.base_price * 1.25}}</p>
+                            {% else %}
+                                <p class="price">Price: ${{flight.base_price}}</p>
+                            {% endif %}
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
                         {% if flight.departure_date > current_date %}
-                            {% if flight['full'] %}
+                            {% if flight['status'] == "Full" %}
                                 <div>
                                     <div class="notice">Flight Full</div>
                                 </div>
@@ -315,6 +319,7 @@
                                         <input type="hidden" name="departure_date" value="{{ flight.departure_date }}">
                                         <input type="hidden" name="departure_time" value="{{ flight.departure_time}}">
                                         <input type="hidden" name="base_price" value="{{ flight.base_price}}">
+                                        <input type="hidden" name="capacity_status" value="{{ flight.status }}">
                                     </div>
                                     <button type="submit" style="margin-top: 20px;" onclick="purchase()">Purchase</button>
                                 </form>
