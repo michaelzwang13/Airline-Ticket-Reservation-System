@@ -565,7 +565,8 @@ def staff_searchCustomerFlights():
 @app.route('/staff_searchCustomerRates',methods=['GET','POST'])
 def staff_searchCustomerRates():
     flight_number =  request.form['flight_number']
-    cursor = comm.cursor()
+    username = session['username']
+    cursor = conn.cursor()
     query = ''' SELECT airline_name FROM airline_staff
                                 WHERE username = %s'''
     params = (username)
@@ -573,7 +574,7 @@ def staff_searchCustomerRates():
     airline_name = cursor.fetchone()['airline_name']
     cursor.close()
 
-    return render_template('staff_profile.html',section = "view-flight-rates", revenue=revenue , customer = customer,rates=rates)
+    #return render_template('staff_profile.html',section = "view-flight-rates", revenue=revenue , customer = customer,rates=rates)
 
 def get_revenue_mostFrequentCustomer(airline_name):
     username = session['username']
