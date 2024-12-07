@@ -17,13 +17,6 @@ conn = pymysql.connect(host='localhost',
                         #charset='utf8mb4',
                         #cursorclass=pymysql.cursors.DictCursor)
                         port = 3306,
-                        #port = 8889,
-                        #user='root',
-                        #password='root',
-                        #db='ProjectFinal',
-                        #charset='utf8mb4',
-                        #cursorclass=pymysql.cursors.DictCursor)
-                        port = 3306,
                         user='root',
                         password='',
                         db='Airline',
