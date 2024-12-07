@@ -989,7 +989,13 @@ def staff_view_flights_ranged():
     username = session['username']
     start_date = request.form['start_date']
     end_date = request.form['end_date']
+    departure_airport_code = request.form['departure_airport_code']
+    arrival_airport_code = request.form['arrival_airport_code']
+    departure_airport_city = request.form['departure_airport_city']
+    arrival_airport_city = request.form['arrival_airport_city']
 
+    if not start_date and not end_date and not departure_airport_code and not departure_airport_city and not arrival_airport_code and arrival_airport_city:
+        return render_template('staff_home.html',section = 'view-flights', error="no input")
     cursor = conn.cursor()
 
     query = ''' SELECT airline_name FROM airline_staff
@@ -998,11 +1004,41 @@ def staff_view_flights_ranged():
     cursor.execute(query, (username,))
     airline_name = cursor.fetchone()['airline_name']
 
-    query = '''SELECT * FROM flight
-               WHERE airline_name = %s AND departure_date >= %s 
-               AND departure_date <= %s'''
-    cursor.execute(query, (airline_name, start_date, end_date))
+    query = '''SELECT DISTINCT airline_name, flight_number, departure_date, departure_time,
+                               arrival_date, arrival_time, base_price, flight_status, airplane_id
+               FROM flight natural join airport
+               WHERE airline_name = %s'''
+    
+    params = (airline_name,)
+
+    if start_date:
+        query += 'AND departure_date >= %s'
+        params += (departure_date,)
+    if end_date:
+        query += 'AND departure_date <= %s'
+        params += (arrival_date,)
+    if departure_airport_code:
+        query += 'AND departure_airport_code = %s'
+        params += (departure_airport_code,)
+    if arrival_airport_code:
+        query += 'AND arrival_airport_code >= %s'
+        params += (arrival_airport_code,)
+    if departure_airport_city:
+        query += '''AND (departure_airport_code in 
+                        (SELECT code from airport
+                            where city = %s))'''
+        params += (departure_airport_city,)
+    if arrival_airport_city:
+        query += '''AND (arrival_airport_code in 
+                        (SELECT code from airport
+                            where city = %s))'''
+        params += (arrival_airport_city,)
+
+    cursor.execute(query, params)
     flights = cursor.fetchall()
+
+    for flight in flights:
+        print(flight)
 
     results = {"flights":flights}
     cursor.close()
