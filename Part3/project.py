@@ -851,7 +851,7 @@ def changeFlightStatus():
     
     ins = '''UPDATE flight SET flight_status = %s 
              WHERE flight_number = %s AND departure_date = %s AND departure_time = %s AND airline_name = %s '''
-    cursor.execute(ins, (flight_status, flight_number, departure_date, departure_time))
+    cursor.execute(ins, (flight_status, flight_number, departure_date, departure_time,airline_name))
 
     conn.commit()
     cursor.close()
