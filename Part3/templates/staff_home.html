@@ -330,6 +330,11 @@
         </section>
         
         <section id="view-flights" class="search-box {% if section == 'view-flights' %}active{% endif %}">
+            {% if error == "no input" %}
+                <script>
+                    alert("Please enter at least one field")
+                </script>
+            {% endif %}
             <h2>View Flights</h2>
             {% if results and 'flights' in results and ranged %}
                 <h3>Flights Found</h3>
@@ -385,11 +390,27 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="start-date">Start Date</label>
-                            <input type="date" id="start-date" name = "start_date" placeholder="Enter start date" required>
+                            <input type="date" id="start-date" name = "start_date" placeholder="Enter start date">
                         </div>
                         <div class="form-group">
                             <label for="end-date">End Date</label>
-                            <input type="date" id="end-date" name = "end_date" placeholder="Enter end date" required>
+                            <input type="date" id="end-date" name = "end_date" placeholder="Enter end date">
+                        </div>
+                        <div class="form-group">
+                            <label for="departure-airport-code">Departure Airport</label>
+                            <input type="text" id="departure-airport-code" name = "departure_airport_code" placeholder="Enter departure airport code">
+                        </div>
+                        <div class="form-group">
+                            <label for="arrival-airport-code">Arrival Airport</label>
+                            <input type="text" id="arrival-airport-code" name = "arrival_airport_code" placeholder="Enter arrival airport code">
+                        </div>
+                        <div class="form-group">
+                            <label for="departure-airport-city">Departure City</label>
+                            <input type="text" id="departure-airport-city" name = "departure_airport_city" placeholder="Enter departure city">
+                        </div>
+                        <div class="form-group">
+                            <label for="arrival-airport-city">Arrival City</label>
+                            <input type="text" id="arrival-airport-city" name = "arrival_airport_city" placeholder="Enter arrival city">
                         </div>
                     </div>
                     <button type="submit">View Flights</button>
