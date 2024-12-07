@@ -201,7 +201,7 @@
     <nav>
         <button onclick="showSection('search-flights')">Search Flights</button>
         <button onclick="showSection('check-status')">Check Flight Status</button>
-        <button onclick="showSection('view-flights')">View Flights</button>
+        <button onclick="window.location.href='/staff_view_flights_default'">View Flights</button>
         <button onclick="showSection('view-customers')">View Customers On A Flight</button>
         <button onclick="window.location.href='/staff_view_delayed_ontime'">View On-Time/Delayed Flights</button>
         <!-- <button onclick="showSection('view-delayed-ontime')">View On-Time/Delayed Flights</button> -->
@@ -331,7 +331,7 @@
         
         <section id="view-flights" class="search-box {% if section == 'view-flights' %}active{% endif %}">
             <h2>View Flights</h2>
-            {% if results and 'flights' in results%}
+            {% if results and 'flights' in results and ranged %}
                 <h3>Flights Found</h3>
                 {% if results['flights']|length ==0 %}
                     <p>No flights found</p>
@@ -357,8 +357,31 @@
                     <button type="submit" style="margin-top: 20px;">Back to View Flights</button>
                 </form>
             {% else %}
+                <h3>Flights in next 30 days</h3>
+                    {% if results %}
+                        {% if results['flights']|length ==0 %}
+                            <p>No flights found</p>
+                        {% else %}
+                            {% for flight in results['flights'] %}
+                                <div class="card">
+                                    <div class="details">
+                                        <h3>{{flight.airline_name}}</h3>
+                                        <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                                        <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                                        <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
+                                            Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
+                                        <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                                    </div>
+                                    <div class="price+id">
+                                        <p class="price">Price: ${{flight.base_price}}</p>
+                                        Airplane ID: {{ flight.airplane_id}}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
                 <p class="section-description">View flights under a specified time range</p>
-                <form action="/staff_view_flights" method="POST">
+                <form action="/staff_view_flights_ranged" method="POST">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="start-date">Start Date</label>

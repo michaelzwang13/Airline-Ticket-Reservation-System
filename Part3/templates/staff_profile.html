@@ -154,6 +154,49 @@
         .card .actions button:hover {
             background-color: #ec971f;
         }
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 300px;
+            border-left: 2px solid #ddd;
+            border-bottom: 2px solid #ddd;
+            padding: 10px;
+            background-color: #fff8f0;
+            margin-top: 20px;
+        }
+
+        .bar {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #ff6600;
+            width: 100px;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bar:hover {
+            background-color: #e65c00;
+            cursor: pointer;
+        }
+
+        .bar .label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .bar .value {
+            margin-bottom: 10px;
+            font-size: 0.8em;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -169,8 +212,8 @@
     <nav>
         <button onclick="showFeature('edit-profile-info')">Edit Profile Info</button>
         <button onclick="showFeature('view-flight-rates')">View Flight Ratings</button>
-        <button onclick="showFeature('view-frequent-customers')">View Frequent Customers</button>
-        <button onclick="showFeature('view-earned-revenue')">View Earned Revenue</button>
+        <button onclick="window.location.href='/redirect_searchcustomer'">View Frequent Customers</button>
+        <button onclick="window.location.href='/staff_view_earned_revenue'">View Earned Revenue</button>
     </nav>
     <div class="container">
         <!-- Edit Profile Info -->
@@ -204,29 +247,43 @@
         <!-- View Flight Rates -->
         <section id="view-flight-rates" class="feature-section {% if section == 'view-flight-rates' %}active{% endif %}">
             <h2>View Flight Ratings</h2>
-            {% if rates %}
-                {% for rate in rates %}
-                    <div class="card">
-                        <div class="details">
-                            <h3>{{rate.airline_name}}</h3>
-                            <p><strong>Flight Number:</strong> {{ rate.flight_number }}</p>
-                            <p><strong>Customer:</strong> {{ rate.name }}</p>
-                            <p><strong>Ratings:</strong> {{ rate.rating }}</p>
-                            <p><strong>Comments:</strong> {{ rate.comments }}</p>
+            {% if queried %}
+                {% if not rates %}
+                    <h3>No ratings found or flight information inaccessible</h3>
+                {% else %}
+                    <h3>Average Rating: {{ avg_rating }}</h3>
+                    {% for rate in rates %}
+                        <div class="card">
+                            <div class="details">
+                                <h3>{{rate.airline_name}}</h3>
+                                <p><strong>Flight Number:</strong> {{ rate.flight_number }}</p>
+                                <p><strong>Customer:</strong> {{ rate.email_address }}</p>
+                                <p><strong>Rating:</strong> {{ rate.rating }}</p>
+                                <p><strong>Comments:</strong> {{ rate.comments }}</p>
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                {% endif %}
                 <form action="/redirect_searchrates" method="GET">
                     <button type="submit" style="margin-top: 20px;">Back to Search</button>
                 </form>
             {% else %}
                 <h2>Search Customer's ratings</h2>
                 <form action="/staff_searchCustomerRates" method="POST">
-                    <label for="flight_number">Flight Number:</label>
-                    <input type="text" id="flight-number" name="flight_number" required>
+                    <div class="form-group">
+                        <label for="flight_number">Flight Number:</label>
+                        <input type="text" id="flight-number" name="flight_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="departure_date">Departure Date:</label>
+                        <input type="date" id="departure-date" name="departure_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="departure_time">Departure Time:</label>
+                        <input type="time" id="departure-time" name="departure_time" required>
+                    </div>
                     <button type="submit">Search Ratings</button>
                 </form>
-
             {% endif %}
         </section>
 
@@ -234,25 +291,29 @@
         <section id="view-frequent-customers" class="feature-section {% if section == 'view-frequent-customers' %}active{% endif %}">
             <h3>Most Frequent Customer in the Past Year</h3>
             <p id="Frequent Customer">{{ customer['most'] }}</p>
-            {% if 'customer_flights' in customer.keys() %}
+            {% if queried %}
                 <h2>View Customer's Flights</h2>
-                {% for flight in customer['customer_flights'] %}
-                    <div class="card">
-                        <div class="details">
-                            <h3>{{flight.airline_name}}</h3>
-                            <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
-                            <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
-                            <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
-                                Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
-                            <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                {% if 'customer_flights' in customer.keys() and customer['customer_flights']|length != 0 %}
+                    {% for flight in customer['customer_flights'] %}
+                        <div class="card">
+                            <div class="details">
+                                <h3>{{flight.airline_name}}</h3>
+                                <p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+                                <p><strong>{{ flight.departure_airport_code }}</strong> → <strong>{{ flight.arrival_airport_code }}</strong></p>
+                                <p>Departure Time: <strong>{{ flight.departure_date }} {{ flight.departure_time }}</strong> ------- 
+                                    Arrival Time: <strong>{{ flight.arrival_date }} {{ flight.arrival_time }}</strong></p>
+                                <p>Status: <strong>{{ flight.flight_status }}</strong></p>
+                            </div>
+                            <div class="price+id">
+                                <p class="price">Price: ${{flight.base_price}}</p>
+                                Airplane ID: {{ flight.airplane_id}}
+                            </div>
+                            
                         </div>
-                        <div class="price+id">
-                            <p class="price">Price: ${{flight.base_price}}</p>
-                            Airplane ID: {{ flight.airplane_id}}
-                        </div>
-                        
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <h3>No flights from this customer found</h3>
+                {% endif %}
                 <form action="/redirect_searchcustomer" method="GET">
                     <button type="submit" style="margin-top: 20px;">Back to Search</button>
                 </form>
@@ -264,8 +325,6 @@
                     <button type="submit">Search Customer</button>
                 </form>
             {% endif %}
-                
-
         </section>
 
         <!-- View Earned Revenue -->
@@ -275,6 +334,18 @@
             <p id="total-revenue">${{ revenue['last_year'] }}</p>
             <h3>Total Revenue in the Past Month</h3>
             <p id="total-revenue">${{ revenue['last_month'] }}</p>
+
+            <h3>Monthly Ticket Sales for the Past Year</h3>
+            <div id="monthly-ticket-bar-chart" class="bar-chart">
+                {% for month in revenue['ticket_count'] %}
+                    <div 
+                        class="bar" 
+                        style="height: 0%">
+                        <span class="label">{{ month['month'] }}</span>
+                        <span class="value">${{ month['ticket_count'] }}</span>
+                    </div>
+                {% endfor %}
+            </div>
         </section>
     </div>
 
@@ -317,6 +388,28 @@
             group.appendChild(removeButton);
 
             emailList.appendChild(group);
+        }
+
+        function calculateBarHeights() {
+            const charts = document.querySelectorAll('.bar-chart');
+            
+            charts.forEach(chart => {
+                const bars = chart.querySelectorAll('.bar');
+                
+                const values = Array.from(bars).map(bar => {
+                    const valueSpan = bar.querySelector('.value');
+                    return parseFloat(valueSpan.textContent.replace('$', ''));
+                });
+                
+                // find the maximum value to determine the height of the bar
+                const maxValue = Math.max(...values);
+                // set heights relative to the maximum value
+                bars.forEach(bar => {
+                    const value = parseFloat(bar.querySelector('.value').textContent.replace('$', ''));
+                    const percentage = (value / maxValue * 100); 
+                    bar.style.height = percentage + '%';
+                });
+            });
         }
 
         function saveProfile() {
@@ -374,6 +467,9 @@
             alert("Logging out...");
             window.location.href = '/logout_staff';
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateBarHeights();
+        });
     </script>
 </body>
 </html>

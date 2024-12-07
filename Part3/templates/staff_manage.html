@@ -56,6 +56,28 @@
         nav button:hover {
             background-color: #e65c00;
         }
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card .details {
+            max-width: 70%;
+        }
+        .card .details h3 {
+            color: #ff7f27;
+            margin: 0 0 10px 0;
+        }
+        .card .details p {
+            margin: 5px 0;
+            color: #555;
+        }
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -120,11 +142,21 @@
     <div class="container">
         <!-- Create New Flights -->
         <section id="create-new-flights" class="feature-section {% if section == 'create-new-flights' %}active{% endif %}">
-            {% if error %}
+            {% if error == "maintenance" %}
                 <script>
-                    alert("Can Not create flight")
+                    alert("Cannot create flight, airplane under maintenance")
                     window.location.href = '/staff_manage';
                 </script>
+            {% elif error == "not authorized" %}
+                <script>
+                    alert("Cannot create flight, not authorized for this airline")
+                    window.location.href = '/staff_manage';
+                </script>   
+            {% elif error == "none" %}
+                <script>
+                    alert("Flight created successfully")
+                    window.location.href = '/staff_manage';
+                </script>   
             {% else %}
                 <h2>Create New Flights</h2>
                 <form id="create-flight-form" action = /createNewFlights method = 'POST'>
@@ -157,6 +189,7 @@
                         <select id="flight-status" name = "flight_status">
                             <option value="On-Time">On-Time</option>
                             <option value="Delayed">Delayed</option>
+                            <option value="Delayed">Canceled</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -171,16 +204,26 @@
                         <label for="airplane-id">Airplane ID:</label>
                         <input type="text" id="airplane-id" name = "airplane_id" placeholder="Enter airplane ID">
                     </div>
-                    <button type="submit" onclick="createFlight()">Create Flight</button>
+                    <button type="submit" >Create Flight</button>
                 </form>
             {% endif %}
         </section>
 
         <!-- Change Status of Flight -->
         <section id="change-flight-status" class="feature-section {% if section == 'change-flight-status' %}active{% endif %}">
-            {% if error %}
+            {% if error == "no flights" %}
                 <script>
-                    alert("Invalid flight number")
+                    alert("No flights found")
+                    window.location.href = '/staff_manage';
+                </script>
+            {% elif error == "not authorized" %}
+                <script>
+                    alert("Not authorized to change this flight")
+                    window.location.href = '/staff_manage';
+                </script>
+            {% elif error == "no error" %}
+                <script>
+                    alert("Successfully changed status")
                     window.location.href = '/staff_manage';
                 </script>
             {% else %}
@@ -191,24 +234,49 @@
                         <input type="text" name = "flight_number" id="flight-status-number" placeholder="Enter flight number">
                     </div>
                     <div class="form-group">
+                        <label for="flight-status-date">Flight Departure Date:</label>
+                        <input type="date" name = "departure_date" id="flight-status-date" placeholder="Enter flight departure date">
+                    </div>
+                    <div class="form-group">
+                        <label for="flight-status-time">Flight Departure Time:</label>
+                        <input type="time" name = "departure_time" id="flight-status-time" placeholder="Enter flight departure time">
+                    </div>
+                    <div class="form-group">
                         <label for="new-status">New Status:</label>
                         <select id="new-status" name = "flight_status">
                             <option value="On-Time">On-Time</option>
                             <option value="Delayed">Delayed</option>
+                            <option value="Delayed">Canceled</option>
                         </select>
                     </div>
-                    <button type="submit" onclick="changeFlightStatus()">Change Status</button>
+                    <button type="submit">Change Status</button>
                 </form>
             {%endif%}
         </section>
 
         <!-- Add Airplane -->
         <section id="add-airplane" class="feature-section {% if section == 'add-airplane' %}active{% endif %}">
-            {% if error %}
-                <script>
-                    alert("Invalid Airline Name")
-                    window.location.href = '/staff_manage';
-                </script>
+            {% if airplanes %}
+                {% if error %}
+                    <script>
+                        alert("Cannot add airplane that does not belong to your airline")
+                        window.location.href = '/staff_manage';
+                    </script>
+                {% endif %}
+                <p>Found {{ airplanes|length }} airplanes</p>
+                {% for airplane in airplanes %}
+                    <div class="card">
+                        <div class="details">
+                            <p><strong>Model: </strong> {{ airplane.manufacturing_company }} {{ airplane.model_num }} </p>
+                            <p><strong>ID: </strong> {{ airplane.ID }}</p>
+                            <p><strong>Age: </strong> {{ airplane.age }}</p>
+                            <p><strong>Number of Seats: </strong> {{ airplane.num_seats }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+                <form action="/redirectAddAirplane">
+                    <button type="submit" style="margin-top: 20px;">Back to Add Airplane</button>
+                </form>
             {% else %}
                 <h2>Add Airplane</h2>
                 <form id="add-airplane-form" action = /addAirplane method = 'POST'>
@@ -337,10 +405,10 @@
             window.location.href = '/logout_staff';
         }
 
-        function createFlight() {
-            alert("Flight created successfully!");
+        // function createFlight() {
+        //     alert("Flight created successfully!");
             
-        }
+        // }
 
         function changeFlightStatus() {
         }
