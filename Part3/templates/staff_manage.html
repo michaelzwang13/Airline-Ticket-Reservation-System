@@ -281,10 +281,6 @@
                 <h2>Add Airplane</h2>
                 <form id="add-airplane-form" action = /addAirplane method = 'POST'>
                     <div class="form-group">
-                        <label for="airline-name">Airline Name:</label>
-                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airpline name">
-                    </div>
-                    <div class="form-group">
                         <label for="ID">Airplane ID:</label>
                         <input type="number" id="ID" name = "airplane_id" placeholder="Enter airplane ID">
                     </div>
@@ -347,18 +343,9 @@
 
         <!-- Schedule Maintenance -->
         <section id="schedule-maintenance" class="feature-section {% if section == 'schedule-maintenance' %}active{% endif %}">
-            {% if error %}
-                <script>
-                    alert("Invalid Airline Name")
-                    window.location.href = '/staff_manage';
-                </script>
-            {% else %}
+            
                 <h2>Schedule Maintenance</h2>
                 <form id="schedule-maintenance-form" action = '/scheduleMaintenance' method = 'POST'>
-                    <div class="form-group">
-                        <label for="airline-name">Airline Name:</label>
-                        <input type="text" id="airline-name" name = "airline_name" placeholder="Enter airline name">
-                    </div>
                     <div class="form-group">
                         <label for="ID">Airplane ID:</label>
                         <input type="number" id="ID" name = "airplane_id" placeholder="Enter airplane ID">
@@ -381,7 +368,6 @@
                     </div>
                     <button type="submit" onclick="scheduleMaintenance()">Schedule Maintenance</button>
                 </form>
-            {%endif%}
         </section>
     </div>
 

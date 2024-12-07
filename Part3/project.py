@@ -740,7 +740,6 @@ def customer_profile():
 @app.route('/createNewFlights',methods=['GET','POST'])
 def createNewFlights():
     username = session['username']
-    airline_name = request.form['airline_name']
     flight_number = request.form['flight_number']
     departure_time = request.form['departure_time']
     departure_date = request.form['departure_date']
@@ -758,10 +757,7 @@ def createNewFlights():
                                 WHERE username = %s'''
     params = (username)
     cursor.execute(query, params)
-    staff_airline_name = cursor.fetchone()['airline_name']
-
-    if airline_name != staff_airline_name:
-        return render_template('staff_manage.html',section = 'create-new-flights',error="not authorized")
+    airline_name = cursor.fetchone()['airline_name']
 
     departure_date_time = departure_date + " " + departure_time
     arrival_date_time = arrival_date + " " + arrival_time
@@ -843,26 +839,18 @@ def changeFlightStatus():
     params = (username)
     cursor.execute(query, params)
 
-    staff_airline_name = cursor.fetchone()['airline_name']
+    airline_name = cursor.fetchone()['airline_name']
 
     query = '''SELECT * FROM flight 
-               WHERE flight_number = %s AND departure_date = %s AND departure_time = %s'''
-    cursor.execute(query, (flight_number, departure_date, departure_time))  
+               WHERE flight_number = %s AND departure_date = %s AND departure_time = %s AND airline_name = %s'''
+    cursor.execute(query, (flight_number, departure_date, departure_time,airline_name))  
     flights = cursor.fetchall()
 
     if not flights:
         return render_template('staff_manage.html',section = 'change-flight-status',error ="no flights")
-    else:
-        found_airline = False
-        for flight in flights:
-            if flight['airline_name'] == staff_airline_name:
-                found_airline = True
-                break;    
-        if not found_airline:
-            return render_template('staff_manage.html',section = 'change-flight-status',error ="not authorized")
-
+    
     ins = '''UPDATE flight SET flight_status = %s 
-             WHERE flight_number = %s AND departure_date = %s AND departure_time = %s'''
+             WHERE flight_number = %s AND departure_date = %s AND departure_time = %s AND airline_name = %s '''
     cursor.execute(ins, (flight_status, flight_number, departure_date, departure_time))
 
     conn.commit()
@@ -873,7 +861,7 @@ def changeFlightStatus():
 @app.route('/addAirplane',methods=['GET','POST'])
 def addAirplane():
     username = session['username']
-    airline_name = request.form['airline_name']
+    #airline_name = request.form['airline_name']
     airplane_id = request.form['airplane_id']
     num_seats = request.form['capacity']
     manufacturing_company = request.form['manufacturing_company']
@@ -889,10 +877,8 @@ def addAirplane():
     params = (username)
     cursor.execute(query, params)
 
-    staff_airline_name = cursor.fetchone()['airline_name']
+    airline_name = cursor.fetchone()['airline_name']
 
-    if airline_name != staff_airline_name:
-        error = True
 
     ins = 'INSERT INTO airplane VALUES(%s, %s, %s, %s, %s, %s, %s)'
     cursor.execute(ins, (airline_name, airplane_id, num_seats, manufacturing_company, 
@@ -911,7 +897,7 @@ def addAirplane():
 
     query = ''' SELECT * FROM airplane
                                 WHERE airline_name = %s'''
-    params = (staff_airline_name)
+    params = (airline_name)
     cursor.execute(query, params)
 
     airplanes = cursor.fetchall()
@@ -941,7 +927,14 @@ def addAirport():
 
 @app.route('/scheduleMaintenance',methods=['GET','POST'])
 def scheduleMaintenance():
-    airline_name = request.form['airline_name']
+    username = session['username']
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+
+    staff_airline_name = cursor.fetchone()['airline_name']
+    airline_name = staff_airline_name
     airplane_id = request.form['airplane_id']
 
     maintenance_start_date = request.form['maintenance_start_date']
