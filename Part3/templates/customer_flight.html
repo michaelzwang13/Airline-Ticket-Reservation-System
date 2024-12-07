@@ -150,6 +150,23 @@
             <a onclick="logout()" style="cursor: pointer;">Log Out</a>
         </div>
     </header>
+    {% if error == "rating error" %}
+        <script>
+            alert("You have already rated this flight");
+        </script>
+    {% elif error == "cannot cancel" %}
+        <script>
+            alert("Cannot cancel. Flight within 24 hours");
+        </script>
+    {% elif error == "cancel success" %}
+        <script>
+            alert("Cancel successful");
+        </script>
+    {% elif error == "rating success" %}
+        <script>
+            alert("Rating submitted");
+        </script>
+    {% endif %}
     <div class="container">
         <h2>Upcoming Flights</h2>
         <div id="upcoming-flights">
@@ -172,7 +189,7 @@
                         </div>
                         <form action="/cancel_flight" method="POST" class="cancel-form">
                             <input type="hidden" name="flight_id" value="{{ flight.ID }}">
-                            <button type="submit" onclick="cancel()" class="cancel">Cancel</button>
+                            <button type="submit" class="cancel">Cancel</button>
                         </form>
                     </div>
                 {% endfor %}
@@ -209,7 +226,7 @@
                             <input type="number" id="rating" name="rating" min="1" max="5" required>
                             <label for="comment">Comment:</label>
                             <textarea id="comment" name="comment" rows="3" placeholder="Enter your comment" required></textarea>
-                            <button type="submit" onclick="rate()">Submit</button>
+                            <button type="submit" >Submit</button>
                         </form>
                     </div>
                 {% endfor %}
