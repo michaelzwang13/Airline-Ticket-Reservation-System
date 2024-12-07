@@ -508,12 +508,10 @@ def searchFlight():
                    WHERE flight_number = %s'''
         cursor.execute(query_num_seats, (flight['flight_number']))
         num_seats = cursor.fetchone()['num_seats']
-
         query_purchase_count = '''SELECT COUNT(*) FROM flight natural join purchase natural join ticket 
                                                                     WHERE flight_number = %s'''
         cursor.execute(query_purchase_count, (flight['flight_number']))
         total_purchased = cursor.fetchone()['COUNT(*)']
-
         if num_seats == total_purchased:
             flight['status'] = "Full"
         elif num_seats * 0.8 <= total_purchased:
