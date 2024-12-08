@@ -779,26 +779,26 @@ def createNewFlights():
     query = '''
             SELECT * 
             FROM maintenance_procedure 
-            WHERE ID = %s 
+            WHERE airplane_id = %s 
             AND (
                 EXISTS (
                     SELECT 1 
                     FROM maintenance_procedure AS mp
-                    WHERE mp.ID = %s 
+                    WHERE mp.airplane_id = %s 
                         AND %s BETWEEN CONCAT(mp.maintenance_start_date, ' ', mp.maintenance_start_time)
                                     AND CONCAT(mp.maintenance_end_date, ' ', mp.maintenance_end_time)
                 )
                 OR EXISTS (
                     SELECT 1 
                     FROM maintenance_procedure AS mp
-                    WHERE mp.ID = %s 
+                    WHERE mp.airplane_id = %s 
                         AND %s BETWEEN CONCAT(mp.maintenance_start_date, ' ', mp.maintenance_start_time)
                                     AND CONCAT(mp.maintenance_end_date, ' ', mp.maintenance_end_time)
                 )
                 OR EXISTS (
                     SELECT 1 
                     FROM maintenance_procedure AS mp
-                    WHERE mp.ID = %s 
+                    WHERE mp.airplane_id = %s 
                         AND %s < CONCAT(mp.maintenance_end_date, ' ', mp.maintenance_end_time)
                         AND %s > CONCAT(mp.maintenance_start_date, ' ', mp.maintenance_start_time)
                 )
@@ -818,7 +818,7 @@ def createNewFlights():
                         departure_airport_code, arrival_airport_code, airplane_id))
 
     query = '''SELECT num_seats FROM airplane
-               WHERE ID = %s'''
+               WHERE airplane_id = %s'''
     cursor.execute(query, (airplane_id))
     num_seats = cursor.fetchone()['num_seats']
 
@@ -902,7 +902,7 @@ def addAirplane():
         UPDATE airplane
         SET age = TIMESTAMPDIFF(YEAR, manufacturing_date, CURDATE()) 
                 - (DATE_FORMAT(CURDATE(), '%%M-%%D') < DATE_FORMAT(manufacturing_date, '%%M-%%D'))
-        WHERE ID = %s;
+        WHERE airplane_id = %s;
         '''
 
     cursor.execute(update_age_query, (airplane_id,))
