@@ -477,6 +477,7 @@ def searchFlight():
         return render_template('index.html',results = {'False':False},section = "search-flights")
     # Prepare the SQL query
     cursor = conn.cursor()
+    # Add return date conditionally for round-trip search
     query = """
         SELECT * FROM flight
         WHERE 
@@ -491,16 +492,32 @@ def searchFlight():
                     OR arrival_airport_code = %s) 
             AND
             departure_date = %s
-    """
+        """
     params = (departure_city, departure_airport_code, arrival_city, arrival_airport_code, departure_date)
-    
-    # Add return date conditionally for round-trip search
-    if return_date:
-        query += " OR departure_date = %s"
-        params += (return_date,)
 
     cursor.execute(query, params)
     flights = cursor.fetchall()
+    if return_date:
+        return_query = """
+        SELECT * FROM flight
+        WHERE 
+            (departure_airport_code in 
+                        (SELECT code from airport
+                            where city = %s)
+                    OR departure_airport_code = %s) 
+            AND
+            (arrival_airport_code in 
+                        (SELECT code from airport
+                            where city = %s)
+                    OR arrival_airport_code = %s) 
+            AND
+            departure_date = %s
+        """
+        params_return  = (arrival_city, arrival_airport_code,departure_city, departure_airport_code, return_date)
+        cursor.execute(return_query, params_return)
+        flights_return = cursor.fetchall()
+        flights+=flights_return
+    
 
     for flight in flights: 
         query_num_seats = '''SELECT num_seats FROM flight natural join airplane
