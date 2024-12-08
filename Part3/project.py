@@ -412,7 +412,6 @@ def rateFlight():
     departure_time = request.form['departure_time']
     rating = request.form['rating']
     comment = request.form['comment']
-
     cursor = conn.cursor()   
 
     query = '''SELECT * FROM rate 
@@ -421,8 +420,8 @@ def rateFlight():
                   departure_time = %s'''
     cursor.execute(query, (email_address, flight_number, airline_name, departure_date,
                             departure_time))
-    rating = cursor.fetchone()
-    if rating:
+    existing_rating = cursor.fetchone()
+    if existing_rating:
         return customer_flight("rating error")
 
     ins = 'INSERT INTO rate VALUES(%s, %s, %s, %s, %s, %s, %s)'
@@ -1004,10 +1003,10 @@ def staff_view_flights_ranged():
 
     if start_date:
         query += 'AND departure_date >= %s'
-        params += (departure_date,)
+        params += (start_date,)
     if end_date:
         query += 'AND departure_date <= %s'
-        params += (arrival_date,)
+        params += (end_date,)
     if departure_airport_code:
         query += 'AND departure_airport_code = %s'
         params += (departure_airport_code,)
