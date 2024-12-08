@@ -213,11 +213,11 @@
                             <p>Status: <strong>{{ flight.flight_status }}</strong></p>
                         </div>
                         <div class="price+id">
-                            <p class="price">Price: {{flight.base_price}}</p>
+                            <p class="price">Base Price: {{flight.base_price}}</p>
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
-                        <button onclick="showRatingForm('{{ flight.id }}')" class="rate">Rate</button>
-                        <form id="rating-form-{{ flight.id }}" class="rating-form" action="/rate_flight" method="POST" style="display: none;">
+                        <button onclick="showRatingForm('{{ flight.flight_number }}')" class="rate">Rate</button>
+                        <form id="rating-form-{{ flight.flight_number }}" class="rating-form" action="/rate_flight" method="POST" style="display: none;">
                             <input type="hidden" name="flight_number" value="{{ flight.flight_number }}">
                             <input type="hidden" name="airline_name" value="{{ flight.airline_name }}">
                             <input type="hidden" name="departure_time" value="{{ flight.departure_time }}">

@@ -221,7 +221,11 @@
                             <p>Status: <strong>{{ flight.flight_status }}</strong></p>
                         </div>
                         <div class="price+id">
-                            <p class="price">Price: ${{flight.base_price}}</p>
+                            {% if flight['status'] == 'Nearly Full' %}
+                                <p class="price">Price: ${{flight.base_price * 1.25}}</p>
+                            {% else %}
+                                <p class="price">Price: ${{flight.base_price}}</p>
+                            {% endif %}
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
                     </div>

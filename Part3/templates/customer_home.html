@@ -264,7 +264,7 @@
                             {% endif %}
                             Airplane ID: {{ flight.airplane_id}}
                         </div>
-                        {% if flight.departure_date > current_date %}
+                        {% if flight.departure_date > current_date and flight.flight_status !='Canceled' %}
                             {% if flight['status'] == "Full" %}
                                 <div>
                                     <div class="notice">Flight Full</div>

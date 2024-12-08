@@ -305,7 +305,7 @@
                                 <p>Status: <strong>{{ flight.flight_status }}</strong></p>
                             </div>
                             <div class="price+id">
-                                <p class="price">Price: ${{flight.base_price}}</p>
+                                <p class="price">Base Price: ${{flight.base_price}}</p>
                                 Airplane ID: {{ flight.airplane_id}}
                             </div>
                             
@@ -342,7 +342,7 @@
                         class="bar" 
                         style="height: 0%">
                         <span class="label">{{ month['month'] }}</span>
-                        <span class="value">${{ month['ticket_count'] }}</span>
+                        <span class="value">{{ month['ticket_count'] }}</span>
                     </div>
                 {% endfor %}
             </div>

@@ -10,18 +10,18 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        port = 8889,
+                        #port = 8889,
+                        #user='root',
+                        #password='root',
+                        #db='ProjectFinal',
+                        #charset='utf8mb4',
+                        #cursorclass=pymysql.cursors.DictCursor)
+                        port = 3306,
                         user='root',
-                        password='root',
-                        db='ProjectFinal',
+                        password='',
+                        db='Airline',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
-                        # port = 3306,
-                        # user='root',
-                        # password='',
-                        # db='Airline',
-                        # charset='utf8mb4',
-                        # cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
@@ -412,7 +412,6 @@ def rateFlight():
     departure_time = request.form['departure_time']
     rating = request.form['rating']
     comment = request.form['comment']
-
     cursor = conn.cursor()   
 
     query = '''SELECT * FROM rate 
@@ -421,8 +420,8 @@ def rateFlight():
                   departure_time = %s'''
     cursor.execute(query, (email_address, flight_number, airline_name, departure_date,
                             departure_time))
-    rating = cursor.fetchone()
-    if rating:
+    existing_rating = cursor.fetchone()
+    if existing_rating:
         return customer_flight("rating error")
 
     ins = 'INSERT INTO rate VALUES(%s, %s, %s, %s, %s, %s, %s)'
@@ -478,6 +477,7 @@ def searchFlight():
         return render_template('index.html',results = {'False':False},section = "search-flights")
     # Prepare the SQL query
     cursor = conn.cursor()
+    # Add return date conditionally for round-trip search
     query = """
         SELECT * FROM flight
         WHERE 
@@ -492,28 +492,42 @@ def searchFlight():
                     OR arrival_airport_code = %s) 
             AND
             departure_date = %s
-    """
+        """
     params = (departure_city, departure_airport_code, arrival_city, arrival_airport_code, departure_date)
-    
-    # Add return date conditionally for round-trip search
-    if return_date:
-        query += " OR departure_date = %s"
-        params += (return_date,)
 
     cursor.execute(query, params)
     flights = cursor.fetchall()
+    if return_date:
+        return_query = """
+        SELECT * FROM flight
+        WHERE 
+            (departure_airport_code in 
+                        (SELECT code from airport
+                            where city = %s)
+                    OR departure_airport_code = %s) 
+            AND
+            (arrival_airport_code in 
+                        (SELECT code from airport
+                            where city = %s)
+                    OR arrival_airport_code = %s) 
+            AND
+            departure_date = %s
+        """
+        params_return  = (arrival_city, arrival_airport_code,departure_city, departure_airport_code, return_date)
+        cursor.execute(return_query, params_return)
+        flights_return = cursor.fetchall()
+        flights+=flights_return
+    
 
     for flight in flights: 
         query_num_seats = '''SELECT num_seats FROM flight natural join airplane
                    WHERE flight_number = %s'''
         cursor.execute(query_num_seats, (flight['flight_number']))
         num_seats = cursor.fetchone()['num_seats']
-
         query_purchase_count = '''SELECT COUNT(*) FROM flight natural join purchase natural join ticket 
                                                                     WHERE flight_number = %s'''
         cursor.execute(query_purchase_count, (flight['flight_number']))
         total_purchased = cursor.fetchone()['COUNT(*)']
-
         if num_seats == total_purchased:
             flight['status'] = "Full"
         elif num_seats * 0.8 <= total_purchased:
@@ -740,7 +754,6 @@ def customer_profile():
 @app.route('/createNewFlights',methods=['GET','POST'])
 def createNewFlights():
     username = session['username']
-    airline_name = request.form['airline_name']
     flight_number = request.form['flight_number']
     departure_time = request.form['departure_time']
     departure_date = request.form['departure_date']
@@ -758,10 +771,7 @@ def createNewFlights():
                                 WHERE username = %s'''
     params = (username)
     cursor.execute(query, params)
-    staff_airline_name = cursor.fetchone()['airline_name']
-
-    if airline_name != staff_airline_name:
-        return render_template('staff_manage.html',section = 'create-new-flights',error="not authorized")
+    airline_name = cursor.fetchone()['airline_name']
 
     departure_date_time = departure_date + " " + departure_time
     arrival_date_time = arrival_date + " " + arrival_time
@@ -769,26 +779,26 @@ def createNewFlights():
     query = '''
             SELECT * 
             FROM maintenance_procedure 
-            WHERE ID = %s 
+            WHERE airplane_id = %s 
             AND (
                 EXISTS (
                     SELECT 1 
                     FROM maintenance_procedure AS mp
-                    WHERE mp.ID = %s 
+                    WHERE mp.airplane_id = %s 
                         AND %s BETWEEN CONCAT(mp.maintenance_start_date, ' ', mp.maintenance_start_time)
                                     AND CONCAT(mp.maintenance_end_date, ' ', mp.maintenance_end_time)
                 )
                 OR EXISTS (
                     SELECT 1 
                     FROM maintenance_procedure AS mp
-                    WHERE mp.ID = %s 
+                    WHERE mp.airplane_id = %s 
                         AND %s BETWEEN CONCAT(mp.maintenance_start_date, ' ', mp.maintenance_start_time)
                                     AND CONCAT(mp.maintenance_end_date, ' ', mp.maintenance_end_time)
                 )
                 OR EXISTS (
                     SELECT 1 
                     FROM maintenance_procedure AS mp
-                    WHERE mp.ID = %s 
+                    WHERE mp.airplane_id = %s 
                         AND %s < CONCAT(mp.maintenance_end_date, ' ', mp.maintenance_end_time)
                         AND %s > CONCAT(mp.maintenance_start_date, ' ', mp.maintenance_start_time)
                 )
@@ -808,7 +818,7 @@ def createNewFlights():
                         departure_airport_code, arrival_airport_code, airplane_id))
 
     query = '''SELECT num_seats FROM airplane
-               WHERE ID = %s'''
+               WHERE airplane_id = %s'''
     cursor.execute(query, (airplane_id))
     num_seats = cursor.fetchone()['num_seats']
 
@@ -843,27 +853,19 @@ def changeFlightStatus():
     params = (username)
     cursor.execute(query, params)
 
-    staff_airline_name = cursor.fetchone()['airline_name']
+    airline_name = cursor.fetchone()['airline_name']
 
     query = '''SELECT * FROM flight 
-               WHERE flight_number = %s AND departure_date = %s AND departure_time = %s'''
-    cursor.execute(query, (flight_number, departure_date, departure_time))  
+               WHERE flight_number = %s AND departure_date = %s AND departure_time = %s AND airline_name = %s'''
+    cursor.execute(query, (flight_number, departure_date, departure_time,airline_name))  
     flights = cursor.fetchall()
 
     if not flights:
         return render_template('staff_manage.html',section = 'change-flight-status',error ="no flights")
-    else:
-        found_airline = False
-        for flight in flights:
-            if flight['airline_name'] == staff_airline_name:
-                found_airline = True
-                break;    
-        if not found_airline:
-            return render_template('staff_manage.html',section = 'change-flight-status',error ="not authorized")
-
+    
     ins = '''UPDATE flight SET flight_status = %s 
-             WHERE flight_number = %s AND departure_date = %s AND departure_time = %s'''
-    cursor.execute(ins, (flight_status, flight_number, departure_date, departure_time))
+             WHERE flight_number = %s AND departure_date = %s AND departure_time = %s AND airline_name = %s '''
+    cursor.execute(ins, (flight_status, flight_number, departure_date, departure_time,airline_name))
 
     conn.commit()
     cursor.close()
@@ -873,7 +875,7 @@ def changeFlightStatus():
 @app.route('/addAirplane',methods=['GET','POST'])
 def addAirplane():
     username = session['username']
-    airline_name = request.form['airline_name']
+    #airline_name = request.form['airline_name']
     airplane_id = request.form['airplane_id']
     num_seats = request.form['capacity']
     manufacturing_company = request.form['manufacturing_company']
@@ -889,10 +891,8 @@ def addAirplane():
     params = (username)
     cursor.execute(query, params)
 
-    staff_airline_name = cursor.fetchone()['airline_name']
+    airline_name = cursor.fetchone()['airline_name']
 
-    if airline_name != staff_airline_name:
-        error = True
 
     ins = 'INSERT INTO airplane VALUES(%s, %s, %s, %s, %s, %s, %s)'
     cursor.execute(ins, (airline_name, airplane_id, num_seats, manufacturing_company, 
@@ -902,7 +902,7 @@ def addAirplane():
         UPDATE airplane
         SET age = TIMESTAMPDIFF(YEAR, manufacturing_date, CURDATE()) 
                 - (DATE_FORMAT(CURDATE(), '%%M-%%D') < DATE_FORMAT(manufacturing_date, '%%M-%%D'))
-        WHERE ID = %s;
+        WHERE airplane_id = %s;
         '''
 
     cursor.execute(update_age_query, (airplane_id,))
@@ -911,7 +911,7 @@ def addAirplane():
 
     query = ''' SELECT * FROM airplane
                                 WHERE airline_name = %s'''
-    params = (staff_airline_name)
+    params = (airline_name)
     cursor.execute(query, params)
 
     airplanes = cursor.fetchall()
@@ -941,15 +941,21 @@ def addAirport():
 
 @app.route('/scheduleMaintenance',methods=['GET','POST'])
 def scheduleMaintenance():
-    airline_name = request.form['airline_name']
+    cursor = conn.cursor()  
+    username = session['username']
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+
+    staff_airline_name = cursor.fetchone()['airline_name']
+    airline_name = staff_airline_name
     airplane_id = request.form['airplane_id']
 
     maintenance_start_date = request.form['maintenance_start_date']
     maintenance_start_time = request.form['maintenance_start_time']
     maintenance_end_date = request.form['maintenance_end_date']
     maintenance_end_time = request.form['maintenance_end_time']
-
-    cursor = conn.cursor()   
 
     ins = 'INSERT INTO maintenance_procedure VALUES(%s, %s, %s, %s, %s, %s)'
     cursor.execute(ins, (airline_name, airplane_id, maintenance_start_time,
@@ -1013,10 +1019,10 @@ def staff_view_flights_ranged():
 
     if start_date:
         query += 'AND departure_date >= %s'
-        params += (departure_date,)
+        params += (start_date,)
     if end_date:
         query += 'AND departure_date <= %s'
-        params += (arrival_date,)
+        params += (end_date,)
     if departure_airport_code:
         query += 'AND departure_airport_code = %s'
         params += (departure_airport_code,)
