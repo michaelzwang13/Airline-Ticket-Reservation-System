@@ -19,7 +19,7 @@ conn = pymysql.connect(host='localhost',
                         port = 3306,
                         user='root',
                         password='',
-                        db='Airline',
+                        db='Final_project',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
 
@@ -342,7 +342,7 @@ def staff_profile():
     freq_customer, revenue = get_revenue_mostFrequentCustomer(airline_name)
     customer = {'most':freq_customer}
 
-    return render_template('staff_profile.html', spending=[0, {}], username=username,revenue = revenue,customer = customer, section = 'edit-profile-info')
+    return render_template('staff_profile.html', username=username,revenue = revenue,customer = customer, section = 'edit-profile-info')
 
 @app.route('/editCustomerProfile',methods=['GET','POST'])
 def editCustomerProfile():
@@ -375,6 +375,7 @@ def editStaffProfile():
     updated_profile = {}
     username = session['username']
     for key, value in request.form.items():
+        print(key)
         if value !='':
             if 'phoneNumbers' in key:  
                 if 'phoneNumbers' not in updated_profile:
@@ -387,8 +388,13 @@ def editStaffProfile():
             else:
                 updated_profile[key] = value
     cursor = conn.cursor()
-        
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
     for key, value in updated_profile.items():
+        
         if key == 'phoneNumbers':
             for num in value:
                 ins = 'INSERT INTO airline_staff_phone_number VALUES(%s, %s)'
@@ -401,7 +407,8 @@ def editStaffProfile():
             cursor.execute(f'UPDATE airline_staff SET {key} = '+'%s WHERE username = %s', (value, username))
     conn.commit()
     cursor.close()
-    return render_template('staff_profile.html',spending = {}, section = 'edit-profile-info')
+    customer, revenue = get_revenue_mostFrequentCustomer(airline_name)
+    return render_template('staff_profile.html',customer = customer,revenue = revenue, section = 'edit-profile-info')
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():

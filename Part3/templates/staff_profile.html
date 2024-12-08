@@ -222,11 +222,11 @@
             <form id="edit-profile-form" action="/editStaffProfile" method="POST">
                 <div class="form-group">
                     <label for="first-name">First Name:</label>
-                    <input type="text" id="first-name" placeholder="Enter your first name">
+                    <input type="text" id="first-name" name = 'first_name' placeholder="Enter your first name">
                 </div>
                 <div class="form-group">
                     <label for="last-name">Last Name:</label>
-                    <input type="text" id="last-name" placeholder="Enter your last name">
+                    <input type="text" id="last-name" name = 'last_name'placeholder="Enter your last name">
                 </div>
                 <div class="form-group">
                     <label for="dob">Date of Birth:</label>
@@ -240,7 +240,9 @@
                     <h3>Email Addresses</h3>
                 </div>
                 <button type="button" onclick="addEmailAddress()">Add Email Address</button>
-                <button type="button" class="save-button" onclick="saveProfile()">Save Changes</button>
+                <div class="form-actions">
+                    <button type="submit" class="save-button">Save Changes</button>
+                </div>
             </form>
         </section>
 
@@ -412,39 +414,6 @@
             });
         }
 
-        function saveProfile() {
-            const inputs = document.querySelectorAll('#edit-profile-form input');
-            const phoneInputs = document.querySelectorAll('.phone-input');
-            const emailInputs = document.querySelectorAll('.email-input');
-            const updatedProfile = {};
-            
-            inputs.forEach(input => {
-                if (input.value.trim() !== "" && !input.classList.contains('phone-input') && !input.classList.contains('email-input')) {
-                    const fieldName = input.id.replace(/-/g, '');
-                    updatedProfile[fieldName] = input.value.trim();
-                }
-            });
-
-            const phoneNumbers = [];
-            phoneInputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    phoneNumbers.push(input.value.trim());
-                }
-            });
-
-            const emailAddresses = [];
-            emailInputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    emailAddresses.push(input.value.trim());
-                }
-            });
-
-            updatedProfile.phoneNumbers = phoneNumbers;
-            updatedProfile.emailAddresses = emailAddresses;
-
-            alert('Profile updated successfully!');
-            console.log("Updated Profile:", updatedProfile);
-        }
 
         function showFeature(featureId) {
             const sections = document.querySelectorAll('.feature-section');

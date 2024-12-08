@@ -7,9 +7,6 @@
 -- Server version: 8.0.35
 -- PHP Version: 8.2.20
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -29,7 +26,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `airline` (
   `name` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `airline`
@@ -56,7 +53,7 @@ CREATE TABLE `airline_staff` (
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
   `date_of_birth` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 --
 -- Dumping data for table `airline_staff`
@@ -87,7 +84,7 @@ INSERT INTO `airline_staff` (`username`, `airline_name`, `password`, `first_name
 CREATE TABLE `airline_staff_email` (
   `username` varchar(50) NOT NULL,
   `email_address` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `airline_staff_email`
@@ -105,7 +102,7 @@ INSERT INTO `airline_staff_email` (`username`, `email_address`) VALUES
 CREATE TABLE `airline_staff_phone_number` (
   `username` varchar(50) NOT NULL,
   `phone_number` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `airline_staff_phone_number`
@@ -128,7 +125,7 @@ CREATE TABLE `airplane` (
   `model_num` varchar(15) NOT NULL,
   `manufacturing_date` date NOT NULL,
   `age` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `airplane`
@@ -170,7 +167,7 @@ CREATE TABLE `airport` (
   `country` varchar(50) NOT NULL,
   `num_terminals` int NOT NULL,
   `airport_type` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `airport`
@@ -203,7 +200,7 @@ CREATE TABLE `customer` (
   `passport_number` varchar(50) NOT NULL,
   `passport_expiration` date NOT NULL,
   `passport_country` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `customer`
@@ -227,7 +224,7 @@ INSERT INTO `customer` (`email_address`, `password`, `first_name`, `last_name`, 
 CREATE TABLE `customer_phone_number` (
   `email_address` varchar(50) NOT NULL,
   `phone_number` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `customer_phone_number`
@@ -255,7 +252,7 @@ CREATE TABLE `flight` (
   `departure_airport_code` varchar(20) NOT NULL,
   `arrival_airport_code` varchar(20) NOT NULL,
   `airplane_id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `flight`
@@ -296,7 +293,7 @@ CREATE TABLE `maintenance_procedure` (
   `maintenance_start_date` date NOT NULL,
   `maintenance_end_time` time NOT NULL,
   `maintenance_end_date` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `maintenance_procedure`
@@ -325,7 +322,7 @@ CREATE TABLE `purchase` (
   `card_number` decimal(20,0) DEFAULT NULL,
   `card_name` varchar(50) NOT NULL,
   `expiration_date` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `purchase`
@@ -526,7 +523,7 @@ CREATE TABLE `rate` (
   `departure_date` date NOT NULL,
   `comments` varchar(100) NOT NULL,
   `rating` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `rate`
@@ -548,7 +545,7 @@ CREATE TABLE `ticket` (
   `flight_number` varchar(50) DEFAULT NULL,
   `departure_time` time DEFAULT NULL,
   `departure_date` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 --
 -- Dumping data for table `ticket`
