@@ -10,18 +10,18 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                        #port = 8889,
-                        #user='root',
-                        #password='root',
-                        #db='ProjectFinal',
-                        #charset='utf8mb4',
-                        #cursorclass=pymysql.cursors.DictCursor)
-                        port = 3306,
+                        port = 8889,
                         user='root',
-                        password='',
-                        db='Airline',
+                        password='root',
+                        db='ProjectFinal',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
+                        # port = 3306,
+                        # user='root',
+                        # password='',
+                        # db='Airline',
+                        # charset='utf8mb4',
+                        # cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
 @app.route('/')
@@ -400,8 +400,20 @@ def editStaffProfile():
         else:
             cursor.execute(f'UPDATE airline_staff SET {key} = '+'%s WHERE username = %s', (value, username))
     conn.commit()
+
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
+
     cursor.close()
-    return render_template('staff_profile.html',spending = {}, section = 'edit-profile-info')
+
+    freq_customer, revenue = get_revenue_mostFrequentCustomer(airline_name) 
+    customer = {}
+    customer['most'] = freq_customer
+
+    return render_template('staff_profile.html',spending = {}, section = 'edit-profile-info', customer=customer, revenue=revenue)
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():
@@ -1010,8 +1022,8 @@ def staff_view_flights_ranged():
     cursor.execute(query, (username,))
     airline_name = cursor.fetchone()['airline_name']
 
-    query = '''SELECT DISTINCT airline_name, flight_number, departure_date, departure_time,
-                               arrival_date, arrival_time, base_price, flight_status, airplane_id
+    query = '''SELECT DISTINCT airline_name, flight_number, departure_date, departure_time, departure_airport_code,
+                               arrival_airport_code, arrival_date, arrival_time, base_price, flight_status, airplane_id
                FROM flight natural join airport
                WHERE airline_name = %s'''
     
