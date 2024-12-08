@@ -941,6 +941,7 @@ def addAirport():
 
 @app.route('/scheduleMaintenance',methods=['GET','POST'])
 def scheduleMaintenance():
+    cursor = conn.cursor()  
     username = session['username']
     query = ''' SELECT airline_name FROM airline_staff
                                 WHERE username = %s'''
@@ -955,8 +956,6 @@ def scheduleMaintenance():
     maintenance_start_time = request.form['maintenance_start_time']
     maintenance_end_date = request.form['maintenance_end_date']
     maintenance_end_time = request.form['maintenance_end_time']
-
-    cursor = conn.cursor()   
 
     ins = 'INSERT INTO maintenance_procedure VALUES(%s, %s, %s, %s, %s, %s)'
     cursor.execute(ins, (airline_name, airplane_id, maintenance_start_time,
