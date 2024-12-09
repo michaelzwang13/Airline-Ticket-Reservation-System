@@ -413,7 +413,7 @@ def editStaffProfile():
     customer = {}
     customer['most'] = freq_customer
 
-    return render_template('staff_profile.html',spending = {}, section = 'edit-profile-info', customer=customer, revenue=revenue)
+    return render_template('staff_profile.html',spending = {}, section = 'edit-profile-info', customer=customer,)
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():
