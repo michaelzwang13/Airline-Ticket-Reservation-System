@@ -19,7 +19,7 @@ conn = pymysql.connect(host='localhost',
                         port = 3306,
                         user='root',
                         password='',
-                        db='Final_project',
+                        db='demo_flight',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
 
@@ -908,7 +908,7 @@ def addAirplane():
     update_age_query = '''
         UPDATE airplane
         SET age = TIMESTAMPDIFF(YEAR, manufacturing_date, CURDATE()) 
-                - (DATE_FORMAT(CURDATE(), '%%M-%%D') < DATE_FORMAT(manufacturing_date, '%%M-%%D'))
+                - (CURDATE() < DATE_ADD(manufacturing_date, INTERVAL TIMESTAMPDIFF(YEAR, manufacturing_date, CURDATE()) YEAR))
         WHERE airplane_id = %s;
         '''
 
