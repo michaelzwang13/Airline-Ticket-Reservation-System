@@ -223,10 +223,11 @@
                 <div class="form-group">
                     <label for="first-name">First Name:</label>
                     <input type="text" id="first-name" name = 'first_name' placeholder="Enter your first name">
+                    <input type="text" id="first-name" name = "first_name" placeholder="Enter your first name">
                 </div>
                 <div class="form-group">
                     <label for="last-name">Last Name:</label>
-                    <input type="text" id="last-name" name = 'last_name'placeholder="Enter your last name">
+                    <input type="text" id="last-name" name = "last_name" placeholder="Enter your last name">
                 </div>
                 <div class="form-group">
                     <label for="dob">Date of Birth:</label>
@@ -386,7 +387,7 @@
             input.type = 'email';
             input.placeholder = 'Enter email address';
             input.classList.add('email-input');
-            input.name =`email_address[${phoneNumberCount}]`;
+            input.name =`email_address[${emailAddressrCount}]`;
             emailGroup.appendChild(input);
 
             const removeButton = document.createElement('button');

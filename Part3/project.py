@@ -13,7 +13,7 @@ conn = pymysql.connect(host='localhost',
                         #port = 8889,
                         #user='root',
                         #password='root',
-                        #db='ProjectFinal',
+                        #db='Project',
                         #charset='utf8mb4',
                         #cursorclass=pymysql.cursors.DictCursor)
                         port = 3306,
@@ -405,11 +405,20 @@ def editStaffProfile():
         else:
             cursor.execute(f'UPDATE airline_staff SET {key} = '+'%s WHERE username = %s', (value, username))
     conn.commit()
+
+    query = ''' SELECT airline_name FROM airline_staff
+                                WHERE username = %s'''
+    params = (username)
+    cursor.execute(query, params)
+    airline_name = cursor.fetchone()['airline_name']
+
     cursor.close()
+
     freq_customer, revenue = get_revenue_mostFrequentCustomer(airline_name) 
     customer = {}
     customer['most'] = freq_customer
-    return render_template('staff_profile.html',customer = customer,revenue = revenue, section = 'edit-profile-info')
+
+    return render_template('staff_profile.html',spending = {}, revenue=revenue, section = 'edit-profile-info', customer=customer)
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():
@@ -910,7 +919,7 @@ def addAirplane():
         UPDATE airplane
         SET age = TIMESTAMPDIFF(YEAR, manufacturing_date, CURDATE()) 
                 - (CURDATE() < DATE_ADD(manufacturing_date, INTERVAL TIMESTAMPDIFF(YEAR, manufacturing_date, CURDATE()) YEAR))
-        WHERE airplane_id = %s;
+        WHERE airplane_id = %s
         '''
 
     cursor.execute(update_age_query, (airplane_id,))
@@ -1018,8 +1027,8 @@ def staff_view_flights_ranged():
     cursor.execute(query, (username,))
     airline_name = cursor.fetchone()['airline_name']
 
-    query = '''SELECT DISTINCT airline_name, flight_number, departure_date, departure_time,
-                               arrival_date, arrival_time, base_price, flight_status, airplane_id
+    query = '''SELECT DISTINCT airline_name, flight_number, departure_date, departure_time, departure_airport_code,
+                               arrival_airport_code, arrival_date, arrival_time, base_price, flight_status, airplane_id
                FROM flight natural join airport
                WHERE airline_name = %s'''
     
