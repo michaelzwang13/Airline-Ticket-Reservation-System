@@ -13,7 +13,7 @@ conn = pymysql.connect(host='localhost',
                         port = 8889,
                         user='root',
                         password='root',
-                        db='ProjectFinal',
+                        db='Project',
                         charset='utf8mb4',
                         cursorclass=pymysql.cursors.DictCursor)
                         # port = 3306,
@@ -413,7 +413,7 @@ def editStaffProfile():
     customer = {}
     customer['most'] = freq_customer
 
-    return render_template('staff_profile.html',spending = {}, section = 'edit-profile-info', customer=customer,)
+    return render_template('staff_profile.html',spending = {}, revenue=revenue, section = 'edit-profile-info', customer=customer,)
 
 @app.route('/rate_flight',methods=['POST'])
 def rateFlight():
@@ -913,8 +913,8 @@ def addAirplane():
     update_age_query = '''
         UPDATE airplane
         SET age = TIMESTAMPDIFF(YEAR, manufacturing_date, CURDATE()) 
-                - (DATE_FORMAT(CURDATE(), '%%M-%%D') < DATE_FORMAT(manufacturing_date, '%%M-%%D'))
-        WHERE airplane_id = %s;
+                - (CURDATE() < DATE_ADD(manufacturing_date, INTERVAL TIMESTAMPDIFF(YEAR, manufacturing_date, CURDATE()) YEAR))
+        WHERE airplane_id = %s
         '''
 
     cursor.execute(update_age_query, (airplane_id,))

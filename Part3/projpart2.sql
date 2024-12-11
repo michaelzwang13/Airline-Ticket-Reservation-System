@@ -5,13 +5,13 @@ CREATE TABLE airline(
    
 CREATE TABLE airplane(
     airline_name VARCHAR(50),
-    ID INT,
+    airplane_ID INT,
     num_seats INT NOT NULL,
     manufacturing_company VARCHAR(50) NOT NULL,
     model_num VARCHAR(15) NOT NULL,
     manufacturing_date DATE NOT NULL,
     age INT NOT NULL,
-    PRIMARY KEY(airline_name, ID),
+    PRIMARY KEY(airline_name, airplane_ID),
     FOREIGN KEY(airline_name) REFERENCES airline(name)
 );
 
@@ -38,7 +38,7 @@ CREATE TABLE flight(
     arrival_airport_code VARCHAR(20) NOT NULL,
     airplane_id INT,
     PRIMARY KEY(airline_name,flight_number,departure_time,departure_date),
-    FOREIGN KEY(airline_name,airplane_id) REFERENCES airplane(airline_name,ID),
+    FOREIGN KEY(airline_name,airplane_id) REFERENCES airplane(airline_name,airplane_ID),
     FOREIGN KEY(departure_airport_code) REFERENCES airport(code),
     FOREIGN KEY(arrival_airport_code) REFERENCES airport(code)
 );
@@ -106,13 +106,13 @@ CREATE TABLE airline_staff_email(
 
 CREATE TABLE maintenance_procedure(
     airline_name VARCHAR(50),
-    ID INT,
+    airplane_ID INT,
     maintenance_start_time TIME NOT NULL,
     maintenance_start_date DATE NOT NULL,
     maintenance_end_time TIME NOT NULL,
     maintenance_end_date DATE NOT NULL,
-    PRIMARY KEY (airline_name,ID),
-    FOREIGN KEY (airline_name,ID) REFERENCES airplane(airline_name,ID)
+    PRIMARY KEY (airline_name,airplane_ID),
+    FOREIGN KEY (airline_name,airplane_ID) REFERENCES airplane(airline_name,airplane_ID)
 );
 
 CREATE TABLE rate(
@@ -168,7 +168,7 @@ INSERT INTO customer (email_address, password, first_name, last_name, building_n
 ('kevin.li@protonmail.com', 'k3vinli$', 'Kevin', 'Li', 'Highrise Plaza', 'Elm Street', '22C', 'Seattle', 'WA', 98101, '1993-12-05', 'D28374659', '2032-04-25', 'China');
 
 
-INSERT INTO airplane (airline_name, ID, num_seats, manufacturing_company, model_num, manufacturing_date, age) VALUES
+INSERT INTO airplane (airline_name, airplane_ID, num_seats, manufacturing_company, model_num, manufacturing_date, age) VALUES
 ('Delta Air Lines', 1012, 180, 'Boeing', '737', '2015-06-15', 9),
 ('Delta Air Lines', 1025, 200, 'Airbus', 'A320', '2018-04-20', 6),
 ('Delta Air Lines', 1043, 250, 'Boeing', '757', '2012-07-10', 12),
