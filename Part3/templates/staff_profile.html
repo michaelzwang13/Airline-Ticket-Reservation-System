@@ -352,6 +352,8 @@
     </div>
 
     <script>
+        let phoneNumberCount = 0;
+        let emailAddressrCount = 0;
         function addPhoneNumber() {
             const phoneList = document.getElementById('phone-list');
 
@@ -362,6 +364,7 @@
             input.type = 'text';
             input.placeholder = 'Enter phone number';
             input.classList.add('phone-input');
+            input.name =`phoneNumbers[${phoneNumberCount}]`;
             group.appendChild(input);
 
             const removeButton = document.createElement('button');
@@ -382,6 +385,7 @@
             input.type = 'email';
             input.placeholder = 'Enter email address';
             input.classList.add('email-input');
+            input.name =`email_address[${phoneNumberCount}]`;
             group.appendChild(input);
 
             const removeButton = document.createElement('button');

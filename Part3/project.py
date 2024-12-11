@@ -375,7 +375,6 @@ def editStaffProfile():
     updated_profile = {}
     username = session['username']
     for key, value in request.form.items():
-        print(key)
         if value !='':
             if 'phoneNumbers' in key:  
                 if 'phoneNumbers' not in updated_profile:
