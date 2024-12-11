@@ -406,7 +406,9 @@ def editStaffProfile():
             cursor.execute(f'UPDATE airline_staff SET {key} = '+'%s WHERE username = %s', (value, username))
     conn.commit()
     cursor.close()
-    customer, revenue = get_revenue_mostFrequentCustomer(airline_name)
+    freq_customer, revenue = get_revenue_mostFrequentCustomer(airline_name) 
+    customer = {}
+    customer['most'] = freq_customer
     return render_template('staff_profile.html',customer = customer,revenue = revenue, section = 'edit-profile-info')
 
 @app.route('/rate_flight',methods=['POST'])
