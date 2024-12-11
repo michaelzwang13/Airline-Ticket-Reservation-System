@@ -357,43 +357,45 @@
         function addPhoneNumber() {
             const phoneList = document.getElementById('phone-list');
 
-            const group = document.createElement('div');
-            group.classList.add('group');
+            const phoneGroup = document.createElement('div');
+            phoneGroup.classList.add('group');
 
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = 'Enter phone number';
             input.classList.add('phone-input');
             input.name =`phoneNumbers[${phoneNumberCount}]`;
-            group.appendChild(input);
+            phoneGroup.appendChild(input);
 
             const removeButton = document.createElement('button');
             removeButton.textContent = 'Remove';
-            removeButton.onclick = () => group.remove();
-            group.appendChild(removeButton);
+            removeButton.onclick = () => phoneGroup.remove();
+            phoneGroup.appendChild(removeButton);
 
-            phoneList.appendChild(group);
+            phoneList.appendChild(phoneGroup);
+            phoneNumberCount++
         }
 
         function addEmailAddress() {
             const emailList = document.getElementById('email-list');
 
-            const group = document.createElement('div');
-            group.classList.add('group');
+            const emailGroup = document.createElement('div');
+            emailGroup.classList.add('group');
 
             const input = document.createElement('input');
             input.type = 'email';
             input.placeholder = 'Enter email address';
             input.classList.add('email-input');
             input.name =`email_address[${phoneNumberCount}]`;
-            group.appendChild(input);
+            emailGroup.appendChild(input);
 
             const removeButton = document.createElement('button');
             removeButton.textContent = 'Remove';
-            removeButton.onclick = () => group.remove();
-            group.appendChild(removeButton);
+            removeButton.onclick = () => emailGroup.remove();
+            emailGroup.appendChild(removeButton);
 
-            emailList.appendChild(group);
+            emailList.appendChild(emailGroup);
+            emailAddressrCount++
         }
 
         function calculateBarHeights() {
