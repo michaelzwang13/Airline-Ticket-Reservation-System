@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Registration - Airline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff8f0;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .image-section {
+            flex: 1;
+            background-color: #ffe6cc;
+			background: url('images/staff registration.jpeg') no-repeat center center/cover;
+        }
+        .form-section {
+            flex: 1;
+            padding: 40px;
+            position: relative;
+        }
+        h1 {
+            color: #ff6600;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ff6600;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-link:hover {
+            background-color: rgba(255, 102, 0, 0.1);
+        }
+        .back-link::before {
+            content: "←";
+            font-size: 16px;
+        }
+        .multi-field-container {
+            margin-bottom: 20px;
+        }
+        .multi-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .multi-field input {
+            flex: 1;
+        }
+        .add-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 0;
+            width: auto;
+        }
+        .remove-button {
+            background-color: #ff4444;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: auto;
+            margin-top: 0;
+        }
+        .required {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-section">
+        </div>
+        <div class="form-section">
+            <a href="/staff_login" class="back-link">Back</a>
+            <h1>Staff Registration</h1>
+            <form id="staffRegistrationForm" action="/staffRegisterAuth" method="POST">
+                <div class="form-group">
+                    <label for="username">Username <span class="required">*</span></label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="airline_name">Airline Name <span class="required">*</span></label>
+                    <input type="text" id="airline_name" name="airline_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="first_name">First Name <span class="required">*</span></label>
+                    <input type="text" id="first_name" name="first_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="last_name">Last Name <span class="required">*</span></label>
+                    <input type="text" id="last_name" name="last_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date_of_birth">Date of Birth <span class="required">*</span></label>
+                    <input type="date" id="date_of_birth" name="date_of_birth" required>
+                </div>
+
+                <div id="phone-list">
+                    <div class="form-group">
+                        <label for="phone number">Phone Number </label>
+                        <input type="text" name="phoneNumbers[0]" class="phone-input" placehold = "Enter phone number" style="flex: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+                </div>
+                <button type="button" onclick="addPhoneNumber()" style="
+                    background-color: #ff6600;
+                    color: white;
+                    border: none;
+                    padding: 10px 15px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-left: 5px; /* Space between the input and button */
+                ">+</button>
+
+                <div id="email-list">
+                    <div class="form-group">
+                        <label for="email address">Email Address <span class="required">*</span></label>
+                        <input type="text" name="email_address[0]" class="email-input" placehold = "Enter email address" required style="flex: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+                </div>
+                <button type="button" onclick="addEmailAddress()" style="
+                    background-color: #ff6600;
+                    color: white;
+                    border: none;
+                    padding: 10px 15px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-left: 5px; /* Space between the input and button */
+                ">+</button>
+
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let phoneNumberCount = 1;
+        let emailNumberCount = 1;
+        function addPhoneNumber() {
+            const phoneList = document.getElementById('phone-list');
+            const phoneGroup = document.createElement('div');
+            phoneGroup.classList.add('phone-group');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter phone number';
+            input.classList.add('phone-input');
+            input.name =`phoneNumbers[${phoneNumberCount}]`;
+            phoneGroup.appendChild(input);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => phoneGroup.remove();
+            phoneGroup.appendChild(removeButton);
+
+            phoneList.appendChild(phoneGroup);
+            phoneNumberCount++;
+        }
+        function addPhoneField() {
+            const container = document.getElementById('phone-fields');
+            const newField = document.createElement('div');
+            newField.className = 'multi-field';
+            newField.innerHTML = `
+                <input type="tel" name="phones[]" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
+                <button type="button" class="remove-button" onclick="removeField(this)">-</button>
+            `;
+            container.appendChild(newField);
+        }
+
+        function addEmailAddress() {
+            const emailList = document.getElementById('email-list');
+            const emailGroup = document.createElement('div');
+            emailGroup.classList.add('email-group');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter email address';
+            input.classList.add('email-input');
+            input.name =`email_address[${emailNumberCount}]`;
+            emailGroup.appendChild(input);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => emailGroup.remove();
+            emailGroup.appendChild(removeButton);
+
+            emailList.appendChild(emailGroup);
+            emailNumberCount++;
+        }
+        function addEmailField() {
+            const container = document.getElementById('email-fields');
+            const newField = document.createElement('div');
+            newField.className = 'multi-field';
+            newField.innerHTML = `
+                <input type="tel" name="email[]" title="Please enter email address">
+                <button type="button" class="remove-button" onclick="removeField(this)">-</button>
+            `;
+            container.appendChild(newField);
+        }
+
+        function removeField(button) {
+            button.parentElement.remove();
+        }
+
+    </script>
+</body>
+</html>
