@@ -30,11 +30,11 @@ Staff:
 - Edit profile information
 
 ### Project Snippets
-![Customer Login Page](/Final%20Files/demo/image1.png)
-![Customer Register Page](/Final%20Files/demo/image2.png)
-![Flight Search Interface](/Final%20Files/demo/image3.png)
-![Flight Search Results](/Final%20Files/demo/image4.png)
-![Staff View Monthly Revenue](/Final%20Files/demo/image5.png)
+![Customer Login Page](/src/demo/image1.png)
+![Customer Register Page](/src/demo/image2.png)
+![Flight Search Interface](/src/demo/image3.png)
+![Flight Search Results](/src/demo/image4.png)
+![Staff View Monthly Revenue](/src/demo/image5.png)
 
 ### Languages and Tools
 1. Frontend: HTML/CSS and JavaScript
